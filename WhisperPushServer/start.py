@@ -3,12 +3,11 @@ import logging
 import sys
 
 import uvicorn
+from alembic.config import Config
+from alembic.runtime.environment import EnvironmentContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
-
-from alembic.config import Config
-from alembic.script import ScriptDirectory
-from alembic.runtime.environment import EnvironmentContext
 
 from app.config import settings
 
