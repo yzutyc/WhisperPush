@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>消息推送系统需求文档</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fafafa;
+    }
+    h1, h2, h3, h4 {
+      color: #2c3e50;
+    }
+    h1 {
+      text-align: center;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+    h2 {
+      border-left: 4px solid #3498db;
+      padding-left: 10px;
+      margin-top: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    code {
+      background-color: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    .note {
+      background-color: #e8f4fc;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    ul, ol {
+      margin: 15px 0;
+      padding-left: 30px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>消息推送系统需求文档</h1>
+
+<p><strong>文档版本：</strong>1.0<br>
+<strong>最后更新：</strong>2026年5月13日<br>
+<strong>目标平台：</strong>iOS / Android</p>
+
+<div class="note">
+  <p>本系统旨在构建一个类似 Bark 的自托管消息推送服务，支持用户通过 HTTP API 向自己的移动设备发送自定义通知。系统包含服务端（Python FastAPI）和客户端（Flutter 跨平台 App）。</p>
+</div>
+
+<h2>一、项目概述</h2>
+
+<p>开发一套完整的自托管消息推送解决方案，允许用户通过简单的 HTTP 请求向自己的 iOS/Android 设备发送通知。系统强调安全性、可扩展性和用户体验，支持多种内容格式和高级通知特性。</p>
+
+<h2>二、核心功能需求</h2>
+
+<h3>2.1 用户账户系统</h3>
+<ul>
+  <li>用户注册（邮箱/用户名 + 密码）</li>
+  <li>用户登录（JWT Token 认证）</li>
+  <li>会话管理（Token 刷新机制）</li>
+</ul>
+
+<h3>2.2 Secret 秘钥管理</h3>
+<ul>
+  <li>每个用户可创建多个 Secret 秘钥</li>
+  <li>秘钥可命名（如“生产环境”、“测试环境”）</li>
+  <li>支持查看、复制、删除秘钥</li>
+  <li>秘钥在数据库中以哈希形式存储（非明文）</li>
+</ul>
+
+<h3>2.3 消息推送功能</h3>
+<ul>
+  <li>通过 HTTP API 推送消息（需携带有效 Secret）</li>
+  <li>支持三种内容格式：
+    <ul>
+      <li>纯文本（<code>text/plain</code>）</li>
+      <li>Markdown（<code>text/markdown</code>）</li>
+      <li>HTML（<code>text/html</code>，需安全过滤）</li>
+    </ul>
+  </li>
+  <li>消息包含标题、正文、时间戳</li>
+  <li>支持消息分组（Group）</li>
+  <li>支持消息级别（Level: active, timeSensitive, critical）</li>
+</ul>
+
+<h3>2.4 消息接收与展示（App 端）</h3>
+<ul>
+  <li>消息列表界面（仿短信 UI）</li>
+  <li>消息详情页（根据内容类型渲染）</li>
+  <li>未读消息标记</li>
+  <li>消息搜索与过滤</li>
+  <li>后台推送通知（集成 FCM/APNs）</li>
+</ul>
+
+<h3>2.5 服务器配置</h3>
+<ul>
+  <li>App 内可配置自定义服务器地址</li>
+  <li>支持 HTTPS 强制校验</li>
+</ul>
+
+<h2>三、技术栈</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>组件</th>
+      <th>技术选型</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>后端框架</td>
+      <td>Python 3.10+ + FastAPI</td>
+    </tr>
+    <tr>
+      <td>数据库</td>
+      <td>PostgreSQL (推荐) / MySQL</td>
+    </tr>
+    <tr>
+      <td>ORM</td>
+      <td>SQLAlchemy + Alembic</td>
+    </tr>
+    <tr>
+      <td>前端框架</td>
+      <td>Flutter 3.0+</td>
+    </tr>
+    <tr>
+      <td>推送服务</td>
+      <td>HTTP Webhook + Firebase Cloud Messaging (FCM) + Apple Push Notification service (APNs)</td>
+    </tr>
+    <tr>
+      <td>部署</td>
+      <td>Docker + Docker Compose</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>四、API 接口设计</h2>
+
+<h3>4.1 认证接口</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>方法</th>
+      <th>路径</th>
+      <th>功能</th>
+      <th>认证</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>POST</td>
+      <td><code>/api/v1/auth/register</code></td>
+      <td>用户注册</td>
+      <td>无</td>
+    </tr>
+    <tr>
+      <td>POST</td>
+      <td><code>/api/v1/auth/login</code></td>
+      <td>用户登录</td>
+      <td>无</td>
+    </tr>
+    <tr>
+      <td>GET</td>
+      <td><code>/api/v1/auth/me</code></td>
+      <td>获取当前用户信息</td>
+      <td>Bearer JWT</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>4.2 Secret 管理接口</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>方法</th>
+      <th>路径</th>
+      <th>功能</th>
+      <th>认证</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>POST</td>
+      <td><code>/api/v1/secrets</code></td>
+      <td>创建新 Secret</td>
+      <td>Bearer JWT</td>
+    </tr>
+    <tr>
+      <td>GET</td>
+      <td><code>/api/v1/secrets</code></td>
+      <td>列出所有 Secret</td>
+      <td>Bearer JWT</td>
+    </tr>
+    <tr>
+      <td>DELETE</td>
+      <td><code>/api/v1/secrets/{secret_id}</code></td>
+      <td>删除指定 Secret</td>
+      <td>Bearer JWT</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>4.3 消息推送接口（外部调用）</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>方法</th>
+      <th>路径</th>
+      <th>功能</th>
+      <th>认证</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>POST</td>
+      <td><code>/api/v1/push</code></td>
+      <td>推送消息</td>
+      <td>Header: <code>X-Secret-Key</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>请求体示例：</strong></p>
+<pre><code>{
+  "title": "服务器告警",
+  "body": "# CPU 使用率过高\n当前负载: 95%",
+  "content_type": "markdown",
+  "group": "monitoring",
+  "level": "timeSensitive"
+}</code></pre>
+
+<h3>4.4 消息查询接口（App 使用）</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>方法</th>
+      <th>路径</th>
+      <th>功能</th>
+      <th>认证</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GET</td>
+      <td><code>/api/v1/messages</code></td>
+      <td>分页获取消息列表</td>
+      <td>Bearer JWT</td>
+    </tr>
+    <tr>
+      <td>GET</td>
+      <td><code>/api/v1/messages/{msg_id}</code></td>
+      <td>获取单条消息详情</td>
+      <td>Bearer JWT</td>
+    </tr>
+    <tr>
+      <td>PATCH</td>
+      <td><code>/api/v1/messages/{msg_id}/read</code></td>
+      <td>标记消息为已读</td>
+      <td>Bearer JWT</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>五、数据库设计</h2>
+
+<h3>5.1 users 表（用户）</h3>
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>Integer (PK)</td>
+      <td>用户ID</td>
+    </tr>
+    <tr>
+      <td>username</td>
+      <td>String(50)</td>
+      <td>用户名（唯一）</td>
+    </tr>
+    <tr>
+      <td>email</td>
+      <td>String(100)</td>
+      <td>邮箱（唯一）</td>
+    </tr>
+    <tr>
+      <td>password_hash</td>
+      <td>String(128)</td>
+      <td>密码哈希值</td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>DateTime</td>
+      <td>注册时间</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>5.2 secrets 表（用户秘钥）</h3>
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>Integer (PK)</td>
+      <td>秘钥ID</td>
+    </tr>
+    <tr>
+      <td>user_id</td>
+      <td>Integer (FK)</td>
+      <td>关联用户ID</td>
+    </tr>
+    <tr>
+      <td>secret_key_hash</td>
+      <td>String(64)</td>
+      <td>Secret 哈希值（SHA256）</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>String(50)</td>
+      <td>秘钥名称（可选）</td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>DateTime</td>
+      <td>创建时间</td>
+    </tr>
+    <tr>
+      <td>is_active</td>
+      <td>Boolean</td>
+      <td>是否启用</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>5.3 messages 表（消息）</h3>
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>Integer (PK)</td>
+      <td>消息ID</td>
+    </tr>
+    <tr>
+      <td>user_id</td>
+      <td>Integer (FK)</td>
+      <td>接收用户ID</td>
+    </tr>
+    <tr>
+      <td>title</td>
+      <td>String(100)</td>
+      <td>消息标题</td>
+    </tr>
+    <tr>
+      <td>body</td>
+      <td>Text</td>
+      <td>消息正文</td>
+    </tr>
+    <tr>
+      <td>content_type</td>
+      <td>String(20)</td>
+      <td>内容类型：text/markdown/html</td>
+    </tr>
+    <tr>
+      <td>group</td>
+      <td>String(50)</td>
+      <td>消息分组（可选）</td>
+    </tr>
+    <tr>
+      <td>level</td>
+      <td>String(20)</td>
+      <td>消息级别：active/timeSensitive/critical</td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>DateTime</td>
+      <td>创建时间</td>
+    </tr>
+    <tr>
+      <td>read</td>
+      <td>Boolean</td>
+      <td>是否已读</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>六、前端页面设计（Flutter）</h2>
+
+<h3>6.1 启动页（SplashScreen）</h3>
+<ul>
+  <li><strong>功能：</strong>应用启动时短暂显示 Logo</li>
+  <li><strong>逻辑：</strong>检查本地 Token → 有则进主页，无则进登录页</li>
+</ul>
+
+<h3>6.2 登录页（LoginPage）</h3>
+<ul>
+  <li><strong>内容：</strong>用户名/邮箱、密码输入框，“注册”和“登录”按钮</li>
+  <li><strong>功能：</strong>调用登录 API，保存 JWT 到本地</li>
+</ul>
+
+<h3>6.3 注册页（RegisterPage）</h3>
+<ul>
+  <li><strong>内容：</strong>用户名、邮箱、密码、确认密码</li>
+  <li><strong>功能：</strong>调用注册 API，成功后自动登录</li>
+</ul>
+
+<h3>6.4 消息列表页（MessageListPage）</h3>
+<ul>
+  <li><strong>内容：</strong>
+    <ul>
+      <li>顶部 AppBar（含“设置”图标）</li>
+      <li>消息列表项（标题、摘要、时间、未读标记）</li>
+    </ul>
+  </li>
+  <li><strong>功能：</strong>下拉刷新、上滑加载、点击进入详情页</li>
+</ul>
+
+<h3>6.5 消息详情页（MessageDetailPage）</h3>
+<ul>
+  <li><strong>内容：</strong>标题、时间戳、正文（按类型渲染）</li>
+  <li><strong>功能：</strong>标记为已读、复制内容</li>
+  <li><strong>渲染方案：</strong>
+    <ul>
+      <li>text → <code>Text</code> widget</li>
+      <li>markdown → <code>flutter_markdown</code> 包</li>
+      <li>html → <code>flutter_html</code> 包（带 XSS 过滤）</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>6.6 设置页（SettingsPage）</h3>
+<ul>
+  <li><strong>内容：</strong>
+    <ul>
+      <li>服务器地址配置（文本输入）</li>
+      <li>Secret 管理（列表 + “新建”按钮）</li>
+      <li>“退出登录”按钮</li>
+    </ul>
+  </li>
+  <li><strong>功能：</strong>保存服务器 URL、管理 Secret 秘钥</li>
+</ul>
+
+<h2>七、安全与扩展性</h2>
+
+<h3>7.1 安全措施</h3>
+<ul>
+  <li>所有 API 强制 HTTPS</li>
+  <li>Secret 秘钥仅用于推送鉴权，不用于登录</li>
+  <li>数据库中 Secret 存储 SHA256 哈希值</li>
+  <li>HTML 内容使用 <code>flutter_html</code> + 安全策略过滤 XSS</li>
+  <li>JWT Token 设置合理过期时间（7天）</li>
+</ul>
+
+<h3>7.2 扩展功能（未来）</h3>
+<ul>
+  <li>消息有效期（自动清理过期消息）</li>
+  <li>Web 客户端支持</li>
+  <li>消息模板管理</li>
+  <li>多设备同步</li>
+  <li>自定义铃声/图标（iOS 15+）</li>
+</ul>
+
+<h2>八、部署与运维</h2>
+
+<ul>
+  <li>提供 Docker Compose 部署脚本</li>
+  <li>支持 Cloudflare Worker / Serverless 部署</li>
+  <li>内置健康检查接口（<code>/health</code>）</li>
+  <li>日志记录与监控（可选集成 Prometheus）</li>
+</ul>
+
+</body>
+</html>
