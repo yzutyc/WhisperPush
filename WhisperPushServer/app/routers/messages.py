@@ -94,13 +94,17 @@ def push_message(
     if not user:
         raise HTTPException(status_code=401, detail="Invalid secret key")
 
+    level = message_data.level
+    if not level or level.strip() == "":
+        level = "active"
+    
     new_message = models.Message(
         user_id=user.id,
         title=message_data.title,
         body=message_data.body,
         content_type=message_data.content_type,
         group=message_data.group,
-        level=message_data.level
+        level=level
     )
     db.add(new_message)
     db.commit()
