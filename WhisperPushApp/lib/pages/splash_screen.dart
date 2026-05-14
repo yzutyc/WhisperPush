@@ -21,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late Animation<double> _scaleAnimation;
   late Animation<double> _pulseAnimation;
   late Animation<double> _particleAnimation;
-  bool _isLoaded = false;
   List<_ParticleData> particles = [];
 
   @override
@@ -84,7 +83,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
-      setState(() => _isLoaded = true);
       await Future.delayed(const Duration(milliseconds: 300));
       if (mounted) {
         if (authProvider.isAuthenticated) {

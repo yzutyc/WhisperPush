@@ -745,7 +745,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         foregroundColor: AppTheme.dangerRed,
                         shape: RoundedRectangleBorder(
                           borderRadius: AppTheme.borderRadius,
-                          border: Border.all(color: AppTheme.dangerRed),
+                          side: BorderSide(color: AppTheme.dangerRed),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),

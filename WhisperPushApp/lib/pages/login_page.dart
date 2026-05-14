@@ -106,12 +106,12 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await authProvider.login(
-        token: result['token'],
+        token: result['access_token'],
         serverUrl: url,
         username: result['username'],
       );
 
-      await ServerCache.addHistoryUrl(url);
+      await ServerCache.addUrl(url);
 
       if (mounted) {
         Navigator.pushReplacement(

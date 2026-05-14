@@ -29,6 +29,22 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> login({
+    required String token,
+    required String serverUrl,
+    String? username,
+  }) async {
+    _token = token;
+    _serverUrl = serverUrl;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+    await prefs.setString('server_url', serverUrl);
+    if (username != null) {
+      await prefs.setString('username', username);
+    }
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     _token = null;
     final prefs = await SharedPreferences.getInstance();
