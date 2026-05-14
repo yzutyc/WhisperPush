@@ -6,10 +6,11 @@ import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../components/form_input.dart';
 import '../components/neon_button.dart';
-import '../components/glass_container.dart';
+import '../components/glass_card.dart';
 import '../components/particle_background.dart';
 import '../components/logo_widget.dart';
 import '../components/toast_widget.dart';
+import '../components/empty_state.dart';
 import '../utils/server_cache.dart';
 import '../theme/app_theme.dart';
 import 'register_page.dart';
@@ -33,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
   String? _serverStatus;
   bool? _serverAvailable;
   List<String> _historyUrls = [];
-  bool _showHistoryDropdown = false;
 
   @override
   void initState() {
@@ -79,56 +79,76 @@ class _LoginPageState extends State<LoginPage> {
         _serverAvailable = false;
         _serverStatus = '✗ 连接失败';
       });
-      ToastWidget.showError(context, '服务器连接失败: ${e.toString()}');
+      ToastWidget.showError(context, '连接失败: ${e.toString()}');
     } finally {
-      setState(() {
-        _isCheckingServer = false;
-      });
+      setState(() => _isCheckingServer = false);
     }
-  }
-
-  void _selectHistoryUrl(String url) {
-    setState(() {
-      _serverUrlController.text = url;
-      _showHistoryDropdown = false;
-    });
-    _checkServerStatus();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final url = _serverUrlController.text.trim();
+    if (url.isEmpty) {
+      ToastWidget.showWarning(context, '请先设置服务器地址');
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      
-      await authProvider.saveServerUrl(_serverUrlController.text);
-      await ServerCache.setCurrentServer(_serverUrlController.text);
-      
-      final api = ApiService(baseUrl: authProvider.serverUrl!);
+      final api = ApiService(baseUrl: url);
       
       final result = await api.login(
-        _usernameController.text,
-        _passwordController.text,
+        _usernameController.text.trim(),
+        _passwordController.text.trim(),
       );
 
-      await authProvider.saveToken(result['access_token']);
+      await authProvider.login(
+        token: result['token'],
+        serverUrl: url,
+        username: result['username'],
+      );
+
+      await ServerCache.addHistoryUrl(url);
 
       if (mounted) {
-        ToastWidget.showSuccess(context, '登录成功');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MessageListPage()),
         );
       }
     } catch (e) {
-      if (mounted) {
-        ToastWidget.showError(context, '登录失败: ${e.toString()}');
-      }
+      ToastWidget.showError(context, '登录失败: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _showServerSelector() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ServerSelectorDialog(
+        currentUrl: _serverUrlController.text,
+        historyUrls: _historyUrls,
+        onSelect: (url) {
+          setState(() {
+            _serverUrlController.text = url;
+          });
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _serverUrlController.dispose();
+    super.dispose();
   }
 
   @override
@@ -140,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: Scaffold(
         body: ParticleBackground(
-          particleCount: 50,
+          particleCount: 40,
           child: SingleChildScrollView(
             child: Container(
               height: MediaQuery.of(context).size.height,
@@ -216,118 +236,58 @@ class _LoginPageState extends State<LoginPage> {
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 32),
-                              GlassContainer(
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  children: [
-                                    FormInput(
-                                      controller: _serverUrlController,
-                                      labelText: '服务器地址',
-                                      prefixIcon: Icons.cloud,
-                                      keyboardType: TextInputType.url,
-                                      validator: (value) => 
-                                          value?.isEmpty ?? true ? '请输入服务器地址' : null,
-                                      onChanged: (_) {
-                                        setState(() {
-                                          _serverStatus = null;
-                                          _serverAvailable = null;
-                                        });
-                                      },
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: InkWell(
+                                  onTap: _showServerSelector,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
                                     ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: const Color.fromARGB(30, 139, 92, 246),
+                                      border: Border.all(
+                                        color: AppTheme.techPurple.withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        if (_serverStatus != null)
-                                          Expanded(
-                                            child: Text(
-                                              _serverStatus!,
-                                              style: TextStyle(
-                                                color: _serverAvailable == true 
-                                                  ? AppTheme.pulseGreen 
-                                                  : AppTheme.dangerRed,
-                                                fontSize: 12,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
+                                        const Icon(
+                                          Icons.cloud,
+                                          color: AppTheme.techPurple,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          _serverUrlController.text.isNotEmpty
+                                              ? _serverUrlController.text.length > 20
+                                                  ? '${_serverUrlController.text.substring(0, 20)}...'
+                                                  : _serverUrlController.text
+                                              : '选择服务器',
+                                          style: TextStyle(
+                                            color: AppTheme.techPurple,
+                                            fontSize: 13,
                                           ),
-                                        const SizedBox(width: 8),
-                                        Row(
-                                          children: [
-                                            if (_historyUrls.isNotEmpty)
-                                              IconButton(
-                                                icon: const Icon(
-                                                  Icons.arrow_drop_down,
-                                                  color: AppTheme.textTertiary,
-                                                ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _showHistoryDropdown = !_showHistoryDropdown;
-                                                  });
-                                                },
-                                              ),
-                                            _isCheckingServer
-                                                ? const SizedBox(
-                                                    width: 20,
-                                                    height: 20,
-                                                    child: CircularProgressIndicator(
-                                                      color: AppTheme.techPurple,
-                                                      strokeWidth: 2,
-                                                    ),
-                                                  )
-                                                : ElevatedButton(
-                                                    onPressed: _checkServerStatus,
-                                                    style: ElevatedButton.styleFrom(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        horizontal: 12, 
-                                                        vertical: 6,
-                                                      ),
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(8),
-                                                      ),
-                                                      minimumSize: const Size(60, 32),
-                                                      backgroundColor: AppTheme.techPurple,
-                                                    ),
-                                                    child: const Text(
-                                                      '验证',
-                                                      style: TextStyle(color: Colors.white),
-                                                    ),
-                                                  ),
-                                          ],
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Icon(
+                                          Icons.arrow_drop_down,
+                                          color: AppTheme.techPurple,
+                                          size: 16,
                                         ),
                                       ],
                                     ),
-                                    if (_showHistoryDropdown && _historyUrls.isNotEmpty)
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 8),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(color: AppTheme.borderColor),
-                                          borderRadius: BorderRadius.circular(8),
-                                          color: AppTheme.spaceIndigo,
-                                        ),
-                                        child: Column(
-                                          children: _historyUrls.map((url) {
-                                            return ListTile(
-                                              title: Text(
-                                                url,
-                                                style: const TextStyle(color: AppTheme.textSecondary),
-                                              ),
-                                              onTap: () => _selectHistoryUrl(url),
-                                              trailing: const Icon(
-                                                Icons.arrow_right,
-                                                color: AppTheme.textTertiary,
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ),
-                                      ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              GlassContainer(
+                              const SizedBox(height: 20),
+                              GlassCard(
                                 padding: const EdgeInsets.all(0),
+                                enableHover: false,
                                 child: Column(
                                   children: [
                                     FormInput(
@@ -363,8 +323,8 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   },
                                   child: const Text(
-                                    '忘记密码？',
-                                    style: TextStyle(color: AppTheme.techPurple),
+                                    '忘记密码?',
+                                    style: TextStyle(color: AppTheme.textTertiary),
                                   ),
                                 ),
                               ),
@@ -379,7 +339,7 @@ class _LoginPageState extends State<LoginPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   const Text(
-                                    '还没有账户？',
+                                    '还没有账户? ',
                                     style: TextStyle(color: AppTheme.textTertiary),
                                   ),
                                   TextButton(
@@ -393,14 +353,12 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                                     child: const Text(
                                       '立即注册',
-                                      style: TextStyle(
-                                        color: AppTheme.techPurple,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: TextStyle(color: AppTheme.techPurple),
                                     ),
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 32),
                             ],
                           ),
                         ),
@@ -411,6 +369,284 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ServerSelectorDialog extends StatefulWidget {
+  final String currentUrl;
+  final List<String> historyUrls;
+  final ValueChanged<String> onSelect;
+
+  const ServerSelectorDialog({
+    super.key,
+    required this.currentUrl,
+    required this.historyUrls,
+    required this.onSelect,
+  });
+
+  @override
+  State<ServerSelectorDialog> createState() => _ServerSelectorDialogState();
+}
+
+class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
+  final _newUrlController = TextEditingController();
+  bool _isChecking = false;
+  String? _checkStatus;
+  bool? _isAvailable;
+
+  @override
+  void initState() {
+    super.initState();
+    _newUrlController.text = widget.currentUrl;
+  }
+
+  Future<void> _checkServer() async {
+    final url = _newUrlController.text.trim();
+    if (url.isEmpty) return;
+
+    setState(() {
+      _isChecking = true;
+      _checkStatus = '验证中...';
+      _isAvailable = null;
+    });
+
+    try {
+      final api = ApiService(baseUrl: url);
+      final available = await api.checkServerStatus();
+      
+      setState(() {
+        _isAvailable = available;
+        _checkStatus = available ? '✓ 服务可用' : '✗ 服务不可用';
+      });
+
+      if (available) {
+        ToastWidget.showSuccess(context, '服务器连接成功');
+      } else {
+        ToastWidget.showWarning(context, '服务器不可用');
+      }
+    } catch (e) {
+      setState(() {
+        _isAvailable = false;
+        _checkStatus = '✗ 连接失败';
+      });
+    } finally {
+      setState(() => _isChecking = false);
+    }
+  }
+
+  void _selectUrl(String url) {
+    _newUrlController.text = url;
+    _checkServer();
+  }
+
+  void _confirm() {
+    final url = _newUrlController.text.trim();
+    if (url.isEmpty) {
+      ToastWidget.showWarning(context, '请输入服务器地址');
+      return;
+    }
+    widget.onSelect(url);
+    Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _newUrlController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: const BoxDecoration(
+        color: AppTheme.spaceBlue,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(32),
+          topRight: Radius.circular(32),
+        ),
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 16),
+            Container(
+              width: 48,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.borderColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              '选择服务器',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '选择历史地址或输入新地址',
+              style: TextStyle(color: AppTheme.textTertiary),
+            ),
+            const SizedBox(height: 24),
+            GlassCard(
+              padding: const EdgeInsets.all(0),
+              enableHover: false,
+              child: Column(
+                children: [
+                  FormInput(
+                    controller: _newUrlController,
+                    labelText: '服务器地址',
+                    prefixIcon: Icons.cloud,
+                    keyboardType: TextInputType.url,
+                    hintText: 'https://api.example.com',
+                    validator: (value) => 
+                        value?.isEmpty ?? true ? '请输入服务器地址' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (_checkStatus != null)
+                          Text(
+                            _checkStatus!,
+                            style: TextStyle(
+                              color: _isAvailable == true 
+                                  ? AppTheme.pulseGreen 
+                                  : AppTheme.dangerRed,
+                              fontSize: 12,
+                            ),
+                          ),
+                        const SizedBox(width: 8),
+                        _isChecking
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: AppTheme.techPurple,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : ElevatedButton(
+                                onPressed: _checkServer,
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, 
+                                    vertical: 8,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  backgroundColor: AppTheme.techPurple,
+                                ),
+                                child: const Text(
+                                  '验证',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            if (widget.historyUrls.isNotEmpty)
+              Column(
+                children: [
+                  Text(
+                    '历史地址',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textTertiary,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...widget.historyUrls.map((url) {
+                    return GlassCard(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.all(0),
+                      onTap: () => _selectUrl(url),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color.fromARGB(30, 6, 182, 212),
+                              ),
+                              child: const Icon(
+                                Icons.cloud,
+                                color: AppTheme.neonBlue,
+                                size: 18,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                url,
+                                style: TextStyle(color: AppTheme.textPrimary),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (widget.currentUrl == url)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.techPurple.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '当前',
+                                  style: TextStyle(
+                                    color: AppTheme.techPurple,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(width: 8),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              )
+            else
+              EmptyState(
+                icon: Icons.history,
+                title: '暂无历史地址',
+                description: '输入新地址并验证后会自动保存',
+              ),
+            const SizedBox(height: 32),
+            NeonButton(
+              text: '确认',
+              onPressed: _confirm,
+            ),
+            const SizedBox(height: 32),
+          ],
         ),
       ),
     );

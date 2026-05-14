@@ -7,9 +7,10 @@ import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/secret.dart';
 import '../models/user.dart';
-import '../components/glass_container.dart';
+import '../components/glass_card.dart';
 import '../components/neon_button.dart';
 import '../components/neon_switch.dart';
+import '../components/empty_state.dart';
 import '../theme/app_theme.dart';
 import 'login_page.dart';
 import 'change_password_page.dart';
@@ -30,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
   User? _currentUser;
   String _appVersion = '1.0.0';
   bool _notificationsEnabled = true;
+  String? _serverUrl;
 
   @override
   void initState() {
@@ -37,6 +39,14 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadUserInfo();
     _loadSecrets();
     _loadAppVersion();
+    _loadServerUrl();
+  }
+
+  void _loadServerUrl() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    setState(() {
+      _serverUrl = authProvider.serverUrl;
+    });
   }
 
   Future<void> _loadUserInfo() async {
@@ -88,15 +98,11 @@ class _SettingsPageState extends State<SettingsPage> {
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      final secret = await api.createSecret();
-      
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => SecretDetailDialog(secret: secret),
-        );
-      }
+      await api.createSecret();
       await _loadSecrets();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Secret 创建成功')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('创建失败: ${e.toString()}')),
@@ -107,7 +113,69 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _deleteSecret(int id) async {
-    if (!await _confirmDelete()) return;
+    if (!await showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
+          padding: const EdgeInsets.all(24),
+          enableHover: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '确认删除',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '确定要删除这个 Secret 吗？',
+                style: TextStyle(color: AppTheme.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.spaceBlue,
+                        foregroundColor: AppTheme.textPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: AppTheme.borderColor),
+                      ),
+                      child: const Text('取消'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.dangerRed,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text('删除'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    )) return;
 
     setState(() => _isLoading = true);
     try {
@@ -118,6 +186,9 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       await api.deleteSecret(id);
       await _loadSecrets();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已删除')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('删除失败: ${e.toString()}')),
@@ -127,51 +198,62 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<bool> _confirmDelete() async {
-    return await showDialog(
-      context: context,
-      builder: (context) => GlassContainer(
-        child: AlertDialog(
-          backgroundColor: AppTheme.spaceIndigo,
-          title: const Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
-          content: const Text(
-            '确定要删除这个 Secret 吗？',
-            style: TextStyle(color: AppTheme.textSecondary),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('取消', style: TextStyle(color: AppTheme.textTertiary)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('删除', style: TextStyle(color: AppTheme.dangerRed)),
-            ),
-          ],
-        ),
-      ),
-    ) ?? false;
-  }
-
   Future<void> _logout() async {
     if (!await showDialog(
       context: context,
-      builder: (context) => GlassContainer(
-        child: AlertDialog(
-          backgroundColor: AppTheme.spaceIndigo,
-          title: const Text('确认退出', style: TextStyle(color: AppTheme.textPrimary)),
-          content: const Text(
-            '确定要退出登录吗？',
-            style: TextStyle(color: AppTheme.textSecondary),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('取消', style: TextStyle(color: AppTheme.textTertiary)),
+      builder: (context) => GlassCard(
+        padding: const EdgeInsets.all(24),
+        enableHover: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '确认退出',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary,
+              ),
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('退出', style: TextStyle(color: AppTheme.dangerRed)),
+            const SizedBox(height: 16),
+            Text(
+              '确定要退出登录吗？',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.spaceBlue,
+                      foregroundColor: AppTheme.textPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: AppTheme.borderColor),
+                    ),
+                    child: const Text('取消'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.dangerRed,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: const Text('退出'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -212,7 +294,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSectionHeader(String title, {IconData? icon}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
         children: [
           if (icon != null)
@@ -222,10 +304,10 @@ class _SettingsPageState extends State<SettingsPage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
               color: AppTheme.textTertiary,
-              letterSpacing: 1,
+              letterSpacing: 1.5,
             ),
           ),
         ],
@@ -245,29 +327,24 @@ class _SettingsPageState extends State<SettingsPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.5)),
-          ),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: isHighlighted 
-                    ? AppTheme.techPurple.withOpacity(0.2)
-                    : AppTheme.spaceBlue,
+                    ? const Color.fromARGB(30, 139, 92, 246)
+                    : const Color.fromARGB(40, 51, 65, 85),
               ),
               child: Icon(icon, 
-                color: isHighlighted ? AppTheme.techPurple : AppTheme.textTertiary,
+                color: isHighlighted ? AppTheme.techPurple : AppTheme.textSecondary,
                 size: 20,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,6 +375,65 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildServerInfoCard() {
+    return GlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(0),
+      enableHover: true,
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: const Color.fromARGB(30, 6, 182, 212),
+              ),
+              child: const Icon(Icons.cloud, color: AppTheme.neonBlue, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '服务器地址',
+                    style: TextStyle(fontSize: 13, color: AppTheme.textTertiary),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _serverUrl ?? '未设置',
+                    style: TextStyle(fontSize: 14, color: AppTheme.textPrimary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                Text(
+                  '切换',
+                  style: TextStyle(fontSize: 13, color: AppTheme.techPurple),
+                ),
+                const SizedBox(width: 4),
+                Icon(Icons.refresh, size: 16, color: AppTheme.techPurple),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -316,33 +452,39 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: CircularProgressIndicator(color: AppTheme.techPurple),
               )
             : ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  _buildSectionHeader('账户信息', icon: Icons.account_circle),
-                  GlassContainer(
+                  _buildServerInfoCard(),
+                  _buildSectionHeader('账户', icon: Icons.account_circle),
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     padding: const EdgeInsets.all(0),
+                    enableHover: false,
                     child: Column(
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                           decoration: BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.5)),
+                              bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.3)),
                             ),
                           ),
                           child: Row(
                             children: [
                               Container(
-                                width: 64,
-                                height: 64,
+                                width: 70,
+                                height: 70,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: const LinearGradient(
                                     colors: [AppTheme.techPurple, AppTheme.neonBlue],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppTheme.techPurple.withOpacity(0.3),
-                                      blurRadius: 15,
+                                      color: const Color.fromARGB(60, 139, 92, 246),
+                                      blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
                                   ],
@@ -351,7 +493,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   child: Text(
                                     _currentUser?.username[0].toUpperCase() ?? 'U',
                                     style: const TextStyle(
-                                      fontSize: 28,
+                                      fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -366,7 +508,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     Text(
                                       _currentUser?.username ?? '用户名',
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 19,
                                         fontWeight: FontWeight.bold,
                                         color: AppTheme.textPrimary,
                                       ),
@@ -375,7 +517,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     Text(
                                       _currentUser?.email ?? 'user@example.com',
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 13,
                                         color: AppTheme.textTertiary,
                                       ),
                                     ),
@@ -411,8 +553,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   _buildSectionHeader('Secret 管理', icon: Icons.key),
-                  GlassContainer(
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     padding: const EdgeInsets.all(0),
+                    enableHover: false,
                     child: Column(
                       children: [
                         Container(
@@ -426,27 +570,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         if (_secrets.isEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: 64,
-                                  height: 64,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(32),
-                                    border: Border.all(color: AppTheme.borderColor),
-                                  ),
-                                  child: const Icon(
-                                    Icons.key_off,
-                                    size: 32,
-                                    color: AppTheme.textTertiary,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  '暂无 Secret',
-                                  style: TextStyle(color: AppTheme.textTertiary),
-                                ),
-                              ],
+                            child: EmptyState(
+                              icon: Icons.key_off,
+                              title: '暂无 Secret',
+                              description: '点击上方按钮创建新的 Secret',
                             ),
                           )
                         else
@@ -456,18 +583,18 @@ class _SettingsPageState extends State<SettingsPage> {
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: AppTheme.borderColor.withOpacity(0.5),
+                                    color: AppTheme.borderColor.withOpacity(0.3),
                                   ),
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 40,
-                                    height: 40,
+                                    width: 44,
+                                    height: 44,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
-                                      color: AppTheme.spaceBlue,
+                                      color: const Color.fromARGB(30, 139, 92, 246),
                                     ),
                                     child: const Icon(
                                       Icons.key,
@@ -475,7 +602,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       size: 20,
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,6 +625,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     icon: const Icon(
                                       Icons.delete,
                                       color: AppTheme.dangerRed,
+                                      size: 20,
                                     ),
                                     onPressed: () => _deleteSecret(secret.id),
                                   ),
@@ -509,67 +637,67 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   _buildSectionHeader('安全设置', icon: Icons.security),
-                  GlassContainer(
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     padding: const EdgeInsets.all(0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: AppTheme.spaceBlue,
-                                ),
-                                child: const Icon(
-                                  Icons.notifications,
-                                  color: AppTheme.textTertiary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '推送通知',
-                                      style: TextStyle(color: AppTheme.textPrimary),
-                                    ),
-                                    Text(
-                                      '接收重要消息推送',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppTheme.textTertiary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              NeonSwitch(
-                                value: _notificationsEnabled,
-                                onChanged: (value) {
-                                  setState(() => _notificationsEnabled = value);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('推送设置功能开发中'),
-                                      backgroundColor: AppTheme.spaceIndigo,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
+                    enableHover: false,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color.fromARGB(40, 51, 65, 85),
+                            ),
+                            child: const Icon(
+                              Icons.notifications,
+                              color: AppTheme.textSecondary,
+                              size: 20,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '推送通知',
+                                  style: TextStyle(color: AppTheme.textPrimary),
+                                ),
+                                Text(
+                                  '接收重要消息推送',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppTheme.textTertiary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          NeonSwitch(
+                            value: _notificationsEnabled,
+                            onChanged: (value) {
+                              setState(() => _notificationsEnabled = value);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('推送设置功能开发中'),
+                                  backgroundColor: AppTheme.spaceIndigo,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   _buildSectionHeader('关于', icon: Icons.info),
-                  GlassContainer(
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     padding: const EdgeInsets.all(0),
+                    enableHover: false,
                     child: Column(
                       children: [
                         _buildSettingItem(
@@ -610,144 +738,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.dangerRed),
-                      ),
-                      child: TextButton(
-                        onPressed: _logout,
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: ElevatedButton(
+                      onPressed: _logout,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: AppTheme.dangerRed,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppTheme.borderRadius,
+                          border: Border.all(color: AppTheme.dangerRed),
                         ),
-                        child: Text(
-                          '退出登录',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppTheme.dangerRed,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
+                      child: const Text('退出登录'),
                     ),
                   ),
                   const SizedBox(height: 32),
                 ],
               ),
-      ),
-    );
-  }
-}
-
-class SecretDetailDialog extends StatelessWidget {
-  final SecretWithKey secret;
-
-  const SecretDetailDialog({super.key, required this.secret});
-
-  Future<void> _copyKey(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: secret.secretKey));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('秘钥已复制到剪贴板'),
-        backgroundColor: AppTheme.spaceIndigo,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: GlassContainer(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Secret 创建成功',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.spaceBlue,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.borderColor),
-              ),
-              child: Text(
-                '请妥善保管您的秘钥，它只会显示一次！',
-                style: TextStyle(color: AppTheme.warningOrange),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.spaceBlue,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.techPurple.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SelectableText(
-                      secret.secretKey,
-                      style: TextStyle(
-                        fontFamily: 'Monospace',
-                        fontSize: 13,
-                        color: AppTheme.textPrimary,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.copy,
-                      color: AppTheme.techPurple,
-                    ),
-                    onPressed: () => _copyKey(context),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Text(
-                  '名称: ',
-                  style: TextStyle(color: AppTheme.textTertiary),
-                ),
-                Text(
-                  secret.name ?? '未命名',
-                  style: TextStyle(color: AppTheme.textPrimary),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Text(
-                  'ID: ',
-                  style: TextStyle(color: AppTheme.textTertiary),
-                ),
-                Text(
-                  secret.id.toString(),
-                  style: TextStyle(color: AppTheme.textPrimary),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            NeonButton(
-              text: '确定',
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
       ),
     );
   }
