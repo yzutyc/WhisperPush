@@ -350,7 +350,7 @@ class _MessageListPageState extends State<MessageListPage> {
                 items: [
                   const DropdownMenuItem(value: 'all', child: Text('全部')),
                   const DropdownMenuItem(value: 'critical', child: Text('紧急')),
-                  const DropdownMenuItem(value: 'timeSensitive', child: Text('时间敏感')),
+                  const DropdownMenuItem(value: 'timeSensitive', child: Text('加急')),
                   const DropdownMenuItem(value: 'active', child: Text('普通')),
                 ],
                 onChanged: (value) {

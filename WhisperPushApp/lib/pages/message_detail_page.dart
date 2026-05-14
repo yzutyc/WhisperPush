@@ -262,7 +262,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
         break;
       case 'timeSensitive':
         glowColor = AppTheme.warningOrange;
-        label = '时间敏感';
+        label = '加急';
         icon = Icons.timer;
         break;
       case 'active':

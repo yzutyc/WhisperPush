@@ -43,7 +43,7 @@ class MessageCard extends StatelessWidget {
       case 'timeSensitive':
         glowColor = AppTheme.warningOrange;
         borderColor = const Color.fromARGB(100, 245, 158, 11);
-        label = '时间敏感';
+        label = '加急';
         icon = Icons.timer;
         break;
       case 'active':

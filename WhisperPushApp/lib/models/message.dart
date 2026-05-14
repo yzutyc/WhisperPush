@@ -62,7 +62,7 @@ class Message {
   String get levelText {
     switch (level) {
       case 'timeSensitive':
-        return '时间敏感';
+        return '加急';
       case 'critical':
         return '紧急';
       default:
