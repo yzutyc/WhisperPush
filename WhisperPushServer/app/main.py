@@ -4,7 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
 from app.middleware.logging_middleware import RequestLoggingMiddleware
-from app.routers import auth, secrets, messages, devices, two_factor
+from app.routers import auth, secrets, messages, devices, two_factor, user_settings
 
 app = FastAPI(title="WhisperPush API", version="1.0.0")
 
@@ -36,6 +36,7 @@ app.include_router(two_factor.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(secrets.router, prefix="/api/v1/secrets", tags=["secrets"])
 app.include_router(messages.router, prefix="/api/v1", tags=["messages"])
 app.include_router(devices.router, prefix="/api/v1", tags=["devices"])
+app.include_router(user_settings.router, tags=["user_settings"])
 
 @app.get("/health")
 async def health_check():

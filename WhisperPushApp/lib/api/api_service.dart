@@ -219,6 +219,25 @@ class ApiService {
     return data.map((item) => item.toString()).toList();
   }
 
+  Future<bool> getUserNotificationsSetting() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/users/me/settings'),
+      headers: headers,
+    );
+    final data = _handleResponse(response);
+    return data['notifications_enabled'] ?? true;
+  }
+
+  Future<bool> updateUserNotificationsSetting(bool enabled) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/users/me/settings'),
+      headers: headers,
+      body: jsonEncode({'notifications_enabled': enabled}),
+    );
+    final data = _handleResponse(response);
+    return data['notifications_enabled'] ?? enabled;
+  }
+
   Future<Map<String, dynamic>> loginWithTwoFactor(String usernameOrEmail, String password, String twoFactorCode) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/login'),

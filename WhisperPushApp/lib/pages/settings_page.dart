@@ -45,15 +45,35 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _loadNotificationsSetting() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
-    });
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      final enabled = await api.getUserNotificationsSetting();
+      setState(() {
+        _notificationsEnabled = enabled;
+      });
+    } catch (e) {
+      Logger.e('加载推送设置失败', error: e);
+    }
   }
 
   Future<void> _saveNotificationsSetting(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('notifications_enabled', enabled);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      await api.updateUserNotificationsSetting(enabled);
+    } catch (e) {
+      Logger.e('保存推送设置失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '保存失败');
+      }
+    }
   }
 
   void _loadServerUrl() {
