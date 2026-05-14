@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/auth_provider.dart';
 import 'pages/splash_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,10 +18,7 @@ class MyApp extends StatelessWidget {
       create: (context) => AuthProvider(),
       child: MaterialApp(
         title: 'WhisperPush',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-        ),
+        theme: AppTheme.light(),
         home: const SplashScreen(),
         debugShowCheckedModeBanner: false,
       ),

@@ -21,6 +21,14 @@ class UserResponse(BaseModel):
 class LoginRequest(BaseModel):
     username_or_email: str
     password: str
+    two_factor_code: Optional[str] = None
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 class Token(BaseModel):
     access_token: str
@@ -86,3 +94,24 @@ class DeviceResponse(BaseModel):
 class WSMessage(BaseModel):
     type: str
     data: dict
+
+
+class TwoFactorInfoResponse(BaseModel):
+    enabled: bool
+
+
+class TwoFactorEnableResponse(BaseModel):
+    secret: str
+    qr_code_url: str
+
+
+class TwoFactorVerifyRequest(BaseModel):
+    code: str
+
+
+class TwoFactorDisableRequest(BaseModel):
+    password: str
+
+
+class RecoveryCodesResponse(BaseModel):
+    recovery_codes: list[str]

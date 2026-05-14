@@ -19,6 +19,18 @@ class ApiService {
     return headers;
   }
 
+  Future<bool> checkServerStatus() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/health'),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 5));
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<Map<String, dynamic>> login(String usernameOrEmail, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/login'),
@@ -108,7 +120,118 @@ class ApiService {
     return Message.fromJson(data);
   }
 
-  Map<String, dynamic> _handleResponse(http.Response response) {
+  Future<Message> markMessageUnread(int id) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/api/v1/messages/$id/unread'),
+      headers: headers,
+    );
+    final data = _handleResponse(response);
+    return Message.fromJson(data);
+  }
+
+  Future<void> deleteMessage(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/v1/messages/$id'),
+      headers: headers,
+    );
+    _handleResponse(response);
+  }
+
+  Future<void> logout() async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/logout'),
+      headers: headers,
+    );
+    _handleResponse(response);
+  }
+
+  Future<void> forgotPassword(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/forgot-password'),
+      headers: headers,
+      body: jsonEncode({'email': email}),
+    );
+    _handleResponse(response);
+  }
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/change-password'),
+      headers: headers,
+      body: jsonEncode({
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      }),
+    );
+    _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> getTwoFactorInfo() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/v1/auth/two-factor'),
+      headers: headers,
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> enableTwoFactor() async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/two-factor/enable'),
+      headers: headers,
+    );
+    return _handleResponse(response);
+  }
+
+  Future<void> verifyTwoFactor(String code) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/two-factor/verify'),
+      headers: headers,
+      body: jsonEncode({'code': code}),
+    );
+    _handleResponse(response);
+  }
+
+  Future<void> disableTwoFactor(String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/two-factor/disable'),
+      headers: headers,
+      body: jsonEncode({'password': password}),
+    );
+    _handleResponse(response);
+  }
+
+  Future<List<String>> getRecoveryCodes() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/v1/auth/two-factor/recovery-codes'),
+      headers: headers,
+    );
+    final data = _handleResponse(response) as List;
+    return data.map((item) => item.toString()).toList();
+  }
+
+  Future<List<String>> regenerateRecoveryCodes() async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/two-factor/recovery-codes/regenerate'),
+      headers: headers,
+    );
+    final data = _handleResponse(response) as List;
+    return data.map((item) => item.toString()).toList();
+  }
+
+  Future<Map<String, dynamic>> loginWithTwoFactor(String usernameOrEmail, String password, String twoFactorCode) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/login'),
+      headers: headers,
+      body: jsonEncode({
+        'username_or_email': usernameOrEmail,
+        'password': password,
+        'two_factor_code': twoFactorCode,
+      }),
+    );
+    return _handleResponse(response);
+  }
+
+  dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return {};
       return jsonDecode(response.body);
