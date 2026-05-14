@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../api/api_service.dart';
-import '../providers/auth_provider.dart';
-import '../components/neon_button.dart';
 import '../components/glass_container.dart';
+import '../components/neon_button.dart';
 import '../components/toast_widget.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 
 class TwoFactorPage extends StatefulWidget {
@@ -338,12 +338,12 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _isTwoFactorEnabled
-                      ? AppTheme.pulseGreen.withOpacity(0.2)
-                      : AppTheme.textTertiary.withOpacity(0.2),
+                      ? const Color.fromARGB(51, 16, 185, 129)
+                      : const Color.fromARGB(51, 203, 213, 224),
                   boxShadow: _isTwoFactorEnabled
-                      ? [
+                      ? const [
                           BoxShadow(
-                            color: AppTheme.pulseGreen.withOpacity(0.3),
+                            color: Color.fromARGB(77, 16, 185, 129),
                             blurRadius: 15,
                             spreadRadius: 5,
                           ),
@@ -546,7 +546,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 decoration: BoxDecoration(
                   color: AppTheme.spaceBlue,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.techPurple.withOpacity(0.3)),
+                  border: Border.all(color: const Color.fromARGB(77, 139, 92, 246)),
                 ),
                 child: SelectableText(
                   _secret ?? '',
@@ -638,7 +638,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.warningOrange.withOpacity(0.1),
+            color: const Color.fromARGB(26, 245, 158, 11),
             border: Border.all(color: AppTheme.warningOrange),
             borderRadius: BorderRadius.circular(12),
           ),

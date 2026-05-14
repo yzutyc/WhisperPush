@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 
 import '../api/api_service.dart';
-import '../providers/auth_provider.dart';
-import '../models/secret.dart';
-import '../models/user.dart';
+import '../components/empty_state.dart';
 import '../components/glass_card.dart';
 import '../components/neon_button.dart';
 import '../components/neon_switch.dart';
-import '../components/empty_state.dart';
+import '../components/toast_widget.dart';
+import '../models/secret.dart';
+import '../models/user.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
-import 'login_page.dart';
+import '../utils/logger.dart';
 import 'change_password_page.dart';
-import 'terms_of_service_page.dart';
+import 'login_page.dart';
 import 'privacy_policy_page.dart';
+import 'terms_of_service_page.dart';
 import 'two_factor_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -59,7 +60,10 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       _currentUser = await api.getCurrentUser();
     } catch (e) {
-      print('加载用户信息失败: $e');
+      Logger.e('加载用户信息失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '加载用户信息失败');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -75,9 +79,10 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       _secrets = await api.getSecrets();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('加载失败: ${e.toString()}')),
-      );
+      Logger.e('加载Secrets失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '加载失败');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -100,13 +105,14 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       await api.createSecret();
       await _loadSecrets();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Secret 创建成功')),
-      );
+      if (mounted) {
+        ToastWidget.showSuccess(context, 'Secret 创建成功');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('创建失败: ${e.toString()}')),
-      );
+      Logger.e('创建Secret失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '创建失败');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -186,13 +192,14 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       await api.deleteSecret(id);
       await _loadSecrets();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已删除')),
-      );
+      if (mounted) {
+        ToastWidget.showSuccess(context, '已删除');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('删除失败: ${e.toString()}')),
-      );
+      Logger.e('删除Secret失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '删除失败');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -279,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       }
     } catch (e) {
-      print('退出登录失败: $e');
+      Logger.e('退出登录失败', error: e);
       await Provider.of<AuthProvider>(context, listen: false).logout();
       if (mounted) {
         Navigator.pushReplacement(
@@ -294,20 +301,41 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSectionHeader(String title, {IconData? icon}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
         children: [
           if (icon != null)
-            Icon(icon, color: AppTheme.techPurple, size: 20),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromARGB(20, 139, 92, 246),
+                border: Border.all(color: const Color.fromARGB(77, 139, 92, 246)),
+              ),
+              child: Icon(icon, color: AppTheme.techPurple, size: 18),
+            ),
           if (icon != null)
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
           Text(
-            title,
+            title.toUpperCase(),
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textTertiary,
-              letterSpacing: 1.5,
+              color: AppTheme.techPurpleLight,
+              letterSpacing: 2,
+            ),
+          ),
+          const Expanded(child: SizedBox()),
+          Container(
+            height: 1,
+            width: 40,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color.fromARGB(128, 139, 92, 246), Colors.transparent],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
             ),
           ),
         ],
@@ -327,21 +355,34 @@ class _SettingsPageState extends State<SettingsPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
                 color: isHighlighted 
-                    ? const Color.fromARGB(30, 139, 92, 246)
-                    : const Color.fromARGB(40, 51, 65, 85),
+                    ? const Color.fromARGB(35, 139, 92, 246)
+                    : const Color.fromARGB(45, 51, 65, 85),
+                boxShadow: isHighlighted
+                    ? [
+                        BoxShadow(
+                          color: const Color.fromARGB(30, 139, 92, 246),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : null,
               ),
-              child: Icon(icon, 
-                color: isHighlighted ? AppTheme.techPurple : AppTheme.textSecondary,
-                size: 20,
+              child: Icon(
+                icon, 
+                color: isHighlighted ? AppTheme.techPurpleLight : AppTheme.textSecondary,
+                size: 21,
               ),
             ),
             const SizedBox(width: 14),
@@ -352,15 +393,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
-                      color: isHighlighted ? AppTheme.techPurple : AppTheme.textPrimary,
+                      fontSize: 15.5,
+                      fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.normal,
+                      color: isHighlighted ? AppTheme.techPurpleLight : AppTheme.textPrimary,
+                      height: 1.3,
                     ),
                   ),
                   if (subtitle != null)
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 12, color: AppTheme.textTertiary),
+                      style: TextStyle(fontSize: 12.5, color: AppTheme.textTertiary, height: 1.4),
                     ),
                 ],
               ),
@@ -368,7 +410,11 @@ class _SettingsPageState extends State<SettingsPage> {
             if (trailing != null)
               trailing
             else
-              Icon(Icons.arrow_forward_ios, size: 16, color: AppTheme.textTertiary),
+              Icon(
+                Icons.arrow_forward_ios, 
+                size: 17, 
+                color: AppTheme.textTertiary,
+              ),
           ],
         ),
       ),
@@ -464,9 +510,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.3)),
+                              bottom: BorderSide(color: Color.fromARGB(77, 75, 85, 99)),
                             ),
                           ),
                           child: Row(
@@ -580,10 +626,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           ..._secrets.map((secret) {
                             return Container(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: AppTheme.borderColor.withOpacity(0.3),
+                                    color: Color.fromARGB(77, 75, 85, 99),
                                   ),
                                 ),
                               ),
@@ -681,12 +727,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             value: _notificationsEnabled,
                             onChanged: (value) {
                               setState(() => _notificationsEnabled = value);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('推送设置功能开发中'),
-                                  backgroundColor: AppTheme.spaceIndigo,
-                                ),
-                              );
+                              ToastWidget.showInfo(context, '推送设置功能开发中');
                             },
                           ),
                         ],

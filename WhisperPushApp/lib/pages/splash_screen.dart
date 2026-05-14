@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
 import '../components/logo_widget.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import 'login_page.dart';
 import 'message_list_page.dart';
@@ -132,11 +132,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         ScaleTransition(
                           scale: _pulseAnimation,
                           child: Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.techPurple.withOpacity(0.4),
+                                  color: Color.fromARGB(102, 139, 92, 246),
                                   blurRadius: 30,
                                   spreadRadius: 10,
                                 ),
@@ -225,7 +225,12 @@ class _ParticlePainter extends CustomPainter {
       if (particle.x < 0) particle.x = size.width;
       if (particle.y < 0) particle.y = size.height;
 
-      paint.color = AppTheme.techPurple.withOpacity(particle.opacity);
+      paint.color = Color.fromARGB(
+        (particle.opacity * 255).toInt(),
+        139,
+        92,
+        246,
+      );
       canvas.drawCircle(
         Offset(particle.x, particle.y),
         particle.size,

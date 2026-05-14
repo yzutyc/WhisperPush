@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../api/api_service.dart';
-import '../providers/auth_provider.dart';
-import '../models/message.dart';
-import '../components/message_card.dart';
-import '../components/loading_indicator.dart';
-import '../components/search_input.dart';
 import '../components/empty_state.dart';
 import '../components/glass_container.dart';
+import '../components/loading_indicator.dart';
+import '../components/message_card.dart';
+import '../components/search_input.dart';
+import '../models/message.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import 'message_detail_page.dart';
 import 'settings_page.dart';

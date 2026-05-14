@@ -1,9 +1,10 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
-import '../models/user.dart';
 import '../models/message.dart';
 import '../models/secret.dart';
+import '../models/user.dart';
 
 class ApiService {
   final String baseUrl;

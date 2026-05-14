@@ -1,4 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
+import '../theme/app_theme.dart';
 
 enum ToastType { success, error, warning, info }
 
@@ -112,16 +116,36 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  Color _getBackgroundColor() {
+  _ToastColorScheme _getColorScheme() {
     switch (widget.type) {
       case ToastType.success:
-        return const Color(0xFF10B981);
+        return _ToastColorScheme(
+          borderColor: AppTheme.pulseGreen,
+          iconColor: AppTheme.pulseGreen,
+          iconBg: const Color.fromARGB(20, 16, 185, 129),
+          glowColor: AppTheme.pulseGreen.withOpacity(0.3),
+        );
       case ToastType.error:
-        return const Color(0xFFEF4444);
+        return _ToastColorScheme(
+          borderColor: AppTheme.dangerRed,
+          iconColor: AppTheme.dangerRed,
+          iconBg: const Color.fromARGB(20, 239, 68, 68),
+          glowColor: AppTheme.dangerRed.withOpacity(0.3),
+        );
       case ToastType.warning:
-        return const Color(0xFFF59E0B);
+        return _ToastColorScheme(
+          borderColor: AppTheme.warningOrange,
+          iconColor: AppTheme.warningOrange,
+          iconBg: const Color.fromARGB(20, 245, 158, 11),
+          glowColor: AppTheme.warningOrange.withOpacity(0.3),
+        );
       case ToastType.info:
-        return const Color(0xFF3B82F6);
+        return _ToastColorScheme(
+          borderColor: AppTheme.techPurple,
+          iconColor: AppTheme.techPurple,
+          iconBg: const Color.fromARGB(20, 139, 92, 246),
+          glowColor: AppTheme.techPurple.withOpacity(0.3),
+        );
     }
   }
 
@@ -140,10 +164,12 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = _getColorScheme();
+
     return Positioned(
-      top: MediaQuery.of(context).size.height * 0.2,
-      left: 20,
-      right: 20,
+      top: MediaQuery.of(context).size.height * 0.15,
+      left: 24,
+      right: 24,
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: ScaleTransition(
@@ -151,39 +177,72 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.all(0),
               decoration: BoxDecoration(
-                color: _getBackgroundColor(),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppTheme.borderRadius,
                 boxShadow: [
                   BoxShadow(
+                    color: colorScheme.glowColor,
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                  BoxShadow(
                     color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
+                    blurRadius: 15,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    _getIcon(),
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.message,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+              child: ClipRRect(
+                borderRadius: AppTheme.borderRadius,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(200, 30, 41, 59),
+                      borderRadius: AppTheme.borderRadius,
+                      border: Border.all(
+                        color: colorScheme.borderColor.withOpacity(0.6),
+                        width: 1.5,
                       ),
-                      textAlign: TextAlign.center,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colorScheme.iconBg,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colorScheme.iconColor.withOpacity(0.3),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            _getIcon(),
+                            color: colorScheme.iconColor,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            widget.message,
+                            style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -191,4 +250,18 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
       ),
     );
   }
+}
+
+class _ToastColorScheme {
+  final Color borderColor;
+  final Color iconColor;
+  final Color iconBg;
+  final Color glowColor;
+
+  _ToastColorScheme({
+    required this.borderColor,
+    required this.iconColor,
+    required this.iconBg,
+    required this.glowColor,
+  });
 }

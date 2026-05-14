@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../api/api_service.dart';
-import '../providers/auth_provider.dart';
 import '../components/form_input.dart';
-import '../components/neon_button.dart';
 import '../components/glass_container.dart';
-import '../components/particle_background.dart';
 import '../components/logo_widget.dart';
+import '../components/neon_button.dart';
+import '../components/particle_background.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import 'login_page.dart';
 

@@ -13,10 +13,10 @@ class AppTheme {
   static const Color pulseGreenLight = Color(0xFF34D399);
   static const Color warningOrange = Color(0xFFF59E0B);
   static const Color dangerRed = Color(0xFFEF4444);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFF1F5F9);
-  static const Color textTertiary = Color(0xFFD1D5DB);
-  static const Color textDisabled = Color(0xFF6B7280);
+  static const Color textPrimary = Color(0xFFF8FAFC);
+  static const Color textSecondary = Color(0xFFE2E8F0);
+  static const Color textTertiary = Color(0xFFCBD5E1);
+  static const Color textDisabled = Color(0xFF94A3B8);
   static const Color borderColor = Color(0xFF4B5563);
   static const Color borderLight = Color(0xFF6B7280);
 
