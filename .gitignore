@@ -1,4 +1,5 @@
 /.trae/
+.mcp.json
 
 # Python/Backend
 __pycache__/
