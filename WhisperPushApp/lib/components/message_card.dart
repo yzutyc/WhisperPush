@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../models/message.dart';
+import '../theme/app_theme.dart';
+import 'glass_card.dart';
 
 class MessageCard extends StatelessWidget {
   final Message message;
@@ -26,33 +28,33 @@ class MessageCard extends StatelessWidget {
   });
 
   Widget _buildLevelBadge() {
-    Color bgColor;
-    Color textColor;
+    Color glowColor;
+    Color borderColor;
     String label;
     IconData? icon;
 
     switch (message.level) {
       case 'critical':
-        bgColor = Colors.red[100]!;
-        textColor = Colors.red;
+        glowColor = AppTheme.dangerRed;
+        borderColor = const Color.fromARGB(100, 239, 68, 68);
         label = '紧急';
         icon = Icons.warning;
         break;
       case 'timeSensitive':
-        bgColor = Colors.orange[100]!;
-        textColor = Colors.orange;
+        glowColor = AppTheme.warningOrange;
+        borderColor = const Color.fromARGB(100, 245, 158, 11);
         label = '时间敏感';
         icon = Icons.timer;
         break;
       case 'active':
-        bgColor = Colors.green[100]!;
-        textColor = Colors.green;
+        glowColor = AppTheme.pulseGreen;
+        borderColor = const Color.fromARGB(100, 16, 185, 129);
         label = '普通';
         icon = Icons.check_circle;
         break;
       default:
-        bgColor = Colors.grey[100]!;
-        textColor = Colors.grey;
+        glowColor = AppTheme.textTertiary;
+        borderColor = const Color.fromARGB(100, 209, 213, 219);
         label = '未知';
         icon = null;
     }
@@ -60,21 +62,28 @@ class MessageCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: Color.fromARGB(20, glowColor.red, glowColor.green, glowColor.blue),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: textColor.withOpacity(0.3)),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromARGB(30, glowColor.red, glowColor.green, glowColor.blue),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null)
-            Icon(icon, size: 12, color: textColor),
+            Icon(icon, size: 12, color: glowColor),
           if (icon != null)
             const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
-              color: textColor,
+              color: glowColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -91,9 +100,9 @@ class MessageCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: Colors.indigo[50],
+        color: const Color.fromARGB(20, 139, 92, 246),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.indigo[200]!),
+        border: Border.all(color: const Color.fromARGB(60, 139, 92, 246)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -102,15 +111,21 @@ class MessageCard extends StatelessWidget {
             width: 6,
             height: 6,
             decoration: BoxDecoration(
-              color: Colors.indigo,
+              color: AppTheme.techPurple,
               borderRadius: BorderRadius.circular(3),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(100, 139, 92, 246),
+                  blurRadius: 4,
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 4),
           Text(
             message.group!,
             style: TextStyle(
-              color: Colors.indigo,
+              color: AppTheme.techPurpleLight,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -122,27 +137,22 @@ class MessageCard extends StatelessWidget {
 
   Widget _buildReadStatus() {
     return message.read
-        ? SizedBox(
+        ? Container(
             width: 8,
             height: 8,
-            child: CircleAvatar(
-              backgroundColor: Colors.grey[300],
+            decoration: BoxDecoration(
+              color: AppTheme.textDisabled,
+              borderRadius: BorderRadius.circular(4),
             ),
           )
-        : const SizedBox(
-            width: 8,
-            height: 8,
-            child: CircleAvatar(
-              backgroundColor: Colors.blue,
-            ),
-          );
+        : _UnreadIndicator();
   }
 
   Widget _buildContentPreview() {
     String preview = message.body;
     
-    if (preview.length > 80) {
-      preview = '${preview.substring(0, 80)}...';
+    if (preview.length > 100) {
+      preview = '${preview.substring(0, 100)}...';
     }
 
     switch (message.contentType.toLowerCase()) {
@@ -150,9 +160,9 @@ class MessageCard extends StatelessWidget {
         return MarkdownBody(
           data: preview,
           styleSheet: MarkdownStyleSheet(
-            p: const TextStyle(fontSize: 14, color: Colors.black54),
-            strong: const TextStyle(fontWeight: FontWeight.bold),
-            em: const TextStyle(fontStyle: FontStyle.italic),
+            p: TextStyle(fontSize: 14, color: AppTheme.textTertiary),
+            strong: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textSecondary),
+            em: TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textTertiary),
           ),
         );
       case 'html':
@@ -161,17 +171,18 @@ class MessageCard extends StatelessWidget {
           style: {
             'body': Style(
               fontSize: FontSize(14),
-              color: const Color.fromARGB(255, 87, 87, 87),
+              color: AppTheme.textTertiary,
               margin: Margins.zero,
               padding: HtmlPaddings.zero,
             ),
             'p': Style(margin: Margins.zero, padding: HtmlPaddings.zero),
+            'strong': Style(color: AppTheme.textSecondary),
           },
         );
       default:
         return Text(
           preview,
-          style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.4),
+          style: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
         );
     }
   }
@@ -180,10 +191,15 @@ class MessageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key('message-${message.id}'),
-      direction: onDismissed != null || onMarkToggle != null ? DismissDirection.horizontal : DismissDirection.none,
+      direction: onDismissed != null || onMarkToggle != null 
+          ? DismissDirection.horizontal 
+          : DismissDirection.none,
       background: onDismissed != null
           ? Container(
-              color: Colors.red,
+              decoration: BoxDecoration(
+                color: AppTheme.dangerRed,
+                borderRadius: AppTheme.borderRadius,
+              ),
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.only(left: 24),
               child: const Icon(Icons.delete, color: Colors.white, size: 28),
@@ -191,7 +207,10 @@ class MessageCard extends StatelessWidget {
           : const SizedBox(),
       secondaryBackground: onMarkToggle != null
           ? Container(
-              color: Colors.green,
+              decoration: BoxDecoration(
+                color: AppTheme.pulseGreen,
+                borderRadius: AppTheme.borderRadius,
+              ),
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 24),
               child: Icon(
@@ -208,7 +227,9 @@ class MessageCard extends StatelessWidget {
           onMarkToggle!();
         }
       },
-      child: InkWell(
+      child: GlassCard(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(0),
         onTap: () {
           if (isMultiSelectMode) {
             onSelectChanged(!isSelected);
@@ -216,27 +237,17 @@ class MessageCard extends StatelessWidget {
             onTap();
           }
         },
-        onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(16),
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.08),
-                spreadRadius: 1,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            borderRadius: AppTheme.borderRadius,
             border: isSelected
-                ? Border.all(color: Theme.of(context).primaryColor, width: 2)
+                ? Border.all(color: AppTheme.techPurple, width: 2)
                 : message.read
-                    ? null
-                    : Border(left: const BorderSide(color: Colors.blue, width: 4)),
+                    ? Border.all(color: Colors.transparent)
+                    : Border(
+                        left: BorderSide(color: AppTheme.techPurple, width: 4),
+                      ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +258,8 @@ class MessageCard extends StatelessWidget {
                     Checkbox(
                       value: isSelected,
                       onChanged: onSelectChanged,
-                      activeColor: Theme.of(context).primaryColor,
+                      activeColor: AppTheme.techPurple,
+                      checkColor: Colors.white,
                     ),
                   _buildReadStatus(),
                   const SizedBox(width: 12),
@@ -257,7 +269,7 @@ class MessageCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: message.read ? FontWeight.normal : FontWeight.bold,
                         fontSize: 16,
-                        color: message.read ? Colors.black87 : Colors.black,
+                        color: message.read ? AppTheme.textSecondary : AppTheme.textPrimary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -276,12 +288,66 @@ class MessageCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     message.formattedTime,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: AppTheme.textDisabled),
                   ),
                 ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UnreadIndicator extends StatefulWidget {
+  @override
+  State<_UnreadIndicator> createState() => _UnreadIndicatorState();
+}
+
+class _UnreadIndicatorState extends State<_UnreadIndicator> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat();
+
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const SawTooth(2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _pulseAnimation,
+      child: Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(
+          color: AppTheme.techPurple,
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(100, 139, 92, 246),
+              blurRadius: 6,
+              spreadRadius: 2,
+            ),
+          ],
         ),
       ),
     );

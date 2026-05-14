@@ -7,6 +7,10 @@ import '../providers/auth_provider.dart';
 import '../models/message.dart';
 import '../components/message_card.dart';
 import '../components/loading_indicator.dart';
+import '../components/search_input.dart';
+import '../components/empty_state.dart';
+import '../components/glass_container.dart';
+import '../theme/app_theme.dart';
 import 'message_detail_page.dart';
 import 'settings_page.dart';
 
@@ -115,6 +119,10 @@ class _MessageListPageState extends State<MessageListPage> {
     });
   }
 
+  void _onSearchChanged(String query) {
+    _applyFilters();
+  }
+
   void _navigateToDetail(Message message) {
     if (_isMultiSelectMode) {
       _toggleSelect(message.id);
@@ -192,16 +200,20 @@ class _MessageListPageState extends State<MessageListPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text('确定要删除选中的 ${_selectedMessageIds.length} 条消息吗？'),
+        backgroundColor: AppTheme.spaceIndigo,
+        title: const Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
+        content: Text(
+          '确定要删除选中的 ${_selectedMessageIds.length} 条消息吗？',
+          style: TextStyle(color: AppTheme.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: const Text('取消', style: TextStyle(color: AppTheme.textTertiary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
+            child: const Text('删除', style: TextStyle(color: AppTheme.dangerRed)),
           ),
         ],
       ),
@@ -287,6 +299,7 @@ class _MessageListPageState extends State<MessageListPage> {
   void _showFilterDialog() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: AppTheme.spaceBlue,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
@@ -298,70 +311,82 @@ class _MessageListPageState extends State<MessageListPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               '筛选消息',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
             ),
             const SizedBox(height: 20),
             
-            DropdownButtonFormField<String>(
-              value: _filterStatus,
-              hint: const Text('状态'),
-              items: [
-                const DropdownMenuItem(value: 'all', child: Text('全部')),
-                const DropdownMenuItem(value: 'unread', child: Text('未读')),
-                const DropdownMenuItem(value: 'read', child: Text('已读')),
-              ],
-              onChanged: (value) {
-                setState(() => _filterStatus = value);
-                _applyFilters();
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
+            GlassContainer(
+              padding: const EdgeInsets.all(0),
+              child: DropdownButtonFormField<String>(
+                value: _filterStatus,
+                hint: Text('状态', style: TextStyle(color: AppTheme.textTertiary)),
+                dropdownColor: AppTheme.spaceIndigo,
+                items: [
+                  const DropdownMenuItem(value: 'all', child: Text('全部')),
+                  const DropdownMenuItem(value: 'unread', child: Text('未读')),
+                  const DropdownMenuItem(value: 'read', child: Text('已读')),
+                ],
+                onChanged: (value) {
+                  setState(() => _filterStatus = value);
+                  _applyFilters();
+                },
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
             
-            DropdownButtonFormField<String>(
-              value: _filterLevel,
-              hint: const Text('级别'),
-              items: [
-                const DropdownMenuItem(value: 'all', child: Text('全部')),
-                const DropdownMenuItem(value: 'critical', child: Text('紧急')),
-                const DropdownMenuItem(value: 'timeSensitive', child: Text('时间敏感')),
-                const DropdownMenuItem(value: 'active', child: Text('普通')),
-              ],
-              onChanged: (value) {
-                setState(() => _filterLevel = value);
-                _applyFilters();
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
+            GlassContainer(
+              padding: const EdgeInsets.all(0),
+              child: DropdownButtonFormField<String>(
+                value: _filterLevel,
+                hint: Text('级别', style: TextStyle(color: AppTheme.textTertiary)),
+                dropdownColor: AppTheme.spaceIndigo,
+                items: [
+                  const DropdownMenuItem(value: 'all', child: Text('全部')),
+                  const DropdownMenuItem(value: 'critical', child: Text('紧急')),
+                  const DropdownMenuItem(value: 'timeSensitive', child: Text('时间敏感')),
+                  const DropdownMenuItem(value: 'active', child: Text('普通')),
+                ],
+                onChanged: (value) {
+                  setState(() => _filterLevel = value);
+                  _applyFilters();
+                },
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
             
-            DropdownButtonFormField<String>(
-              value: _filterGroup,
-              hint: const Text('分组'),
-              items: [
-                const DropdownMenuItem(value: 'all', child: Text('全部')),
-                ..._availableGroups.map((group) => 
-                  DropdownMenuItem(value: group, child: Text(group))
+            GlassContainer(
+              padding: const EdgeInsets.all(0),
+              child: DropdownButtonFormField<String>(
+                value: _filterGroup,
+                hint: Text('分组', style: TextStyle(color: AppTheme.textTertiary)),
+                dropdownColor: AppTheme.spaceIndigo,
+                items: [
+                  const DropdownMenuItem(value: 'all', child: Text('全部')),
+                  ..._availableGroups.map((group) => 
+                    DropdownMenuItem(value: group, child: Text(group))
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() => _filterGroup = value);
+                  _applyFilters();
+                },
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-              ],
-              onChanged: (value) {
-                setState(() => _filterGroup = value);
-                _applyFilters();
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 24),
@@ -380,11 +405,12 @@ class _MessageListPageState extends State<MessageListPage> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[200],
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppTheme.spaceIndigo,
+                      foregroundColor: AppTheme.textPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      side: BorderSide(color: AppTheme.borderColor),
                     ),
                     child: const Text('重置'),
                   ),
@@ -394,6 +420,8 @@ class _MessageListPageState extends State<MessageListPage> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.techPurple,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -428,12 +456,13 @@ class _MessageListPageState extends State<MessageListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppTheme.spaceBlue,
         title: _isMultiSelectMode
-            ? Text('已选择 ${_selectedMessageIds.length} 条')
-            : const Text('消息'),
+            ? Text('已选择 ${_selectedMessageIds.length} 条', style: const TextStyle(color: AppTheme.textPrimary))
+            : const Text('消息', style: TextStyle(color: AppTheme.textPrimary)),
         leading: _isMultiSelectMode
             ? IconButton(
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.close, color: AppTheme.textPrimary),
                 onPressed: _exitMultiSelectMode,
               )
             : null,
@@ -442,12 +471,12 @@ class _MessageListPageState extends State<MessageListPage> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.mark_email_read),
+                  icon: const Icon(Icons.mark_email_read, color: AppTheme.textPrimary),
                   onPressed: _markSelectedAsRead,
                   tooltip: '标记为已读',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: AppTheme.dangerRed),
                   onPressed: _deleteSelected,
                   tooltip: '删除',
                 ),
@@ -457,12 +486,12 @@ class _MessageListPageState extends State<MessageListPage> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.filter_alt),
+                  icon: const Icon(Icons.filter_alt, color: AppTheme.textPrimary),
                   onPressed: _showFilterDialog,
                   tooltip: '筛选',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings),
+                  icon: const Icon(Icons.settings, color: AppTheme.textPrimary),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -475,78 +504,58 @@ class _MessageListPageState extends State<MessageListPage> {
             ),
         ],
       ),
-      body: RefreshIndicator(
-        key: _refreshIndicatorKey,
-        onRefresh: _loadMessages,
-        child: _isLoading
-            ? const LoadingIndicator(text: '加载中...')
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
+      body: Container(
+        decoration: AppTheme.gradientBackground,
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _loadMessages,
+          backgroundColor: AppTheme.spaceIndigo,
+          color: AppTheme.techPurple,
+          child: _isLoading
+              ? const LoadingIndicator(text: '加载中...')
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SearchInput(
+                        controller: _searchController,
                         hintText: '搜索消息...',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
+                        onChanged: _onSearchChanged,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: _filteredMessages.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.search_off,
-                                  size: 64,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  '暂无匹配结果',
-                                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _searchController.text.isNotEmpty 
-                                      ? '尝试使用其他关键词搜索' 
-                                      : '消息会显示在这里',
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                const SizedBox(height: 24),
-                                ElevatedButton(
-                                  onPressed: _loadMessages,
-                                  child: const Text('刷新'),
-                                ),
-                              ],
+                    Expanded(
+                      child: _filteredMessages.isEmpty
+                          ? EmptyState(
+                              icon: _searchController.text.isNotEmpty ? Icons.search_off : Icons.inbox,
+                              title: _searchController.text.isNotEmpty ? '暂无匹配结果' : '暂无消息',
+                              description: _searchController.text.isNotEmpty 
+                                  ? '尝试使用其他关键词搜索' 
+                                  : '消息会显示在这里',
+                              actionText: '刷新',
+                              onAction: _loadMessages,
+                            )
+                          : ListView.builder(
+                              itemCount: _filteredMessages.length,
+                              itemBuilder: (context, index) {
+                                final message = _filteredMessages[index];
+                                return MessageCard(
+                                  message: message,
+                                  isSelected: _selectedMessageIds.contains(message.id),
+                                  isMultiSelectMode: _isMultiSelectMode,
+                                  onTap: () => _navigateToDetail(message),
+                                  onLongPress: () => _enterMultiSelectMode(message.id),
+                                  onSelectChanged: (selected) {
+                                    _toggleSelect(message.id);
+                                  },
+                                  onDismissed: () => _deleteMessage(message.id),
+                                  onMarkToggle: () => _markMessageAsUnread(message),
+                                );
+                              },
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: _filteredMessages.length,
-                            itemBuilder: (context, index) {
-                              final message = _filteredMessages[index];
-                              return MessageCard(
-                                message: message,
-                                isSelected: _selectedMessageIds.contains(message.id),
-                                isMultiSelectMode: _isMultiSelectMode,
-                                onTap: () => _navigateToDetail(message),
-                                onLongPress: () => _enterMultiSelectMode(message.id),
-                                onSelectChanged: (selected) {
-                                  _toggleSelect(message.id);
-                                },
-                                onDismissed: () => _deleteMessage(message.id),
-                                onMarkToggle: () => _markMessageAsUnread(message),
-                              );
-                            },
-                          ),
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

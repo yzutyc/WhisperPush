@@ -4,7 +4,11 @@ import 'package:provider/provider.dart';
 import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../components/form_input.dart';
-import '../components/custom_button.dart';
+import '../components/neon_button.dart';
+import '../components/glass_container.dart';
+import '../components/particle_background.dart';
+import '../components/logo_widget.dart';
+import '../theme/app_theme.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -34,13 +38,13 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _getPasswordStrengthColor(String strength) {
     switch (strength) {
       case '弱':
-        return Colors.red;
+        return AppTheme.dangerRed;
       case '中':
-        return Colors.orange;
+        return AppTheme.warningOrange;
       case '强':
-        return Colors.green;
+        return AppTheme.pulseGreen;
       default:
-        return Colors.grey;
+        return AppTheme.textTertiary;
     }
   }
 
@@ -79,7 +83,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('注册成功，请登录')),
+          const SnackBar(
+            content: Text('注册成功，请登录'),
+            backgroundColor: AppTheme.spaceIndigo,
+          ),
         );
         Navigator.pushReplacement(
           context,
@@ -89,7 +96,10 @@ class _RegisterPageState extends State<RegisterPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('注册失败: ${e.toString()}')),
+          SnackBar(
+            content: Text('注册失败: ${e.toString()}'),
+            backgroundColor: AppTheme.spaceIndigo,
+          ),
         );
       }
     } finally {
@@ -100,243 +110,245 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.indigo, Color(0xFF5C6BC0)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.message,
-                        size: 80,
-                        color: Colors.white,
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'WhisperPush',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+      body: ParticleBackground(
+        particleCount: 40,
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: AppTheme.gradientBackground,
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.techPurple.withOpacity(0.4),
+                                blurRadius: 30,
+                                spreadRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: LogoWidget(size: 80),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Secure Push Notifications',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
+                        const SizedBox(height: 16),
+                        const Text(
+                          'WhisperPush',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(32),
-                      topRight: Radius.circular(32),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Secure Push Notifications',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.textTertiary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 16),
-                          Text(
-                            '创建账户',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '请填写以下信息',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 32),
-                          FormInput(
-                            controller: _usernameController,
-                            labelText: '用户名',
-                            prefixIcon: Icons.person,
-                            validator: (value) => 
-                                value?.isEmpty ?? true ? '请输入用户名' : null,
-                          ),
-                          const SizedBox(height: 16),
-                          FormInput(
-                            controller: _emailController,
-                            labelText: '邮箱',
-                            prefixIcon: Icons.email,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) return '请输入邮箱';
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                                return '请输入有效的邮箱地址';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              FormInput(
-                                controller: _passwordController,
-                                labelText: '密码',
-                                prefixIcon: Icons.lock,
-                                obscureText: true,
-                                onChanged: (value) => _validatePasswords(),
-                                errorText: _passwordError.isNotEmpty ? _passwordError : null,
+                ),
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: AppTheme.spaceBlue,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(32),
+                        topRight: Radius.circular(32),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 16),
+                            Text(
+                              '创建账户',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimary,
                               ),
-                              const SizedBox(height: 8),
-                              Row(
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '请填写以下信息',
+                              style: TextStyle(color: AppTheme.textTertiary),
+                            ),
+                            const SizedBox(height: 32),
+                            GlassContainer(
+                              padding: const EdgeInsets.all(0),
+                              child: Column(
                                 children: [
-                                  const Text('密码强度: '),
-                                  Text(
-                                    _getPasswordStrength(_passwordController.text),
-                                    style: TextStyle(
-                                      color: _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text)),
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  FormInput(
+                                    controller: _usernameController,
+                                    labelText: '用户名',
+                                    prefixIcon: Icons.person,
+                                    validator: (value) => 
+                                        value?.isEmpty ?? true ? '请输入用户名' : null,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: _passwordController.text.length >= 6 ? 1 : 0,
-                                          child: Container(
-                                            height: 4,
-                                            color: _passwordController.text.length >= 6 
-                                                ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
-                                                : Colors.grey[300],
+                                  const SizedBox(height: 16),
+                                  FormInput(
+                                    controller: _emailController,
+                                    labelText: '邮箱',
+                                    prefixIcon: Icons.email,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (value) {
+                                      if (value?.isEmpty ?? true) return '请输入邮箱';
+                                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                                        return '请输入有效的邮箱地址';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      FormInput(
+                                        controller: _passwordController,
+                                        labelText: '密码',
+                                        prefixIcon: Icons.lock,
+                                        obscureText: true,
+                                        onChanged: (value) => _validatePasswords(),
+                                        errorText: _passwordError.isNotEmpty ? _passwordError : null,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '密码强度: ',
+                                            style: TextStyle(color: AppTheme.textTertiary),
                                           ),
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Expanded(
-                                          flex: _passwordController.text.length >= 8 ? 1 : 0,
-                                          child: Container(
-                                            height: 4,
-                                            color: _passwordController.text.length >= 8 
-                                                ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
-                                                : Colors.grey[300],
+                                          Text(
+                                            _getPasswordStrength(_passwordController.text),
+                                            style: TextStyle(
+                                              color: _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text)),
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Expanded(
-                                          flex: (_passwordController.text.length >= 8 && 
-                                              RegExp(r'[A-Z]').hasMatch(_passwordController.text) && 
-                                              RegExp(r'[0-9]').hasMatch(_passwordController.text)) 
-                                                  ? 1 : 0,
-                                          child: Container(
-                                            height: 4,
-                                            color: (_passwordController.text.length >= 8 && 
-                                                RegExp(r'[A-Z]').hasMatch(_passwordController.text) && 
-                                                RegExp(r'[0-9]').hasMatch(_passwordController.text)) 
-                                                    ? Colors.green
-                                                    : Colors.grey[300],
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: _passwordController.text.length >= 6 ? 1 : 0,
+                                                  child: Container(
+                                                    height: 4,
+                                                    decoration: BoxDecoration(
+                                                      color: _passwordController.text.length >= 6 
+                                                          ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
+                                                          : AppTheme.borderColor,
+                                                      borderRadius: BorderRadius.circular(2),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 2),
+                                                Expanded(
+                                                  flex: _passwordController.text.length >= 8 ? 1 : 0,
+                                                  child: Container(
+                                                    height: 4,
+                                                    decoration: BoxDecoration(
+                                                      color: _passwordController.text.length >= 8 
+                                                          ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
+                                                          : AppTheme.borderColor,
+                                                      borderRadius: BorderRadius.circular(2),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 2),
+                                                Expanded(
+                                                  flex: (_passwordController.text.length >= 8 && 
+                                                      RegExp(r'[A-Z]').hasMatch(_passwordController.text) && 
+                                                      RegExp(r'[0-9]').hasMatch(_passwordController.text)) 
+                                                          ? 1 : 0,
+                                                  child: Container(
+                                                    height: 4,
+                                                    decoration: BoxDecoration(
+                                                      color: (_passwordController.text.length >= 8 && 
+                                                          RegExp(r'[A-Z]').hasMatch(_passwordController.text) && 
+                                                          RegExp(r'[0-9]').hasMatch(_passwordController.text)) 
+                                                              ? AppTheme.pulseGreen
+                                                              : AppTheme.borderColor,
+                                                      borderRadius: BorderRadius.circular(2),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  FormInput(
+                                    controller: _confirmPasswordController,
+                                    labelText: '确认密码',
+                                    prefixIcon: Icons.lock,
+                                    obscureText: true,
+                                    onChanged: (value) => _validatePasswords(),
+                                    errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          FormInput(
-                            controller: _confirmPasswordController,
-                            labelText: '确认密码',
-                            prefixIcon: Icons.lock,
-                            obscureText: true,
-                            onChanged: (value) => _validatePasswords(),
-                            errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
-                          ),
-                          const SizedBox(height: 24),
-                          CustomButton(
-                            text: '注册',
-                            onPressed: _submit,
-                            isLoading: _isLoading,
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('已有账户？'),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text(
-                                  '立即登录',
-                                  style: TextStyle(
-                                    color: Colors.indigo,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
+                            ),
+                            const SizedBox(height: 24),
+                            NeonButton(
+                              text: '注册',
+                              onPressed: _submit,
+                              isLoading: _isLoading,
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '已有账户？',
+                                  style: TextStyle(color: AppTheme.textTertiary),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    '立即登录',
+                                    style: TextStyle(
+                                      color: AppTheme.techPurple,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '注册即表示您同意我们的服务条款和隐私政策',
-                            style: Theme.of(context).textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('服务条款')),
-                                  );
-                                },
-                                child: const Text(
-                                  '服务条款',
-                                  style: TextStyle(color: Colors.indigo, fontSize: 12),
-                                ),
-                              ),
-                              const Text(' | '),
-                              TextButton(
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('隐私政策')),
-                                  );
-                                },
-                                child: const Text(
-                                  '隐私政策',
-                                  style: TextStyle(color: Colors.indigo, fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '注册即表示您同意我们的服务条款和隐私政策',
+                              style: TextStyle(fontSize: 12, color: AppTheme.textTertiary),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

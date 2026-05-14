@@ -8,6 +8,9 @@ import 'package:share_plus/share_plus.dart';
 import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/message.dart';
+import '../components/glass_card.dart';
+import '../components/glass_container.dart';
+import '../theme/app_theme.dart';
 
 class MessageDetailPage extends StatefulWidget {
   final Message message;
@@ -73,19 +76,63 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
   Future<void> _deleteMessage() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('确定要删除这条消息吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassContainer(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '确认删除',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '确定要删除这条消息吗？',
+                style: TextStyle(color: AppTheme.textTertiary),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.spaceIndigo,
+                        foregroundColor: AppTheme.textPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text('取消'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.dangerRed,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text('删除'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+        ),
       ),
     ) ?? false;
 
@@ -127,15 +174,180 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
   Widget _buildContent() {
     switch (widget.message.contentType.toLowerCase()) {
       case 'markdown':
-        return MarkdownBody(data: widget.message.body);
+        return MarkdownBody(
+          data: widget.message.body,
+          styleSheet: MarkdownStyleSheet(
+            p: TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
+            strong: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
+            em: TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textSecondary),
+            h1: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
+            h2: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
+            h3: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textSecondary,
+            ),
+            blockquote: TextStyle(
+              color: AppTheme.textTertiary,
+              fontStyle: FontStyle.italic,
+            ),
+            code: TextStyle(
+              backgroundColor: AppTheme.spaceBlue,
+              color: AppTheme.neonBlue,
+              fontFamily: 'Monospace',
+            ),
+            codeblockDecoration: BoxDecoration(
+              color: AppTheme.spaceBlue,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
       case 'html':
-        return Html(data: widget.message.body);
+        return Html(
+          data: widget.message.body,
+          style: {
+            'body': Style(
+              fontSize: FontSize(15),
+              color: AppTheme.textSecondary,
+              margin: Margins.zero,
+              padding: HtmlPaddings.zero,
+            ),
+            'p': Style(margin: Margins.zero, padding: HtmlPaddings.zero),
+            'strong': Style(color: AppTheme.textPrimary),
+            'h1': Style(
+              fontSize: FontSize(24),
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
+            'h2': Style(
+              fontSize: FontSize(20),
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
+            ),
+            'code': Style(
+              backgroundColor: AppTheme.spaceBlue,
+              color: AppTheme.neonBlue,
+            ),
+          },
+        );
       default:
         return Text(
           widget.message.body,
-          style: const TextStyle(fontSize: 16, height: 1.6),
+          style: TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
         );
     }
+  }
+
+  Widget _buildLevelBadge() {
+    Color glowColor;
+    String label;
+    IconData? icon;
+
+    switch (widget.message.level) {
+      case 'critical':
+        glowColor = AppTheme.dangerRed;
+        label = '紧急';
+        icon = Icons.warning;
+        break;
+      case 'timeSensitive':
+        glowColor = AppTheme.warningOrange;
+        label = '时间敏感';
+        icon = Icons.timer;
+        break;
+      case 'active':
+        glowColor = AppTheme.pulseGreen;
+        label = '普通';
+        icon = Icons.check_circle;
+        break;
+      default:
+        glowColor = AppTheme.textTertiary;
+        label = '未知';
+        icon = null;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: glowColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: glowColor.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: glowColor.withOpacity(0.2),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) Icon(icon, size: 12, color: glowColor),
+          if (icon != null) const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: glowColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupTag() {
+    if (widget.message.group == null || widget.message.group!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppTheme.techPurple.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.techPurple.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: AppTheme.techPurple,
+              borderRadius: BorderRadius.circular(3),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.techPurple.withOpacity(0.5),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            widget.message.group!,
+            style: TextStyle(
+              color: AppTheme.techPurple,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -150,145 +362,242 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('消息详情'),
+        backgroundColor: AppTheme.spaceBlue,
+        title: const Text('消息详情', style: TextStyle(color: AppTheme.textPrimary)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.copy),
+            icon: const Icon(Icons.copy, color: AppTheme.textPrimary),
             onPressed: _copyToClipboard,
             tooltip: '复制内容',
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+      body: Container(
+        decoration: AppTheme.gradientBackground,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(0),
+                  enableHover: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (widget.message.group != null)
-                        Chip(
-                          label: Text(widget.message.group!),
-                          backgroundColor: Colors.grey[100],
-                          labelStyle: const TextStyle(fontSize: 12),
-                        ),
-                      const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: widget.message.levelColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          widget.message.levelText,
-                          style: TextStyle(
-                            color: widget.message.levelColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                          border: Border(
+                            bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.5)),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    widget.message.title,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time, size: 16, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.message.formattedDate,
-                        style: const TextStyle(color: Colors.grey),
-                      ),
-                      const SizedBox(width: 16),
-                      const Icon(Icons.mark_email_read, size: 16, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.message.read ? '已读' : '未读',
-                        style: TextStyle(
-                          color: widget.message.read ? Colors.grey : Colors.blue,
+                        child: Row(
+                          children: [
+                            _buildGroupTag(),
+                            if (widget.message.group != null) const SizedBox(width: 12),
+                            _buildLevelBadge(),
+                          ],
                         ),
                       ),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.message.title,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: widget.message.read
+                                        ? AppTheme.textTertiary
+                                        : AppTheme.techPurple,
+                                    borderRadius: BorderRadius.circular(3),
+                                    boxShadow: widget.message.read
+                                        ? []
+                                        : [
+                                            BoxShadow(
+                                              color: const Color.fromARGB(80, 139, 92, 246),
+                                              blurRadius: 8,
+                                              spreadRadius: 2,
+                                            ),
+                                          ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  widget.message.read ? '已读' : '未读',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: widget.message.read
+                                        ? AppTheme.textTertiary
+                                        : AppTheme.techPurpleLight,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                const Icon(Icons.access_time, size: 14, color: AppTheme.textTertiary),
+                                const SizedBox(width: 6),
+                                Text(
+                                  widget.message.formattedDate,
+                                  style: TextStyle(fontSize: 13, color: AppTheme.textTertiary),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(60, 30, 41, 59),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                          ),
+                        ),
+                        child: _buildContent(),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[100]!),
-                    ),
-                    child: _buildContent(),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Colors.grey[100]!)),
+            GlassCard(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(0),
+              enableHover: false,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: NeonButton(
+                        onPressed: _isMarkingUnread ? null : _markAsUnread,
+                        variant: NeonButtonVariant.outline,
+                        child: _isMarkingUnread
+                            ? const CircularProgressIndicator(color: AppTheme.textPrimary)
+                            : const Text('标记未读'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: NeonButton(
+                        onPressed: _shareMessage,
+                        variant: NeonButtonVariant.primary,
+                        child: const Text('分享'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: NeonButton(
+                        onPressed: _deleteMessage,
+                        variant: NeonButtonVariant.danger,
+                        child: const Text('删除'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isMarkingUnread ? null : _markAsUnread,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[100],
-                      foregroundColor: Colors.black87,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: _isMarkingUnread
-                        ? const CircularProgressIndicator(color: Colors.black87)
-                        : const Text('标记未读'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _shareMessage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text('分享'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _deleteMessage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text('删除'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+class NeonButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final Widget child;
+  final NeonButtonVariant variant;
+
+  const NeonButton({
+    super.key,
+    required this.onPressed,
+    required this.child,
+    this.variant = NeonButtonVariant.primary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color backgroundColor;
+    Color foregroundColor;
+    Color borderColor;
+    List<BoxShadow> boxShadow;
+
+    switch (variant) {
+      case NeonButtonVariant.primary:
+        backgroundColor = AppTheme.techPurple;
+        foregroundColor = Colors.white;
+        borderColor = Colors.transparent;
+        boxShadow = [
+          BoxShadow(
+            color: const Color.fromARGB(100, 139, 92, 246),
+            blurRadius: 15,
+            spreadRadius: 3,
+            offset: const Offset(0, 4),
+          ),
+        ];
+        break;
+      case NeonButtonVariant.outline:
+        backgroundColor = Colors.transparent;
+        foregroundColor = AppTheme.textPrimary;
+        borderColor = AppTheme.borderColor;
+        boxShadow = [];
+        break;
+      case NeonButtonVariant.danger:
+        backgroundColor = AppTheme.dangerRed;
+        foregroundColor = Colors.white;
+        borderColor = Colors.transparent;
+        boxShadow = [
+          BoxShadow(
+            color: const Color.fromARGB(100, 239, 68, 68),
+            blurRadius: 15,
+            spreadRadius: 3,
+            offset: const Offset(0, 4),
+          ),
+        ];
+        break;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor),
+        boxShadow: boxShadow,
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          foregroundColor: foregroundColor,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+enum NeonButtonVariant {
+  primary,
+  outline,
+  danger,
 }

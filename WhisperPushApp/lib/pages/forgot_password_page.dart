@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../components/form_input.dart';
-import '../components/custom_button.dart';
+import '../components/neon_button.dart';
+import '../components/glass_container.dart';
+import '../theme/app_theme.dart';
 import 'login_page.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -38,7 +40,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('操作失败: ${e.toString()}')),
+          SnackBar(
+            content: Text('操作失败: ${e.toString()}'),
+            backgroundColor: AppTheme.spaceIndigo,
+          ),
         );
       }
       setState(() => _isLoading = false);
@@ -49,92 +54,141 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('忘记密码'),
+        backgroundColor: AppTheme.spaceBlue,
+        title: const Text('忘记密码', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: _isSubmitted
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        size: 80,
-                        color: Colors.green,
+      body: Container(
+        decoration: AppTheme.gradientBackground,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: _isSubmitted
+                  ? GlassContainer(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppTheme.pulseGreen.withOpacity(0.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.pulseGreen.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.check_circle,
+                              size: 50,
+                              color: AppTheme.pulseGreen,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            '重置邮件已发送',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            '请检查您的邮箱，点击邮件中的链接重置密码',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: AppTheme.textTertiary),
+                          ),
+                          const SizedBox(height: 32),
+                          NeonButton(
+                            text: '返回登录',
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        '重置邮件已发送',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    )
+                  : GlassContainer(
+                      padding: const EdgeInsets.all(32),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppTheme.techPurple.withOpacity(0.2),
+                              ),
+                              child: const Icon(
+                                Icons.lock_open,
+                                size: 40,
+                                color: AppTheme.techPurple,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              '忘记密码',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              '请输入您注册时使用的邮箱，我们会发送重置链接到您的邮箱',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: AppTheme.textTertiary),
+                            ),
+                            const SizedBox(height: 48),
+                            FormInput(
+                              controller: _emailController,
+                              labelText: '邮箱地址',
+                              prefixIcon: Icons.email,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value?.isEmpty ?? true) return '请输入邮箱地址';
+                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                                  return '请输入有效的邮箱地址';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 32),
+                            NeonButton(
+                              text: '发送重置链接',
+                              onPressed: _submit,
+                              isLoading: _isLoading,
+                            ),
+                            const SizedBox(height: 24),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                '返回登录',
+                                style: TextStyle(color: AppTheme.techPurple),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        '请检查您的邮箱，点击邮件中的链接重置密码',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 32),
-                      CustomButton(
-                        text: '返回登录',
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginPage()),
-                          );
-                        },
-                      ),
-                    ],
-                  )
-                : Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 48),
-                        const Text(
-                          '忘记密码',
-                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          '请输入您注册时使用的邮箱，我们会发送重置链接到您的邮箱',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(height: 48),
-                        FormInput(
-                          controller: _emailController,
-                          labelText: '邮箱地址',
-                          prefixIcon: Icons.email,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) return '请输入邮箱地址';
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                              return '请输入有效的邮箱地址';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 32),
-                        CustomButton(
-                          text: '发送重置链接',
-                          onPressed: _submit,
-                          isLoading: _isLoading,
-                        ),
-                        const SizedBox(height: 24),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('返回登录'),
-                        ),
-                      ],
                     ),
-                  ),
+            ),
           ),
         ),
       ),

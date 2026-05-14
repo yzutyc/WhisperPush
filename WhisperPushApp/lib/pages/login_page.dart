@@ -5,10 +5,13 @@ import 'package:flutter/services.dart';
 import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../components/form_input.dart';
-import '../components/custom_button.dart';
+import '../components/neon_button.dart';
+import '../components/glass_container.dart';
+import '../components/particle_background.dart';
 import '../components/logo_widget.dart';
 import '../components/toast_widget.dart';
 import '../utils/server_cache.dart';
+import '../theme/app_theme.dart';
 import 'register_page.dart';
 import 'message_list_page.dart';
 import 'forgot_password_page.dart';
@@ -130,228 +133,283 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.indigo, Color(0xFF5C6BC0)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      LogoWidget(size: 80),
-                      SizedBox(height: 16),
-                      Text(
-                        'WhisperPush',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Secure Push Notifications',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(32),
-                      topRight: Radius.circular(32),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Form(
-                      key: _formKey,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        body: ParticleBackground(
+          particleCount: 50,
+          child: SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: AppTheme.gradientBackground,
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Center(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(height: 16),
-                          Text(
-                            '欢迎回来',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '请登录您的账户',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 32),
-                          Column(
-                              children: [
-                                FormInput(
-                                  controller: _serverUrlController,
-                                  labelText: '服务器地址',
-                                  prefixIcon: Icons.cloud,
-                                  keyboardType: TextInputType.url,
-                                  validator: (value) => 
-                                      value?.isEmpty ?? true ? '请输入服务器地址' : null,
-                                  onChanged: (_) {
-                                    setState(() {
-                                      _serverStatus = null;
-                                      _serverAvailable = null;
-                                    });
-                                  },
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.techPurple.withOpacity(0.4),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    if (_serverStatus != null)
-                                      Expanded(
-                                        child: Text(
-                                          _serverStatus!,
-                                          style: TextStyle(
-                                            color: _serverAvailable == true ? Colors.green : Colors.red,
-                                            fontSize: 12,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                    const SizedBox(width: 8),
-                                    Row(
-                                      children: [
-                                        if (_historyUrls.isNotEmpty)
-                                          IconButton(
-                                            icon: const Icon(Icons.arrow_drop_down),
-                                            onPressed: () {
-                                              setState(() {
-                                                _showHistoryDropdown = !_showHistoryDropdown;
-                                              });
-                                            },
-                                          ),
-                                        _isCheckingServer
-                                            ? const SizedBox(
-                                                width: 20,
-                                                height: 20,
-                                                child: CircularProgressIndicator(strokeWidth: 2),
-                                              )
-                                            : ElevatedButton(
-                                                onPressed: _checkServerStatus,
-                                                style: ElevatedButton.styleFrom(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  minimumSize: const Size(60, 32),
-                                                ),
-                                                child: const Text('验证'),
-                                              ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                if (_showHistoryDropdown && _historyUrls.isNotEmpty)
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 8),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey[200]!),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      children: _historyUrls.map((url) {
-                                        return ListTile(
-                                          title: Text(url),
-                                          onTap: () => _selectHistoryUrl(url),
-                                          trailing: const Icon(Icons.arrow_right),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
                               ],
                             ),
-                          const SizedBox(height: 16),
-                          FormInput(
-                            controller: _usernameController,
-                            labelText: '用户名或邮箱',
-                            prefixIcon: Icons.person,
-                            validator: (value) => 
-                                value?.isEmpty ?? true ? '请输入用户名或邮箱' : null,
+                            child: LogoWidget(size: 80),
                           ),
                           const SizedBox(height: 16),
-                          FormInput(
-                            controller: _passwordController,
-                            labelText: '密码',
-                            prefixIcon: Icons.lock,
-                            obscureText: true,
-                            validator: (value) => 
-                                value?.isEmpty ?? true ? '请输入密码' : null,
-                            onFieldSubmitted: (_) => _submit(),
-                          ),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                                );
-                              },
-                              child: const Text(
-                                '忘记密码？',
-                                style: TextStyle(color: Colors.indigo),
-                              ),
+                          const Text(
+                            'WhisperPush',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          CustomButton(
-                            text: '登录',
-                            onPressed: _submit,
-                            isLoading: _isLoading,
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('还没有账户？'),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const RegisterPage()),
-                                  );
-                                },
-                                child: const Text(
-                                  '立即注册',
-                                  style: TextStyle(
-                                    color: Colors.indigo,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Secure Push Notifications',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.textTertiary,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: AppTheme.spaceBlue,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(24),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 24),
+                              Text(
+                                '欢迎回来',
+                                style: Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '请登录您的账户',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 32),
+                              GlassContainer(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  children: [
+                                    FormInput(
+                                      controller: _serverUrlController,
+                                      labelText: '服务器地址',
+                                      prefixIcon: Icons.cloud,
+                                      keyboardType: TextInputType.url,
+                                      validator: (value) => 
+                                          value?.isEmpty ?? true ? '请输入服务器地址' : null,
+                                      onChanged: (_) {
+                                        setState(() {
+                                          _serverStatus = null;
+                                          _serverAvailable = null;
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        if (_serverStatus != null)
+                                          Expanded(
+                                            child: Text(
+                                              _serverStatus!,
+                                              style: TextStyle(
+                                                color: _serverAvailable == true 
+                                                  ? AppTheme.pulseGreen 
+                                                  : AppTheme.dangerRed,
+                                                fontSize: 12,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                        const SizedBox(width: 8),
+                                        Row(
+                                          children: [
+                                            if (_historyUrls.isNotEmpty)
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.arrow_drop_down,
+                                                  color: AppTheme.textTertiary,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _showHistoryDropdown = !_showHistoryDropdown;
+                                                  });
+                                                },
+                                              ),
+                                            _isCheckingServer
+                                                ? const SizedBox(
+                                                    width: 20,
+                                                    height: 20,
+                                                    child: CircularProgressIndicator(
+                                                      color: AppTheme.techPurple,
+                                                      strokeWidth: 2,
+                                                    ),
+                                                  )
+                                                : ElevatedButton(
+                                                    onPressed: _checkServerStatus,
+                                                    style: ElevatedButton.styleFrom(
+                                                      padding: const EdgeInsets.symmetric(
+                                                        horizontal: 12, 
+                                                        vertical: 6,
+                                                      ),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                      minimumSize: const Size(60, 32),
+                                                      backgroundColor: AppTheme.techPurple,
+                                                    ),
+                                                    child: const Text(
+                                                      '验证',
+                                                      style: TextStyle(color: Colors.white),
+                                                    ),
+                                                  ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    if (_showHistoryDropdown && _historyUrls.isNotEmpty)
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: AppTheme.borderColor),
+                                          borderRadius: BorderRadius.circular(8),
+                                          color: AppTheme.spaceIndigo,
+                                        ),
+                                        child: Column(
+                                          children: _historyUrls.map((url) {
+                                            return ListTile(
+                                              title: Text(
+                                                url,
+                                                style: const TextStyle(color: AppTheme.textSecondary),
+                                              ),
+                                              onTap: () => _selectHistoryUrl(url),
+                                              trailing: const Icon(
+                                                Icons.arrow_right,
+                                                color: AppTheme.textTertiary,
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              GlassContainer(
+                                padding: const EdgeInsets.all(0),
+                                child: Column(
+                                  children: [
+                                    FormInput(
+                                      controller: _usernameController,
+                                      labelText: '用户名或邮箱',
+                                      prefixIcon: Icons.person,
+                                      validator: (value) => 
+                                          value?.isEmpty ?? true ? '请输入用户名或邮箱' : null,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    FormInput(
+                                      controller: _passwordController,
+                                      labelText: '密码',
+                                      prefixIcon: Icons.lock,
+                                      obscureText: true,
+                                      validator: (value) => 
+                                          value?.isEmpty ?? true ? '请输入密码' : null,
+                                      onFieldSubmitted: (_) => _submit(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ForgotPasswordPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    '忘记密码？',
+                                    style: TextStyle(color: AppTheme.techPurple),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              NeonButton(
+                                text: '登录',
+                                onPressed: _submit,
+                                isLoading: _isLoading,
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '还没有账户？',
+                                    style: TextStyle(color: AppTheme.textTertiary),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const RegisterPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      '立即注册',
+                                      style: TextStyle(
+                                        color: AppTheme.techPurple,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

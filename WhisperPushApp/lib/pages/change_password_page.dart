@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../api/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../components/form_input.dart';
-import '../components/custom_button.dart';
+import '../components/neon_button.dart';
+import '../components/glass_container.dart';
+import '../theme/app_theme.dart';
 import 'login_page.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -67,7 +69,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('修改失败: ${e.toString()}')),
+          SnackBar(
+            content: Text('修改失败: ${e.toString()}'),
+            backgroundColor: AppTheme.spaceIndigo,
+          ),
         );
       }
       setState(() => _isLoading = false);
@@ -90,106 +95,155 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('修改密码'),
+        backgroundColor: AppTheme.spaceBlue,
+        title: const Text('修改密码', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: _isChanged
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        size: 80,
-                        color: Colors.green,
+      body: Container(
+        decoration: AppTheme.gradientBackground,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: _isChanged
+                  ? GlassContainer(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppTheme.pulseGreen.withOpacity(0.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.pulseGreen.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.check_circle,
+                              size: 50,
+                              color: AppTheme.pulseGreen,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            '密码修改成功',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            '请使用新密码重新登录',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: AppTheme.textTertiary),
+                          ),
+                          const SizedBox(height: 32),
+                          NeonButton(
+                            text: '重新登录',
+                            onPressed: _logoutAndRedirect,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        '密码修改成功',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    )
+                  : GlassContainer(
+                      padding: const EdgeInsets.all(32),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppTheme.neonBlue.withOpacity(0.2),
+                              ),
+                              child: const Icon(
+                                Icons.key,
+                                size: 40,
+                                color: AppTheme.neonBlue,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              '修改密码',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              '请输入当前密码和新密码',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: AppTheme.textTertiary),
+                            ),
+                            const SizedBox(height: 48),
+                            FormInput(
+                              controller: _currentPasswordController,
+                              labelText: '当前密码',
+                              prefixIcon: Icons.lock,
+                              obscureText: true,
+                              validator: (value) => 
+                                  value?.isEmpty ?? true ? '请输入当前密码' : null,
+                            ),
+                            const SizedBox(height: 16),
+                            FormInput(
+                              controller: _newPasswordController,
+                              labelText: '新密码',
+                              prefixIcon: Icons.lock_outline,
+                              obscureText: true,
+                              onChanged: (_) => _validatePasswords(),
+                              errorText: _newPasswordError.isNotEmpty ? _newPasswordError : null,
+                              validator: (value) {
+                                if (value?.isEmpty ?? true) return '请输入新密码';
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            FormInput(
+                              controller: _confirmPasswordController,
+                              labelText: '确认新密码',
+                              prefixIcon: Icons.lock_outline,
+                              obscureText: true,
+                              onChanged: (_) => _validatePasswords(),
+                              errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
+                              validator: (value) => 
+                                  value?.isEmpty ?? true ? '请确认新密码' : null,
+                            ),
+                            const SizedBox(height: 32),
+                            NeonButton(
+                              text: '修改密码',
+                              onPressed: _submit,
+                              isLoading: _isLoading,
+                            ),
+                            const SizedBox(height: 24),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                '取消',
+                                style: TextStyle(color: AppTheme.textTertiary),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        '请使用新密码重新登录',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 32),
-                      CustomButton(
-                        text: '重新登录',
-                        onPressed: _logoutAndRedirect,
-                      ),
-                    ],
-                  )
-                : Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 48),
-                        const Text(
-                          '修改密码',
-                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          '请输入当前密码和新密码',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(height: 48),
-                        FormInput(
-                          controller: _currentPasswordController,
-                          labelText: '当前密码',
-                          prefixIcon: Icons.lock,
-                          obscureText: true,
-                          validator: (value) => 
-                              value?.isEmpty ?? true ? '请输入当前密码' : null,
-                        ),
-                        const SizedBox(height: 16),
-                        FormInput(
-                          controller: _newPasswordController,
-                          labelText: '新密码',
-                          prefixIcon: Icons.lock_outline,
-                          obscureText: true,
-                          onChanged: (_) => _validatePasswords(),
-                          errorText: _newPasswordError.isNotEmpty ? _newPasswordError : null,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) return '请输入新密码';
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        FormInput(
-                          controller: _confirmPasswordController,
-                          labelText: '确认新密码',
-                          prefixIcon: Icons.lock_outline,
-                          obscureText: true,
-                          onChanged: (_) => _validatePasswords(),
-                          errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
-                          validator: (value) => 
-                              value?.isEmpty ?? true ? '请确认新密码' : null,
-                        ),
-                        const SizedBox(height: 32),
-                        CustomButton(
-                          text: '修改密码',
-                          onPressed: _submit,
-                          isLoading: _isLoading,
-                        ),
-                        const SizedBox(height: 24),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('取消'),
-                        ),
-                      ],
                     ),
-                  ),
+            ),
           ),
         ),
       ),

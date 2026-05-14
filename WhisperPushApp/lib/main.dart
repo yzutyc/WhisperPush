@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       create: (context) => AuthProvider(),
       child: MaterialApp(
         title: 'WhisperPush',
-        theme: AppTheme.light(),
+        theme: AppTheme.dark(),
         home: const SplashScreen(),
         debugShowCheckedModeBanner: false,
       ),
