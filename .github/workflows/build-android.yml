@@ -1,0 +1,60 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+    
+    - name: Get dependencies
+      working-directory: ./WhisperPushApp
+      run: flutter pub get
+    
+    - name: Build APK
+      working-directory: ./WhisperPushApp
+      run: flutter build apk --release
+    
+    - name: Build App Bundle
+      working-directory: ./WhisperPushApp
+      run: flutter build appbundle
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release
+        path: WhisperPushApp/build/app/outputs/flutter-apk/app-release.apk
+    
+    - name: Upload App Bundle artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-bundle
+        path: WhisperPushApp/build/app/outputs/bundle/release/app-release.aab
+    
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          WhisperPushApp/build/app/outputs/flutter-apk/app-release.apk
+          WhisperPushApp/build/app/outputs/bundle/release/app-release.aab
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
