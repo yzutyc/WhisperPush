@@ -41,6 +41,19 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadSecrets();
     _loadAppVersion();
     _loadServerUrl();
+    _loadNotificationsSetting();
+  }
+
+  Future<void> _loadNotificationsSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
+    });
+  }
+
+  Future<void> _saveNotificationsSetting(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notifications_enabled', enabled);
   }
 
   void _loadServerUrl() {
@@ -727,7 +740,11 @@ class _SettingsPageState extends State<SettingsPage> {
                             value: _notificationsEnabled,
                             onChanged: (value) {
                               setState(() => _notificationsEnabled = value);
-                              ToastWidget.showInfo(context, '推送设置功能开发中');
+                              _saveNotificationsSetting(value);
+                              ToastWidget.showInfo(
+                                context,
+                                value ? '已开启推送通知' : '已关闭推送通知',
+                              );
                             },
                           ),
                         ],
