@@ -63,7 +63,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final api = ApiService(baseUrl: url);
       final available = await api.checkServerStatus();
-      
+      if (!mounted) return;
+
       setState(() {
         _serverAvailable = available;
         _serverStatus = available ? '✓ 服务可用' : '✗ 服务不可用';
@@ -75,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
         ToastWidget.showWarning(context, '服务器不可用，请检查地址');
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _serverAvailable = false;
         _serverStatus = '✗ 连接失败';
@@ -120,7 +122,9 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
-      ToastWidget.showError(context, '登录失败: ${e.toString()}');
+      if (mounted) {
+        ToastWidget.showError(context, '登录失败: ${e.toString()}');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -185,12 +189,12 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.techPurple.withOpacity(0.5),
+                                  color: AppTheme.techPurple.withValues(alpha: 0.5),
                                   blurRadius: 40,
                                   spreadRadius: 15,
                                 ),
                                 BoxShadow(
-                                  color: AppTheme.neonBlue.withOpacity(0.3),
+                                  color: AppTheme.neonBlue.withValues(alpha: 0.3),
                                   blurRadius: 25,
                                   spreadRadius: 8,
                                 ),
@@ -226,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: AppTheme.borderRadiusSmall,
                               color: const Color.fromARGB(20, 139, 92, 246),
                               border: Border.all(
-                                color: AppTheme.techPurple.withOpacity(0.2),
+                                color: AppTheme.techPurple.withValues(alpha: 0.2),
                               ),
                             ),
                             child: const Text(
@@ -254,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.techPurple.withOpacity(0.15),
+                            color: AppTheme.techPurple.withValues(alpha: 0.15),
                             blurRadius: 30,
                             spreadRadius: 5,
                             offset: const Offset(0, -5),
@@ -293,7 +297,7 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: AppTheme.borderRadiusSmall,
                                       color: const Color.fromARGB(25, 139, 92, 246),
                                       border: Border.all(
-                                        color: AppTheme.techPurple.withOpacity(0.25),
+                                        color: AppTheme.techPurple.withValues(alpha: 0.25),
                                         width: 1,
                                       ),
                                     ),
@@ -486,6 +490,8 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
       final api = ApiService(baseUrl: url);
       final available = await api.checkServerStatus();
       
+      if (!mounted) return;
+
       setState(() {
         _isAvailable = available;
         _checkStatus = available ? '✓ 服务可用' : '✗ 服务不可用';
@@ -497,6 +503,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
         ToastWidget.showWarning(context, '服务器不可用');
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isAvailable = false;
         _checkStatus = '✗ 连接失败';
@@ -539,7 +546,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 30,
             spreadRadius: 10,
           ),
@@ -691,7 +698,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.techPurple.withOpacity(0.2),
+                                  color: AppTheme.techPurple.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(

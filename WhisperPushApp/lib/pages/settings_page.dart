@@ -152,6 +152,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _deleteSecret(int id) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     if (!await showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -168,7 +170,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 height: 56,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppTheme.dangerRed.withOpacity(0.15),
+                  color: AppTheme.dangerRed.withValues(alpha: 0.15),
                 ),
                 child: const Icon(
                   Icons.delete,
@@ -209,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: BorderSide(
-                          color: AppTheme.borderColor.withOpacity(0.5),
+                          color: AppTheme.borderColor.withValues(alpha: 0.5),
                         ),
                       ),
                       child: const Text(
@@ -249,7 +251,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     setState(() => _isLoading = true);
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
@@ -270,6 +271,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _logout() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     if (!await showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -288,7 +291,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: BoxShape.circle,
                   color: const Color.fromARGB(20, 239, 68, 68),
                   border: Border.all(
-                    color: AppTheme.dangerRed.withOpacity(0.3),
+                    color: AppTheme.dangerRed.withValues(alpha: 0.3),
                   ),
                 ),
                 child: const Icon(
@@ -339,7 +342,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: BorderSide(
-                          color: AppTheme.borderColor.withOpacity(0.5),
+                          color: AppTheme.borderColor.withValues(alpha: 0.5),
                         ),
                       ),
                       child: const Text(
@@ -379,8 +382,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     setState(() => _isLoading = true);
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
@@ -397,7 +398,7 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     } catch (e) {
       Logger.e('退出登录失败', error: e);
-      await Provider.of<AuthProvider>(context, listen: false).logout();
+      await authProvider.logout();
       if (mounted) {
         Navigator.pushReplacement(
           context,

@@ -120,10 +120,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             height: 80,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppTheme.pulseGreen.withOpacity(0.2),
+                              color: AppTheme.pulseGreen.withValues(alpha: 0.2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.pulseGreen.withOpacity(0.3),
+                                  color: AppTheme.pulseGreen.withValues(alpha: 0.3),
                                   blurRadius: 15,
                                   spreadRadius: 5,
                                 ),
@@ -169,7 +169,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppTheme.neonBlue.withOpacity(0.2),
+                                color: AppTheme.neonBlue.withValues(alpha: 0.2),
                               ),
                               child: const Icon(
                                 Icons.key,

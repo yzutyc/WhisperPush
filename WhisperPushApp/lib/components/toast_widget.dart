@@ -122,28 +122,28 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
           borderColor: AppTheme.pulseGreen,
           iconColor: AppTheme.pulseGreen,
           iconBg: const Color.fromARGB(20, 16, 185, 129),
-          glowColor: AppTheme.pulseGreen.withOpacity(0.3),
+          glowColor: AppTheme.pulseGreen.withValues(alpha: 0.3),
         );
       case ToastType.error:
         return _ToastColorScheme(
           borderColor: AppTheme.dangerRed,
           iconColor: AppTheme.dangerRed,
           iconBg: const Color.fromARGB(20, 239, 68, 68),
-          glowColor: AppTheme.dangerRed.withOpacity(0.3),
+          glowColor: AppTheme.dangerRed.withValues(alpha: 0.3),
         );
       case ToastType.warning:
         return _ToastColorScheme(
           borderColor: AppTheme.warningOrange,
           iconColor: AppTheme.warningOrange,
           iconBg: const Color.fromARGB(20, 245, 158, 11),
-          glowColor: AppTheme.warningOrange.withOpacity(0.3),
+          glowColor: AppTheme.warningOrange.withValues(alpha: 0.3),
         );
       case ToastType.info:
         return _ToastColorScheme(
           borderColor: AppTheme.techPurple,
           iconColor: AppTheme.techPurple,
           iconBg: const Color.fromARGB(20, 139, 92, 246),
-          glowColor: AppTheme.techPurple.withOpacity(0.3),
+          glowColor: AppTheme.techPurple.withValues(alpha: 0.3),
         );
     }
   }
@@ -186,7 +186,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                     spreadRadius: 5,
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 15,
                     offset: const Offset(0, 4),
                   ),
@@ -202,7 +202,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                       color: const Color.fromARGB(200, 30, 41, 59),
                       borderRadius: AppTheme.borderRadius,
                       border: Border.all(
-                        color: colorScheme.borderColor.withOpacity(0.6),
+                        color: colorScheme.borderColor.withValues(alpha: 0.6),
                         width: 1.5,
                       ),
                     ),
@@ -216,7 +216,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                             color: colorScheme.iconBg,
                             boxShadow: [
                               BoxShadow(
-                                color: colorScheme.iconColor.withOpacity(0.3),
+                                color: colorScheme.iconColor.withValues(alpha: 0.3),
                                 blurRadius: 10,
                               ),
                             ],

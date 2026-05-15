@@ -13,7 +13,7 @@ class ParticleBackground extends StatefulWidget {
   });
 
   @override
-  _ParticleBackgroundState createState() => _ParticleBackgroundState();
+  State<ParticleBackground> createState() => _ParticleBackgroundState();
 }
 
 class _ParticleBackgroundState extends State<ParticleBackground> with SingleTickerProviderStateMixin {
@@ -119,7 +119,7 @@ class ParticlePainter extends CustomPainter {
       if (particle.x < 0) particle.x = canvasSize.width;
       if (particle.y < 0) particle.y = canvasSize.height;
 
-      paint.color = AppTheme.techPurple.withOpacity(particle.opacity);
+      paint.color = AppTheme.techPurple.withValues(alpha: particle.opacity);
       canvas.drawCircle(
         Offset(particle.x, particle.y),
         particle.size,

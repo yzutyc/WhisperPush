@@ -185,7 +185,7 @@ class GlassCardWithBorder extends StatelessWidget {
                   spreadRadius: 3,
                 ),
                 BoxShadow(
-                  color: borderColor.withOpacity(0.4),
+                  color: borderColor.withValues(alpha: 0.4),
                   blurRadius: 15,
                   spreadRadius: 3,
                 ),

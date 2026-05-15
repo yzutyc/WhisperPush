@@ -26,14 +26,14 @@ class GlassContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppTheme.spaceIndigo.withOpacity(0.6),
+        color: backgroundColor ?? AppTheme.spaceIndigo.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: borderColor ?? AppTheme.techPurple.withOpacity(0.2),
+          color: borderColor ?? AppTheme.techPurple.withValues(alpha:0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.techPurple.withOpacity(0.1),
+            color: AppTheme.techPurple.withValues(alpha:0.1),
             blurRadius: blur,
             spreadRadius: 5,
           ),

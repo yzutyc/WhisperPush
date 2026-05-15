@@ -76,9 +76,11 @@ class _MessageListPageState extends State<MessageListPage> {
         print('加载消息失败: $e');
         print('堆栈: $stackTrace');
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('加载失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('加载失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -179,16 +181,19 @@ class _MessageListPageState extends State<MessageListPage> {
       for (var id in _selectedMessageIds) {
         await api.markMessageRead(id);
       }
-      
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('已标记 ${_selectedMessageIds.length} 条消息为已读')),
       );
       _exitMultiSelectMode();
       await _loadMessages();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('操作失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('操作失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -218,31 +223,35 @@ class _MessageListPageState extends State<MessageListPage> {
         ],
       ),
     ) ?? false;
-    
+
+    if (!mounted) return;
     if (!confirmed) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      
+
       for (var id in _selectedMessageIds) {
         await api.deleteMessage(id);
       }
-      
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('已删除 ${_selectedMessageIds.length} 条消息')),
       );
       _exitMultiSelectMode();
       await _loadMessages();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('删除失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('删除失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -259,14 +268,17 @@ class _MessageListPageState extends State<MessageListPage> {
       );
       
       await api.markMessageUnread(message.id);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('已标记为未读')),
       );
       await _loadMessages();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('操作失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('操作失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -274,23 +286,26 @@ class _MessageListPageState extends State<MessageListPage> {
 
   Future<void> _deleteMessage(int messageId) async {
     setState(() => _isLoading = true);
-    
+
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      
+
       await api.deleteMessage(messageId);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('已删除消息')),
       );
       await _loadMessages();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('删除失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('删除失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }

@@ -73,7 +73,9 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         _otpAuthUrl = result['otpauth_url'];
       });
     } catch (e) {
-      ToastWidget.showError(context, '启用失败: ${e.toString()}');
+      if (mounted) {
+        ToastWidget.showError(context, '启用失败: ${e.toString()}');
+      }
     } finally {
       setState(() => _isEnabling = false);
     }
@@ -104,9 +106,12 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         _otpAuthUrl = null;
         _codeController.clear();
       });
+      if (!mounted) return;
       ToastWidget.showSuccess(context, '双因素认证已启用');
     } catch (e) {
-      ToastWidget.showError(context, '验证失败: ${e.toString()}');
+      if (mounted) {
+        ToastWidget.showError(context, '验证失败: ${e.toString()}');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -193,6 +198,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
 
     if (password == null || password.isEmpty) return;
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -201,6 +207,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         token: authProvider.token,
       );
       await api.disableTwoFactor(password);
+      if (!mounted) return;
       setState(() {
         _isTwoFactorEnabled = false;
         _showRecoveryCodes = false;
@@ -208,7 +215,9 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
       });
       ToastWidget.showSuccess(context, '双因素认证已禁用');
     } catch (e) {
-      ToastWidget.showError(context, '禁用失败: ${e.toString()}');
+      if (mounted) {
+        ToastWidget.showError(context, '禁用失败: ${e.toString()}');
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -217,6 +226,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
   Future<void> _copyRecoveryCodes() async {
     final codes = _recoveryCodes.join('\n');
     await Clipboard.setData(ClipboardData(text: codes));
+    if (!mounted) return;
     ToastWidget.showSuccess(context, '恢复码已复制到剪贴板');
   }
 
@@ -229,12 +239,15 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         token: authProvider.token,
       );
       final codes = await api.regenerateRecoveryCodes();
+      if (!mounted) return;
       setState(() {
         _recoveryCodes = codes;
       });
       ToastWidget.showSuccess(context, '恢复码已重新生成');
     } catch (e) {
-      ToastWidget.showError(context, '生成失败: ${e.toString()}');
+      if (mounted) {
+        ToastWidget.showError(context, '生成失败: ${e.toString()}');
+      }
     } finally {
       setState(() => _isLoading = false);
     }

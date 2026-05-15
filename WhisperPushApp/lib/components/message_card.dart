@@ -63,12 +63,12 @@ class MessageCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Color.fromARGB(25, glowColor.red, glowColor.green, glowColor.blue),
+        color: glowColor.withAlpha(25),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: borderColor, width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Color.fromARGB(40, glowColor.red, glowColor.green, glowColor.blue),
+            color: glowColor.withAlpha(40),
             blurRadius: 10,
             spreadRadius: 3,
           ),

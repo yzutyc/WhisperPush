@@ -72,8 +72,8 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
                   )
                 : LinearGradient(
                     colors: [
-                      inactiveColor.withOpacity(0.4),
-                      inactiveColor.withOpacity(0.2),
+                      inactiveColor.withValues(alpha: 0.4),
+                      inactiveColor.withValues(alpha: 0.2),
                     ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -81,15 +81,15 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
             boxShadow: widget.value
                 ? [
                     BoxShadow(
-                      color: AppTheme.techPurple.withOpacity(
-                        _isHovered ? 0.6 : _glowAnimation.value * 0.5,
+                      color: AppTheme.techPurple.withValues(
+                        alpha: _isHovered ? 0.6 : _glowAnimation.value * 0.5,
                       ),
                       blurRadius: _isHovered ? 20 : 15,
                       spreadRadius: _isHovered ? 8 : 5,
                     ),
                     BoxShadow(
-                      color: AppTheme.neonBlue.withOpacity(
-                        _isHovered ? 0.4 : _glowAnimation.value * 0.3,
+                      color: AppTheme.neonBlue.withValues(
+                        alpha: _isHovered ? 0.4 : _glowAnimation.value * 0.3,
                       ),
                       blurRadius: _isHovered ? 15 : 10,
                       spreadRadius: _isHovered ? 5 : 3,
@@ -97,7 +97,7 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
                   ]
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       blurRadius: 8,
                       spreadRadius: 2,
                       offset: const Offset(0, 2),
@@ -105,8 +105,8 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
                   ],
             border: Border.all(
               color: widget.value
-                  ? AppTheme.techPurple.withOpacity(0.8)
-                  : inactiveColor.withOpacity(0.3),
+                  ? AppTheme.techPurple.withValues(alpha: 0.8)
+                  : inactiveColor.withValues(alpha: 0.3),
               width: widget.value ? 1.5 : 1,
             ),
           ),
@@ -145,19 +145,19 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
                       boxShadow: widget.value
                           ? [
                               BoxShadow(
-                                color: AppTheme.techPurple.withOpacity(0.6),
+                                color: AppTheme.techPurple.withValues(alpha: 0.6),
                                 blurRadius: 10,
                                 spreadRadius: 3,
                               ),
                               BoxShadow(
-                                color: Colors.white.withOpacity(0.5),
+                                color: Colors.white.withValues(alpha: 0.5),
                                 blurRadius: 8,
                                 spreadRadius: 2,
                               ),
                             ]
                           : [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
+                                color: Colors.black.withValues(alpha: 0.3),
                                 blurRadius: 5,
                                 spreadRadius: 1,
                               ),

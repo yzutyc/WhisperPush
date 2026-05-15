@@ -129,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.techPurple.withOpacity(0.4),
+                                color: AppTheme.techPurple.withValues(alpha: 0.4),
                                 blurRadius: 30,
                                 spreadRadius: 10,
                               ),

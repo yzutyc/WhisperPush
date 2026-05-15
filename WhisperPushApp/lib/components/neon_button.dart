@@ -23,7 +23,7 @@ class NeonButton extends StatefulWidget {
   });
 
   @override
-  _NeonButtonState createState() => _NeonButtonState();
+  State<NeonButton> createState() => _NeonButtonState();
 }
 
 class _NeonButtonState extends State<NeonButton> {
@@ -64,14 +64,14 @@ class _NeonButtonState extends State<NeonButton> {
               boxShadow: _isHovered && !widget.isLoading
                   ? [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.5),
+                        color: primaryColor.withValues(alpha:0.5),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
                     ]
                   : [
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.3),
+                        color: primaryColor.withValues(alpha:0.3),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),

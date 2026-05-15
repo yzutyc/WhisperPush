@@ -32,7 +32,7 @@ class EmptyState extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: const Color.fromARGB(25, 139, 92, 246),
-              border: Border.all(color: AppTheme.techPurple.withOpacity(0.4), width: 1.5),
+              border: Border.all(color: AppTheme.techPurple.withValues(alpha:0.4), width: 1.5),
               boxShadow: enableGlow
                   ? [
                       const BoxShadow(

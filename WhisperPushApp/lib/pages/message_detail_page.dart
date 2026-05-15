@@ -40,9 +40,11 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
 
       await api.markMessageRead(widget.message.id);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('标记失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('标记失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isMarkingRead = false);
     }
@@ -66,9 +68,11 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('标记失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('标记失败: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() => _isMarkingUnread = false);
     }
@@ -137,6 +141,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       ),
     ) ?? false;
 
+    if (!mounted) return;
     if (!confirmed) return;
 
     try {
@@ -155,14 +160,17 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
         Navigator.pop(context);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('删除失败: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('删除失败: ${e.toString()}')),
+        );
+      }
     }
   }
 
   Future<void> _copyToClipboard() async {
     await Clipboard.setData(ClipboardData(text: widget.message.body));
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('已复制到剪贴板')),
     );
@@ -303,12 +311,12 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: glowColor.withOpacity(0.1),
+        color: glowColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: glowColor.withOpacity(0.3)),
+        border: Border.all(color: glowColor.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: glowColor.withOpacity(0.2),
+            color: glowColor.withValues(alpha: 0.2),
             blurRadius: 8,
             spreadRadius: 2,
           ),
@@ -339,9 +347,9 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppTheme.techPurple.withOpacity(0.1),
+        color: AppTheme.techPurple.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.techPurple.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.techPurple.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -354,7 +362,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
               borderRadius: BorderRadius.circular(3),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.techPurple.withOpacity(0.5),
+                  color: AppTheme.techPurple.withValues(alpha: 0.5),
                   blurRadius: 4,
                 ),
               ],
@@ -413,7 +421,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.5)),
+                            bottom: BorderSide(color: AppTheme.borderColor.withValues(alpha: 0.5)),
                           ),
                         ),
                         child: Row(
