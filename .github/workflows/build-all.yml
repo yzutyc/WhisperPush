@@ -91,11 +91,17 @@ jobs:
       working-directory: ./WhisperPushApp
       run: flutter build ios --simulator --no-codesign
 
+    - name: Package iOS build
+      run: |
+        mkdir -p dist
+        zip -r dist/WhisperPush-v${{ steps.version.outputs.version }}-ios-simulator.zip \
+          WhisperPushApp/build/ios/iphonesimulator/Runner.app
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: ios-v${{ steps.version.outputs.version }}
-        path: WhisperPushApp/build/ios/iphonesimulator/Runner.app
+        path: dist/
 
   build-windows:
     runs-on: windows-latest
