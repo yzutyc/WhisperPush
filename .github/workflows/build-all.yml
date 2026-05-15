@@ -24,7 +24,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed -E 's/version:\s*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed 's/version: *//' | sed 's/+.*//')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Setup Java
@@ -74,7 +74,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed -E 's/version:\s*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed 's/version: *//' | sed 's/+.*//')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Setup Flutter
@@ -147,7 +147,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed -E 's/version:\s*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed 's/version: *//' | sed 's/+.*//')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Install Linux dependencies
@@ -192,7 +192,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed -E 's/version:\s*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed 's/version: *//' | sed 's/+.*//')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Setup Flutter
@@ -231,7 +231,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed -E 's/version:\s*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed 's/version: *//' | sed 's/+.*//')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Setup Flutter
@@ -271,7 +271,7 @@ jobs:
     - name: Get version
       id: version
       run: |
-        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed -E 's/version:\s*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+        VERSION=$(grep '^version:' WhisperPushApp/pubspec.yaml | head -1 | sed 's/version: *//' | sed 's/+.*//')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Download artifacts
