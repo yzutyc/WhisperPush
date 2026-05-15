@@ -9,7 +9,9 @@ from app.routers import auth, secrets, messages, devices, two_factor, user_setti
 app = FastAPI(title="WhisperPush API", version="0.1.6")
 
 class DynamicCORSMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
+
+    @classmethod
+    async def dispatch(cls, request: Request, call_next):
         origin = request.headers.get("origin", "")
         if origin.startswith("http://localhost") or origin.startswith("http://127.0.0.1"):
             response = await call_next(request)

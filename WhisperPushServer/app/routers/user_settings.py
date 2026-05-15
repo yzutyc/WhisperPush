@@ -20,7 +20,7 @@ class UpdateSettingsRequest(BaseModel):
     notifications_enabled: bool
 
 
-@router.get("/", response_model=UserSettings, summary="获取当前用户设置")
+@router.get("", response_model=UserSettings, summary="获取当前用户设置")
 async def get_user_settings(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -36,7 +36,7 @@ async def get_user_settings(
     )
 
 
-@router.put("/", response_model=UserSettings, summary="更新用户设置")
+@router.put("", response_model=UserSettings, summary="更新用户设置")
 async def update_user_settings(
     settings: UpdateSettingsRequest,
     current_user: User = Depends(get_current_user),
@@ -50,6 +50,9 @@ async def update_user_settings(
         
     Returns:
         UserSettings: 更新后的用户设置对象
+        :param settings:
+        :param db:
+        :param current_user:
     """
     current_user.notifications_enabled = settings.notifications_enabled
     db.commit()

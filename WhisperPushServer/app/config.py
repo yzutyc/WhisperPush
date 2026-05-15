@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     apns_use_sandbox: bool = True
 
     class Config:
+        def __init__(self):
+            pass
+
         env_file = ".env"
 
 settings = Settings()

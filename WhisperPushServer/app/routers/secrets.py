@@ -12,7 +12,7 @@ from app.dependencies import get_current_user
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.SecretWithKeyResponse)
+@router.post("", response_model=schemas.SecretWithKeyResponse)
 def create_secret(
     secret_data: schemas.SecretCreate,
     db: Session = Depends(get_db),
@@ -53,7 +53,7 @@ def create_secret(
     )
 
 
-@router.get("/", response_model=list[schemas.SecretResponse])
+@router.get("", response_model=list[schemas.SecretResponse])
 def list_secrets(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
