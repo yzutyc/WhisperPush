@@ -180,15 +180,8 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            width: 100,
-                            height: 100,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: const LinearGradient(
-                                colors: [AppTheme.techPurple, AppTheme.neonBlue],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: AppTheme.techPurple.withValues(alpha: 0.5),
@@ -202,9 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ],
                             ),
-                            child: const Center(
-                              child: LogoWidget(size: 50),
-                            ),
+                            child: const LogoWidget(size: 80),
                           ),
                           const SizedBox(height: 24),
                           const Text(

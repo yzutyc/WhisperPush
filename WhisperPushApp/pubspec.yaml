@@ -32,12 +32,20 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  web: true
-  windows: true
-  macos: true
-  image_path: "assets/logo.svg"
+  macos:
+    generate: true
+    image_path: "assets/logo.png"
+  web:
+    generate: true
+    image_path: "assets/logo.png"
+    background_color: "#8B5CF6"
+    theme_color: "#8B5CF6"
+  windows:
+    generate: true
+    image_path: "assets/logo.png"
+  image_path: "assets/logo.png"
   adaptive_icon_background: "#8B5CF6"
-  adaptive_icon_foreground: "assets/logo.svg"
+  adaptive_icon_foreground: "assets/logo.png"
 
 flutter:
   uses-material-design: true

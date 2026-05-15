@@ -112,54 +112,53 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: ParticleBackground(
         particleCount: 40,
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: AppTheme.gradientBackground,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.techPurple.withValues(alpha: 0.4),
-                                blurRadius: 30,
-                                spreadRadius: 10,
-                              ),
-                            ],
-                          ),
-                          child: const LogoWidget(size: 80),
+        child: Container(
+          decoration: AppTheme.gradientBackground,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.techPurple.withValues(alpha: 0.4),
+                              blurRadius: 30,
+                              spreadRadius: 10,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'WhisperPush',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
-                          ),
+                        child: const LogoWidget(size: 80),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'WhisperPush',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Secure Push Notifications',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppTheme.textTertiary,
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Secure Push Notifications',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textTertiary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                Expanded(
-                  flex: 4,
+              ),
+              Expanded(
+                flex: 4,
+                child: SingleChildScrollView(
                   child: Container(
                     width: double.infinity,
                     decoration: const BoxDecoration(
@@ -174,6 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Form(
                         key: _formKey,
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const SizedBox(height: 16),
                             const Text(
@@ -198,7 +198,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     controller: _usernameController,
                                     labelText: '用户名',
                                     prefixIcon: Icons.person,
-                                    validator: (value) => 
+                                    validator: (value) =>
                                         value?.isEmpty ?? true ? '请输入用户名' : null,
                                   ),
                                   const SizedBox(height: 16),
@@ -250,7 +250,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   child: Container(
                                                     height: 4,
                                                     decoration: BoxDecoration(
-                                                      color: _passwordController.text.length >= 6 
+                                                      color: _passwordController.text.length >= 6
                                                           ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
                                                           : AppTheme.borderColor,
                                                       borderRadius: BorderRadius.circular(2),
@@ -263,7 +263,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   child: Container(
                                                     height: 4,
                                                     decoration: BoxDecoration(
-                                                      color: _passwordController.text.length >= 8 
+                                                      color: _passwordController.text.length >= 8
                                                           ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
                                                           : AppTheme.borderColor,
                                                       borderRadius: BorderRadius.circular(2),
@@ -272,16 +272,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                                 ),
                                                 const SizedBox(width: 2),
                                                 Expanded(
-                                                  flex: (_passwordController.text.length >= 8 && 
-                                                      RegExp(r'[A-Z]').hasMatch(_passwordController.text) && 
-                                                      RegExp(r'[0-9]').hasMatch(_passwordController.text)) 
+                                                  flex: (_passwordController.text.length >= 8 &&
+                                                      RegExp(r'[A-Z]').hasMatch(_passwordController.text) &&
+                                                      RegExp(r'[0-9]').hasMatch(_passwordController.text))
                                                           ? 1 : 0,
                                                   child: Container(
                                                     height: 4,
                                                     decoration: BoxDecoration(
-                                                      color: (_passwordController.text.length >= 8 && 
-                                                          RegExp(r'[A-Z]').hasMatch(_passwordController.text) && 
-                                                          RegExp(r'[0-9]').hasMatch(_passwordController.text)) 
+                                                      color: (_passwordController.text.length >= 8 &&
+                                                          RegExp(r'[A-Z]').hasMatch(_passwordController.text) &&
+                                                          RegExp(r'[0-9]').hasMatch(_passwordController.text))
                                                               ? AppTheme.pulseGreen
                                                               : AppTheme.borderColor,
                                                       borderRadius: BorderRadius.circular(2),
@@ -347,8 +347,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
