@@ -98,7 +98,7 @@ class AppTheme {
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         side: BorderSide(color: borderColor),
       ),
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         shape: RoundedRectangleBorder(borderRadius: borderRadius),
         elevation: 0,
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -110,12 +110,12 @@ class AppTheme {
         space: 8,
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.all(techPurple),
-        trackColor: MaterialStateProperty.all(spaceSlate),
+        thumbColor: WidgetStateProperty.all(techPurple),
+        trackColor: WidgetStateProperty.all(spaceSlate),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.all(techPurple),
-        checkColor: MaterialStateProperty.all(textPrimary),
+        fillColor: WidgetStateProperty.all(techPurple),
+        checkColor: WidgetStateProperty.all(textPrimary),
       ),
     );
   }

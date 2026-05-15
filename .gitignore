@@ -26,9 +26,9 @@ instance/
 .packages
 pubspec.lock
 build/
-ios/
-android/
-web/
+/ios/
+/android/
+/web/
 *.iml
 .idea/
 *.apk
