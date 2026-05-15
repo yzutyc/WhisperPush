@@ -68,22 +68,16 @@ class _SettingsPageState extends State<SettingsPage> {
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      final success = await api.updateUserNotificationsSetting(enabled);
-      if (success) {
-        setState(() => _notificationsEnabled = enabled);
-        if (mounted) {
-          ToastWidget.showInfo(
-            context,
-            enabled ? '已开启推送通知' : '已关闭推送通知',
-          );
-        }
-      } else {
-        if (mounted) {
-          ToastWidget.showError(context, '保存失败，服务器返回异常');
-        }
+      await api.updateUserNotificationsSetting(enabled);
+      if (mounted) {
+        ToastWidget.showInfo(
+          context,
+          enabled ? '已开启推送通知' : '已关闭推送通知',
+        );
       }
     } catch (e) {
       Logger.e('保存推送设置失败', error: e);
+      setState(() => _notificationsEnabled = !enabled);
       if (mounted) {
         ToastWidget.showError(context, '保存失败，请检查网络连接');
       }
@@ -173,7 +167,7 @@ class _SettingsPageState extends State<SettingsPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Row(
           children: [
-            Icon(Icons.key, color: AppTheme.accentPurple),
+            Icon(Icons.key, color: AppTheme.techPurple),
             SizedBox(width: 8),
             Text('秘钥已生成', style: TextStyle(color: Colors.white)),
           ],
@@ -190,14 +184,14 @@ class _SettingsPageState extends State<SettingsPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.accentPurple.withValues(alpha: 0.1),
+                color: AppTheme.techPurple.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.accentPurple.withValues(alpha: 0.3)),
+                border: Border.all(color: AppTheme.techPurple.withValues(alpha: 0.3)),
               ),
               child: SelectableText(
                 secretKey,
                 style: const TextStyle(
-                  color: AppTheme.accentPurple,
+                  color: AppTheme.techPurple,
                   fontFamily: 'monospace',
                   fontSize: 14,
                 ),
@@ -206,15 +200,11 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('我已保存', style: TextStyle(color: AppTheme.textSecondary)),
-          ),
           ElevatedButton.icon(
-            icon: const Icon(Icons.copy, size: 18),
-            label: const Text('复制秘钥'),
+            icon: const Icon(Icons.copy, size: 14),
+            label: const Text(''),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentPurple,
+              backgroundColor: AppTheme.techPurple,
               foregroundColor: Colors.white,
             ),
             onPressed: () {
@@ -914,6 +904,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           NeonSwitch(
                             value: _notificationsEnabled,
                             onChanged: (value) {
+                              setState(() => _notificationsEnabled = value);
                               _saveNotificationsSetting(value);
                             },
                           ),
