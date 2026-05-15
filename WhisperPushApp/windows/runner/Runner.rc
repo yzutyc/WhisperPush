@@ -1,6 +1,6 @@
 // Flutter-facing portions of the Runner.
 
-#include "Runner.rc"
+#include "resource.h"
 
 // Resources
 //
