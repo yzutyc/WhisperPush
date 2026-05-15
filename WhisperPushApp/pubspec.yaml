@@ -31,12 +31,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  web: true
-  windows: true
-  macos: true
   image_path: "assets/logo.svg"
-  # Note: For flutter_launcher_icons, we need PNG, so we'll create one later
-  # For now, let's keep this as a placeholder or use an existing icon
   adaptive_icon_background: "#8B5CF6"
   adaptive_icon_foreground: "assets/logo.svg"
 

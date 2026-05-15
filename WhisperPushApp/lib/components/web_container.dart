@@ -13,7 +13,7 @@ class WebContainer extends StatelessWidget {
     this.mobileWidth = 430.0,
     this.mobileHeight = 932.0,
     this.backgroundColor = const Color(0xFF0F172A),
-    this.borderRadius = 40.0,
+    this.borderRadius = 24.0,
   });
 
   @override

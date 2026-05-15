@@ -1,1 +1,912 @@
+import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
+
+import '../api/api_service.dart';
+import '../components/empty_state.dart';
+import '../components/glass_card.dart';
+import '../components/neon_button.dart';
+import '../components/neon_switch.dart';
+import '../components/toast_widget.dart';
+import '../models/secret.dart';
+import '../models/user.dart';
+import '../providers/auth_provider.dart';
+import '../theme/app_theme.dart';
+import '../utils/logger.dart';
+import 'change_password_page.dart';
+import 'login_page.dart';
+import 'privacy_policy_page.dart';
+import 'terms_of_service_page.dart';
+import 'two_factor_page.dart';
+
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  List<Secret> _secrets = [];
+  bool _isLoading = false;
+  User? _currentUser;
+  String _appVersion = '1.0.0';
+  bool _notificationsEnabled = true;
+  String? _serverUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+    _loadSecrets();
+    _loadAppVersion();
+    _loadServerUrl();
+    _loadNotificationsSetting();
+  }
+
+  Future<void> _loadNotificationsSetting() async {
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      final enabled = await api.getUserNotificationsSetting();
+      setState(() {
+        _notificationsEnabled = enabled;
+      });
+    } catch (e) {
+      Logger.e('加载推送设置失败', error: e);
+    }
+  }
+
+  Future<void> _saveNotificationsSetting(bool enabled) async {
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      await api.updateUserNotificationsSetting(enabled);
+    } catch (e) {
+      Logger.e('保存推送设置失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '保存失败');
+      }
+    }
+  }
+
+  void _loadServerUrl() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    setState(() {
+      _serverUrl = authProvider.serverUrl;
+    });
+  }
+
+  Future<void> _loadUserInfo() async {
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      _currentUser = await api.getCurrentUser();
+    } catch (e) {
+      Logger.e('加载用户信息失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '加载用户信息失败');
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadSecrets() async {
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      _secrets = await api.getSecrets();
+    } catch (e) {
+      Logger.e('加载Secrets失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '加载失败');
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+    });
+  }
+
+  Future<void> _createSecret() async {
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      await api.createSecret();
+      await _loadSecrets();
+      if (mounted) {
+        ToastWidget.showSuccess(context, 'Secret 创建成功');
+      }
+    } catch (e) {
+      Logger.e('创建Secret失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '创建失败');
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _deleteSecret(int id) async {
+    if (!await showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: GlassCard(
+          padding: const EdgeInsets.all(28),
+          enableHover: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.dangerRed.withOpacity(0.15),
+                ),
+                child: const Icon(
+                  Icons.delete,
+                  color: AppTheme.dangerRed,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                '确认删除',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                '确定要删除这个 Secret 吗？',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(30, 75, 85, 99),
+                        foregroundColor: AppTheme.textSecondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppTheme.borderRadius,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(
+                          color: AppTheme.borderColor.withOpacity(0.5),
+                        ),
+                      ),
+                      child: const Text(
+                        '取消',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.dangerRed,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppTheme.borderRadius,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        '删除',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    )) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      await api.deleteSecret(id);
+      await _loadSecrets();
+      if (mounted) {
+        ToastWidget.showSuccess(context, '已删除');
+      }
+    } catch (e) {
+      Logger.e('删除Secret失败', error: e);
+      if (mounted) {
+        ToastWidget.showError(context, '删除失败');
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _logout() async {
+    if (!await showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: GlassCard(
+          padding: const EdgeInsets.all(28),
+          enableHover: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color.fromARGB(20, 239, 68, 68),
+                  border: Border.all(
+                    color: AppTheme.dangerRed.withOpacity(0.3),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.logout,
+                  color: AppTheme.dangerRed,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                '确认退出',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '确定要退出登录吗？',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '您将需要重新输入凭据才能访问',
+                style: TextStyle(
+                  color: AppTheme.textTertiary,
+                  fontSize: 13,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(30, 75, 85, 99),
+                        foregroundColor: AppTheme.textSecondary,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: AppTheme.borderRadius,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(
+                          color: AppTheme.borderColor.withOpacity(0.5),
+                        ),
+                      ),
+                      child: const Text(
+                        '取消',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.dangerRed,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppTheme.borderRadius,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        '退出登录',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    )) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+      await api.logout();
+      
+      await authProvider.logout();
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      }
+    } catch (e) {
+      Logger.e('退出登录失败', error: e);
+      await Provider.of<AuthProvider>(context, listen: false).logout();
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Widget _buildSectionHeader(String title, {IconData? icon}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      child: Row(
+        children: [
+          if (icon != null)
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromARGB(20, 139, 92, 246),
+                border: Border.all(color: const Color.fromARGB(77, 139, 92, 246)),
+              ),
+              child: Icon(icon, color: AppTheme.techPurple, size: 18),
+            ),
+          if (icon != null)
+            const SizedBox(width: 10),
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.techPurpleLight,
+              letterSpacing: 2,
+            ),
+          ),
+          const Expanded(child: SizedBox()),
+          Container(
+            height: 1,
+            width: 40,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color.fromARGB(128, 139, 92, 246), Colors.transparent],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingItem({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
+    VoidCallback? onTap,
+    bool isHighlighted = false,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: isHighlighted 
+                    ? const Color.fromARGB(35, 139, 92, 246)
+                    : const Color.fromARGB(45, 51, 65, 85),
+                boxShadow: isHighlighted
+                    ? [
+                        BoxShadow(
+                          color: const Color.fromARGB(30, 139, 92, 246),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Icon(
+                icon, 
+                color: isHighlighted ? AppTheme.techPurpleLight : AppTheme.textSecondary,
+                size: 21,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 15.5,
+                      fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.normal,
+                      color: isHighlighted ? AppTheme.techPurpleLight : AppTheme.textPrimary,
+                      height: 1.3,
+                    ),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle,
+                      style: TextStyle(fontSize: 12.5, color: AppTheme.textTertiary, height: 1.4),
+                    ),
+                ],
+              ),
+            ),
+            if (trailing != null)
+              trailing
+            else
+              Icon(
+                Icons.arrow_forward_ios, 
+                size: 17, 
+                color: AppTheme.textTertiary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServerInfoCard() {
+    return GlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(0),
+      enableHover: true,
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: const Color.fromARGB(30, 6, 182, 212),
+              ),
+              child: const Icon(Icons.cloud, color: AppTheme.neonBlue, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '服务器地址',
+                    style: TextStyle(fontSize: 13, color: AppTheme.textTertiary),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _serverUrl ?? '未设置',
+                    style: TextStyle(fontSize: 14, color: AppTheme.textPrimary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                Text(
+                  '切换',
+                  style: TextStyle(fontSize: 13, color: AppTheme.techPurple),
+                ),
+                const SizedBox(width: 4),
+                Icon(Icons.refresh, size: 16, color: AppTheme.techPurple),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppTheme.spaceBlue,
+        title: const Text('设置', style: TextStyle(color: AppTheme.textPrimary)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Container(
+        decoration: AppTheme.gradientBackground,
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppTheme.techPurple),
+              )
+            : ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                children: [
+                  _buildServerInfoCard(),
+                  _buildSectionHeader('账户', icon: Icons.account_circle),
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.all(0),
+                    enableHover: false,
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: Color.fromARGB(77, 75, 85, 99)),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: const LinearGradient(
+                                    colors: [AppTheme.techPurple, AppTheme.neonBlue],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromARGB(60, 139, 92, 246),
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    _currentUser?.username[0].toUpperCase() ?? 'U',
+                                    style: const TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _currentUser?.username ?? '用户名',
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _currentUser?.email ?? 'user@example.com',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppTheme.textTertiary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.lock,
+                          title: '修改密码',
+                          subtitle: '更新您的账户密码',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                            );
+                          },
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.shield,
+                          title: '双因素认证',
+                          subtitle: '增强账户安全性',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const TwoFactorPage()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionHeader('Secret 管理', icon: Icons.key),
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.all(0),
+                    enableHover: false,
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          child: NeonButton(
+                            text: '新建 Secret',
+                            onPressed: _createSecret,
+                            isLoading: _isLoading,
+                          ),
+                        ),
+                        if (_secrets.isEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: EmptyState(
+                              icon: Icons.key_off,
+                              title: '暂无 Secret',
+                              description: '点击上方按钮创建新的 Secret',
+                            ),
+                          )
+                        else
+                          ..._secrets.map((secret) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Color.fromARGB(77, 75, 85, 99),
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: const Color.fromARGB(30, 139, 92, 246),
+                                    ),
+                                    child: const Icon(
+                                      Icons.key,
+                                      color: AppTheme.techPurple,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          secret.displayName,
+                                          style: TextStyle(color: AppTheme.textPrimary),
+                                        ),
+                                        Text(
+                                          secret.formattedCreatedAt,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppTheme.textTertiary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: AppTheme.dangerRed,
+                                      size: 20,
+                                    ),
+                                    onPressed: () => _deleteSecret(secret.id),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                      ],
+                    ),
+                  ),
+                  _buildSectionHeader('安全设置', icon: Icons.security),
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.all(0),
+                    enableHover: false,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color.fromARGB(40, 51, 65, 85),
+                            ),
+                            child: const Icon(
+                              Icons.notifications,
+                              color: AppTheme.textSecondary,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '推送通知',
+                                  style: TextStyle(color: AppTheme.textPrimary),
+                                ),
+                                Text(
+                                  '接收重要消息推送',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppTheme.textTertiary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          NeonSwitch(
+                            value: _notificationsEnabled,
+                            onChanged: (value) {
+                              setState(() => _notificationsEnabled = value);
+                              _saveNotificationsSetting(value);
+                              ToastWidget.showInfo(
+                                context,
+                                value ? '已开启推送通知' : '已关闭推送通知',
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  _buildSectionHeader('关于', icon: Icons.info),
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.all(0),
+                    enableHover: false,
+                    child: Column(
+                      children: [
+                        _buildSettingItem(
+                          icon: Icons.info_outline,
+                          title: '版本号',
+                          trailing: Text(
+                            _appVersion,
+                            style: TextStyle(color: AppTheme.textTertiary),
+                          ),
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.description,
+                          title: '服务条款',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TermsOfServicePage(),
+                              ),
+                            );
+                          },
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.lock_outline,
+                          title: '隐私政策',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PrivacyPolicyPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ElevatedButton(
+                      onPressed: _logout,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: AppTheme.dangerRed,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppTheme.borderRadius,
+                          side: BorderSide(color: AppTheme.dangerRed),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text('退出登录'),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+      ),
+    );
+  }
 }
