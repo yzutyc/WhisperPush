@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=D:\Programs\scoop\apps\flutter\3.41.9"
-export "FLUTTER_APPLICATION_PATH=F:\study\WhisperPush\WhisperPushApp"
+export "FLUTTER_ROOT=D:\Programs\scoop\apps\flutter\current"
+export "FLUTTER_APPLICATION_PATH=F:\study\WhisperPush\whisperpushapp"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"

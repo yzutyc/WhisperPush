@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=D:\Programs\scoop\apps\flutter\3.41.9
-FLUTTER_APPLICATION_PATH=F:\study\WhisperPush\WhisperPushApp
+FLUTTER_ROOT=D:\Programs\scoop\apps\flutter\current
+FLUTTER_APPLICATION_PATH=F:\study\WhisperPush\whisperpushapp
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_TARGET=lib\main.dart
 FLUTTER_BUILD_DIR=build
