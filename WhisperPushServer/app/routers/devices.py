@@ -34,15 +34,14 @@ def get_current_user_from_token(token: str, db: Session) -> models.User:
     )
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
-        user_id_str: str = payload.get("sub")
+        user_id_str = payload.get("sub")
         if user_id_str is None:
             raise credentials_exception
-        try:
-            user_id: int = int(user_id_str)
-        except ValueError:
-            raise credentials_exception
-    except JWTError:
+        user_id = int(user_id_str)
+    except (JWTError, ValueError):
         raise credentials_exception
+    except Exception as e:
+        raise Exception(e)
 
     result = db.execute(select(models.User).where(models.User.id == user_id))
     user = result.scalars().first()

@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import User
 from app.dependencies import get_current_user
+from app.models import User
 
 router = APIRouter(prefix="/api/users/me/settings", tags=["user_settings"])
 
@@ -22,8 +22,7 @@ class UpdateSettingsRequest(BaseModel):
 
 @router.get("", response_model=UserSettings, summary="获取当前用户设置")
 async def get_user_settings(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user)
 ):
     """
     获取当前登录用户的设置信息。

@@ -4,6 +4,7 @@
 测试用户注册、登录、登出和修改密码功能。
 """
 import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -14,7 +15,6 @@ os.environ["DATABASE_URL"] = "sqlite:///./test.db"
 from app.config import settings
 from app.main import app
 from app.database import Base, get_db
-from app import models
 
 # 创建测试数据库引擎
 test_engine = create_engine(settings.database_url, connect_args={"check_same_thread": False})

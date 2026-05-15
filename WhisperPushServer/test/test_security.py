@@ -3,17 +3,14 @@
 
 测试密码哈希、验证和 JWT 令牌生成功能。
 """
-import pytest
 from datetime import timedelta
 
+from app.config import settings
 from app.security import (
     get_password_hash,
     verify_password,
-    create_access_token,
-    get_user_by_email,
-    get_user_by_username
+    create_access_token
 )
-from app.config import settings
 
 
 class TestPasswordHashing:

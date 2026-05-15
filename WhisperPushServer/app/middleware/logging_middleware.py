@@ -80,25 +80,27 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             )
             raise
 
-    def _get_client_ip(self, request: Request) -> str:
+    @staticmethod
+    def _get_client_ip(request: Request) -> str:
         """
         获取客户端真实 IP 地址
-        
+
         优先从 X-Forwarded-For 或 X-Real-IP 头获取，
         如果不存在则使用远程地址
-        
+
         Args:
             request: FastAPI 请求对象
-        
+
         Returns:
             str: 客户端 IP 地址
         """
         x_forwarded_for = request.headers.get("X-Forwarded-For")
         if x_forwarded_for:
             return x_forwarded_for.split(",")[0].strip()
-        
+
         x_real_ip = request.headers.get("X-Real-IP")
         if x_real_ip:
             return x_real_ip
-        
-        return request.client.host if request.client else "unknown"
+
+        client = request.client
+        return client.host if client else "unknown"

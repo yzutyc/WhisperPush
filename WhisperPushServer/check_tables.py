@@ -1,5 +1,6 @@
-from app.database import engine
 from sqlalchemy import text
+
+from app.database import engine
 
 print('Checking tables...')
 with engine.begin() as conn:

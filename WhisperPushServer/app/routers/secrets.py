@@ -1,4 +1,5 @@
 import hashlib
+import random
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -112,3 +113,7 @@ def delete_secret(
     db.delete(secret)
     db.commit()
     return None
+
+
+def choice(param):
+    return random.choice(param)

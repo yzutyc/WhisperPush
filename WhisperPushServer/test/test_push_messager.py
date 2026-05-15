@@ -1,7 +1,7 @@
-import requests
 import json
-import sys
 from typing import Optional
+
+import requests
 
 BASE_URL = "http://localhost:8000/api/v1"
 HEALTH_URL = "http://localhost:8000/health"

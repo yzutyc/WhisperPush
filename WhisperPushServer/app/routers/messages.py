@@ -11,7 +11,7 @@ from app.dependencies import get_current_user
 router = APIRouter()
 
 
-def get_user_by_secret(db: Session, secret_key: str) -> models.User:
+def get_user_by_secret(db: Session, secret_key: str) -> models.User | None:
     """
     通过秘钥获取用户
     
@@ -117,7 +117,8 @@ def push_message(
         from app.websocket import manager
         import asyncio
         asyncio.create_task(manager.send_new_message(user.id, message_dict))
-    except Exception:
+    except Exception as e:
+        print(f"Error sending message via WebSocket: {e}")
         pass
 
     # 获取用户活跃设备列表
@@ -125,7 +126,7 @@ def push_message(
         select(models.Device).where(
             models.Device.user_id == user.id,
             models.Device.is_active == True,
-            models.Device.device_token != None
+            models.Device.device_token is not None
         )
     )
     devices = result.scalars().all()
@@ -146,7 +147,8 @@ def push_message(
             push_service.send_push_to_user_devices(
                 devices, new_message.title, new_message.body, push_data
             )
-        except Exception:
+        except Exception as e:
+            print(f"Error sending message via push service: {e}")
             pass
 
     return {"status": "success", "message_id": new_message.id}

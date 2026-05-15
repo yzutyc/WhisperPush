@@ -1,8 +1,7 @@
-import bcrypt
-
 from datetime import datetime, timedelta
 from typing import Optional
 
+import bcrypt
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session

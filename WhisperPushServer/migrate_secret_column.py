@@ -1,5 +1,6 @@
-from app.database import engine
 from sqlalchemy import text
+
+from app.database import engine
 
 print('Migrating two_factor.secret column...')
 with engine.begin() as conn:

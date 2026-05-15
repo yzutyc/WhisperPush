@@ -1,14 +1,14 @@
 import base64
 import hashlib
 import io
-import secrets
 
 import pyotp
-import qrcode
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
+from qrcode import QRCode, constants
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
+import secrets
 from app import models, schemas
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -17,7 +17,7 @@ from app.security import verify_password
 router = APIRouter()
 
 
-def get_two_factor(db: Session, user_id: int) -> models.TwoFactor:
+def get_two_factor(db: Session, user_id: int) -> models.TwoFactor|None:
     """
     获取用户的双因素认证配置
     
@@ -120,9 +120,9 @@ def enable_two_factor(
     
     provisioning_uri = totp.provisioning_uri(name=current_user.email, issuer_name=issuer)
     
-    qr = qrcode.QRCode(
+    qr = QRCode(
         version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        error_correction=constants.ERROR_CORRECT_L,
         box_size=10,
         border=4,
     )
