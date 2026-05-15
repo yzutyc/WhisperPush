@@ -358,6 +358,116 @@ def test_get_messages():
     }
     
     response = requests.get(url, headers=headers)
-    
+
     assert response.status_code == 200, f"期望状态码 200，实际得到 {response.status_code}"
+
+
+def test_push_message_text_with_url():
+    if not service_available:
+        return
+
+    url_bodies = [
+        "请访问 https://example.com 查看详情",
+        "API 文档: http://localhost:8080/api/v1/docs",
+        "带路径的链接: https://github.com/user/repo/issues/123",
+        "带查询参数: https://search.example.com/results?q=keyword&page=1",
+        "带锚点: https://docs.example.com/guide#installation",
+        "多个链接: https://site1.com 和 https://site2.com/path",
+    ]
+
+    all_passed = True
+    for body in url_bodies:
+        response = push_message(
+            title="纯文本包含URL",
+            body=body,
+            content_type="text"
+        )
+        if response.status_code != 200:
+            all_passed = False
+
+    assert all_passed, "部分 text+URL 测试失败"
+
+
+def test_push_message_markdown_with_url():
+    if not service_available:
+        return
+
+    md_bodies = [
+        "行内链接: [Google](https://google.com)",
+        "自动链接: <https://example.com>",
+        "图片链接: ![Logo](https://example.com/logo.png)",
+        "带标题的链接: [API文档](https://docs.example.com '点击查看')",
+        "混合内容: 访问 [官网](https://example.com) 或 [GitHub](https://github.com/user/repo)\n\n![截图](https://img.example.com/screenshot.png)",
+        "引用中的链接:\n> 参考 [RFC 3986](https://tools.ietf.org/html/rfc3986) 了解 URI 语法",
+    ]
+
+    all_passed = True
+    for body in md_bodies:
+        response = push_message(
+            title="Markdown包含URL",
+            body=body,
+            content_type="markdown"
+        )
+        if response.status_code != 200:
+            all_passed = False
+
+    assert all_passed, "部分 markdown+URL 测试失败"
+
+
+def test_push_message_html_with_url():
+    if not service_available:
+        return
+
+    html_bodies = [
+        '<a href="https://example.com">点击访问</a>',
+        '<a href="https://example.com" target="_blank">新窗口打开</a>',
+        '<a href="https://example.com"><img src="https://img.example.com/banner.png" alt="横幅"></a>',
+        '<p>请访问 <a href="https://docs.example.com">文档</a> 或 <a href="https://github.com">GitHub</a></p>',
+        '<ul><li><a href="https://site1.com">站点1</a></li><li><a href="https://site2.com">站点2</a></li></ul>',
+        '<a href="https://example.com/search?q=keyword&sort=date">搜索结果</a>',
+    ]
+
+    all_passed = True
+    for body in html_bodies:
+        response = push_message(
+            title="HTML包含URL",
+            body=body,
+            content_type="html"
+        )
+        if response.status_code != 200:
+            all_passed = False
+
+    assert all_passed, "部分 html+URL 测试失败"
+
+
+def test_push_message_mixed_url_formats():
+    if not service_available:
+        return
+
+    mixed_cases = [
+        {
+            "content_type": "text",
+            "body": "部署完成: https://app.example.com/deploy/12345?env=prod&region=us-east-1#summary"
+        },
+        {
+            "content_type": "markdown",
+            "body": "## 发布日志\n\n- 修复 [Issue #42](https://github.com/user/repo/issues/42)\n- 合并 [PR #10](https://github.com/user/repo/pull/10)\n\n![构建状态](https://img.shields.io/badge/build-passing-brightgreen)"
+        },
+        {
+            "content_type": "html",
+            "body": '<div><h3>通知</h3><p>服务已上线，<a href="https://dashboard.example.com/status">查看状态</a></p><img src="https://monitor.example.com/chart.png" width="600"></div>'
+        }
+    ]
+
+    all_passed = True
+    for case in mixed_cases:
+        response = push_message(
+            title=f"混合URL测试-{case['content_type']}",
+            body=case["body"],
+            content_type=case["content_type"]
+        )
+        if response.status_code != 200:
+            all_passed = False
+
+    assert all_passed, "部分混合 URL 格式测试失败"
 

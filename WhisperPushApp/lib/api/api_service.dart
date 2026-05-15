@@ -26,7 +26,7 @@ class ApiService {
   Future<bool> checkServerStatus() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/health'),
+        Uri.parse('$baseUrl/health'),
         headers: {'Content-Type': 'application/json; charset=utf-8'},
       ).timeout(const Duration(seconds: 5));
       return response.statusCode == 200;

@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api_service.dart';
 import '../components/glass_card.dart';
@@ -171,11 +172,29 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
     await Share.share('${widget.message.title}\n\n${widget.message.body}');
   }
 
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('无法打开链接: $url')),
+        );
+      }
+    }
+  }
+
   Widget _buildContent() {
     switch (widget.message.contentType.toLowerCase()) {
       case 'markdown':
         return MarkdownBody(
           data: widget.message.body,
+          onTapLink: (text, href, title) {
+            if (href != null) {
+              _launchUrl(href);
+            }
+          },
           styleSheet: MarkdownStyleSheet(
             p: TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
             strong: TextStyle(
@@ -216,6 +235,11 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       case 'html':
         return Html(
           data: widget.message.body,
+          onLinkTap: (url, attributes, element) {
+            if (url != null) {
+              _launchUrl(url);
+            }
+          },
           style: {
             'body': Style(
               fontSize: FontSize(15),
