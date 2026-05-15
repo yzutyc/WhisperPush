@@ -1,0 +1,122 @@
+name: Build All Platforms
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    name: Build Android
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+    
+    - name: Get dependencies
+      working-directory: ./WhisperPushApp
+      run: flutter pub get
+    
+    - name: Build APK
+      working-directory: ./WhisperPushApp
+      run: flutter build apk --release
+    
+    - name: Build App Bundle
+      working-directory: ./WhisperPushApp
+      run: flutter build appbundle
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-app-release
+        path: WhisperPushApp/build/app/outputs/flutter-apk/app-release.apk
+    
+    - name: Upload App Bundle artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-app-bundle
+        path: WhisperPushApp/build/app/outputs/bundle/release/app-release.aab
+    
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          WhisperPushApp/build/app/outputs/flutter-apk/app-release.apk
+          WhisperPushApp/build/app/outputs/bundle/release/app-release.aab
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-ios:
+    runs-on: macos-latest
+    name: Build iOS
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+        architecture: x64
+    
+    - name: Get dependencies
+      working-directory: ./WhisperPushApp
+      run: flutter pub get
+    
+    - name: Build iOS Simulator Build (without code signing)
+      working-directory: ./WhisperPushApp
+      run: flutter build ios --release --no-codesign
+    
+    - name: Upload iOS artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app
+        path: WhisperPushApp/build/ios/iphoneos/Runner.app
+
+  build-windows:
+    runs-on: windows-latest
+    name: Build Windows
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+    
+    - name: Get dependencies
+      working-directory: ./WhisperPushApp
+      run: flutter pub get
+    
+    - name: Build Windows
+      working-directory: ./WhisperPushApp
+      run: flutter build windows --release
+    
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-app
+        path: WhisperPushApp/build/windows/x64/runner/Release
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: WhisperPushApp/build/windows/x64/runner/Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
