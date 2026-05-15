@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../api/api_service.dart';
 import '../components/glass_container.dart';
@@ -23,6 +24,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
   String? _apiError;
   String? _qrCodeUrl;
   String? _secret;
+  String? _otpAuthUrl;
   List<String> _recoveryCodes = [];
   final _codeController = TextEditingController();
   bool _showRecoveryCodes = false;
@@ -67,8 +69,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
       );
       final result = await api.enableTwoFactor();
       setState(() {
-        _qrCodeUrl = result['qr_code_url'];
         _secret = result['secret'];
+        _otpAuthUrl = result['otpauth_url'];
       });
     } catch (e) {
       ToastWidget.showError(context, '启用失败: ${e.toString()}');
@@ -99,6 +101,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         _isTwoFactorEnabled = true;
         _qrCodeUrl = null;
         _secret = null;
+        _otpAuthUrl = null;
         _codeController.clear();
       });
       ToastWidget.showSuccess(context, '双因素认证已启用');
@@ -262,7 +265,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                       children: [
                         if (_showRecoveryCodes)
                           _buildRecoveryCodesSection()
-                        else if (_qrCodeUrl != null)
+                        else if (_otpAuthUrl != null || _secret != null)
                           _buildEnableVerificationSection()
                         else
                           _buildMainSection(),
@@ -431,9 +434,9 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 ],
               ),
               const SizedBox(height: 12),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     '1. 启用双因素认证后，系统会生成一个二维码',
                     style: TextStyle(color: AppTheme.textSecondary),
@@ -485,6 +488,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
   }
 
   Widget _buildEnableVerificationSection() {
+    final qrData = _otpAuthUrl ?? (_secret != null ? 'otpauth://totp/WhisperPush?secret=$_secret' : '');
+
     return Column(
       children: [
         Text(
@@ -503,12 +508,13 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         const SizedBox(height: 24),
         GlassContainer(
           padding: const EdgeInsets.all(24),
-          child: _qrCodeUrl != null
-              ? Image.network(
-                  _qrCodeUrl!,
-                  width: 220,
-                  height: 220,
-                  errorBuilder: (context, error, stackTrace) => Container(
+          child: qrData.isNotEmpty
+              ? QrImageView(
+                  data: qrData,
+                  version: QrVersions.auto,
+                  size: 220,
+                  backgroundColor: Colors.white,
+                  errorStateBuilder: (context, error) => Container(
                     width: 200,
                     height: 200,
                     decoration: BoxDecoration(
@@ -604,6 +610,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             setState(() {
               _qrCodeUrl = null;
               _secret = null;
+              _otpAuthUrl = null;
             });
           },
           style: ElevatedButton.styleFrom(

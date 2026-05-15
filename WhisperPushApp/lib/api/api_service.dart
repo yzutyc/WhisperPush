@@ -199,6 +199,7 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/two-factor/disable'),
       headers: headers,
+      body: jsonEncode({'password': password}),
     );
     _handleResponse(response);
   }
@@ -234,6 +235,7 @@ class ApiService {
     final response = await http.put(
       Uri.parse('$baseUrl/api/users/me/settings'),
       headers: headers,
+      body: jsonEncode({'notifications_enabled': enabled}),
     );
     final data = _handleResponse(response);
     return data['notifications_enabled'] ?? enabled;

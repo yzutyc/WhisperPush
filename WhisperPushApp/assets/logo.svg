@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="1024" height="1024" rx="256" fill="url(#gradient1)"/>
+  
+  <!-- Inner glow effect -->
+  <rect x="40" y="40" width="944" height="944" rx="216" fill="url(#gradient2)"/>
+  
+  <!-- Message/Chat Icon - Centered -->
+  <path d="M256 352C256 281.659 314.659 224 384 224H640C710.341 224 769 281.659 769 352V544C769 614.341 710.341 672 640 672H448L288 800V672H384C314.659 672 256 614.341 256 544V352Z" fill="white"/>
+  
+  <!-- Message dots (typing indicator) - Optional detail -->
+  <circle cx="448" cy="736" r="32" fill="white" fill-opacity="0.8"/>
+  <circle cx="512" cy="736" r="32" fill="white" fill-opacity="0.8"/>
+  <circle cx="576" cy="736" r="32" fill="white" fill-opacity="0.8"/>
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="gradient1" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <linearGradient id="gradient2" x1="256" y1="256" x2="768" y2="768" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#EC4899" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

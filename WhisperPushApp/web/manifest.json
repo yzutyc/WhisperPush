@@ -1,11 +1,11 @@
 {
-    "name": "temp_project",
-    "short_name": "temp_project",
+    "name": "WhisperPush",
+    "short_name": "WhisperPush",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0F172A",
+    "theme_color": "#8B5CF6",
+    "description": "WhisperPush - Secure Push Notifications",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
