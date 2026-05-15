@@ -104,9 +104,9 @@ class MessageCard extends StatelessWidget {
         color: const Color.fromARGB(25, 139, 92, 246),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color.fromARGB(80, 139, 92, 246)),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color.fromARGB(30, 139, 92, 246),
+            color: Color.fromARGB(30, 139, 92, 246),
             blurRadius: 8,
             spreadRadius: 2,
           ),
@@ -121,9 +121,9 @@ class MessageCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.techPurple,
               borderRadius: BorderRadius.circular(4),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
-                  color: const Color.fromARGB(120, 139, 92, 246),
+                  color: Color.fromARGB(120, 139, 92, 246),
                   blurRadius: 5,
                 ),
               ],
@@ -132,7 +132,7 @@ class MessageCard extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             message.group!,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.techPurpleLight,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -168,9 +168,9 @@ class MessageCard extends StatelessWidget {
         return MarkdownBody(
           data: preview,
           styleSheet: MarkdownStyleSheet(
-            p: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
-            strong: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textSecondary),
-            em: TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textTertiary),
+            p: const TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
+            strong: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textSecondary),
+            em: const TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textTertiary),
           ),
         );
       case 'html':
@@ -190,7 +190,7 @@ class MessageCard extends StatelessWidget {
       default:
         return Text(
           preview,
-          style: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
+          style: const TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
         );
     }
   }
@@ -204,12 +204,12 @@ class MessageCard extends StatelessWidget {
           : DismissDirection.none,
       background: onDismissed != null
           ? Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(220, 239, 68, 68),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(220, 239, 68, 68),
                 borderRadius: AppTheme.borderRadius,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(60, 239, 68, 68),
+                    color: Color.fromARGB(60, 239, 68, 68),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -222,12 +222,12 @@ class MessageCard extends StatelessWidget {
           : const SizedBox(),
       secondaryBackground: onMarkToggle != null
           ? Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(220, 16, 185, 129),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(220, 16, 185, 129),
                 borderRadius: AppTheme.borderRadius,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(60, 16, 185, 129),
+                    color: Color.fromARGB(60, 16, 185, 129),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -269,8 +269,8 @@ class MessageCard extends StatelessWidget {
                 : Border.all(color: Colors.transparent),
             boxShadow: !message.read && !isSelected
                 ? [
-                    BoxShadow(
-                      color: const Color.fromARGB(30, 139, 92, 246),
+                    const BoxShadow(
+                      color: Color.fromARGB(30, 139, 92, 246),
                       blurRadius: 15,
                       spreadRadius: 3,
                     ),
@@ -325,7 +325,7 @@ class MessageCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     message.formattedTime,
-                    style: TextStyle(fontSize: 12, color: AppTheme.textDisabled),
+                    style: const TextStyle(fontSize: 12, color: AppTheme.textDisabled),
                   ),
                 ],
               ),

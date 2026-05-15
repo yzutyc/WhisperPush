@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../components/logo_widget.dart';
@@ -22,12 +23,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late Animation<double> _pulseAnimation;
   late Animation<double> _particleAnimation;
   List<_ParticleData> particles = [];
+  String _version = '';
 
   @override
   void initState() {
     super.initState();
 
     _initParticles();
+    _loadVersion();
 
     _animationController = AnimationController(
       vsync: this,
@@ -74,6 +77,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _version = 'v${packageInfo.version}';
+      });
+    }
   }
 
   Future<void> _checkAuth() async {
@@ -167,9 +179,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         const SizedBox(height: 64),
                         const NeonLoader(),
                         const SizedBox(height: 16),
-                        const Text(
-                          'v1.0.0',
-                          style: TextStyle(
+                        Text(
+                          _version,
+                          style: const TextStyle(
                             fontSize: 12,
                             color: AppTheme.textTertiary,
                           ),

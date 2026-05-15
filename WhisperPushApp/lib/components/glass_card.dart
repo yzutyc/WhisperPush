@@ -179,8 +179,8 @@ class GlassCardWithBorder extends StatelessWidget {
         border: Border.all(color: borderColor, width: borderWidth),
         boxShadow: enableGlow
             ? [
-                BoxShadow(
-                  color: const Color.fromARGB(30, 0, 0, 0),
+                const BoxShadow(
+                  color: Color.fromARGB(30, 0, 0, 0),
                   blurRadius: 15,
                   spreadRadius: 3,
                 ),
@@ -191,8 +191,8 @@ class GlassCardWithBorder extends StatelessWidget {
                 ),
               ]
             : [
-                BoxShadow(
-                  color: const Color.fromARGB(30, 0, 0, 0),
+                const BoxShadow(
+                  color: Color.fromARGB(30, 0, 0, 0),
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),

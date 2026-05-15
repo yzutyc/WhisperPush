@@ -18,16 +18,16 @@ class PrivacyPolicyPage extends StatelessWidget {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 800),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   '隐私政策',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 24),
                 Text(
-                  '生效日期：2024年1月1日',
+                  '生效日期：2026年5月15日',
                   style: TextStyle(color: Colors.grey),
                 ),
                 SizedBox(height: 32),

@@ -16,7 +16,6 @@ class ToastWidget {
     Duration duration = const Duration(seconds: 3),
   }) {
     OverlayState? overlayState = Overlay.of(context);
-    if (overlayState == null) return;
 
     if (_currentToast != null) {
       _currentToast!.remove();
@@ -232,7 +231,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                         Expanded(
                           child: Text(
                             widget.message,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppTheme.textPrimary,
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
