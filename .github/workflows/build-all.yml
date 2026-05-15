@@ -58,6 +58,14 @@ jobs:
         cp WhisperPushApp/build/app/outputs/bundle/release/app-release.aab \
            dist/WhisperPush-v${{ steps.version.outputs.version }}-android.aab
 
+    - name: Upload to Pgyer
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        curl -X POST "https://www.pgyer.com/apiv2/app/upload" \
+          -F "file=@dist/WhisperPush-v${{ steps.version.outputs.version }}-android.apk" \
+          -F "_api_key=${{ secrets.PGYER_API_KEY }}" \
+          -F "buildUpdateDescription=$(git log -1 --pretty=%B)"
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
