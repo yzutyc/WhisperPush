@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -67,11 +68,24 @@ class _SettingsPageState extends State<SettingsPage> {
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      await api.updateUserNotificationsSetting(enabled);
+      final success = await api.updateUserNotificationsSetting(enabled);
+      if (success) {
+        setState(() => _notificationsEnabled = enabled);
+        if (mounted) {
+          ToastWidget.showInfo(
+            context,
+            enabled ? '已开启推送通知' : '已关闭推送通知',
+          );
+        }
+      } else {
+        if (mounted) {
+          ToastWidget.showError(context, '保存失败，服务器返回异常');
+        }
+      }
     } catch (e) {
       Logger.e('保存推送设置失败', error: e);
       if (mounted) {
-        ToastWidget.showError(context, '保存失败');
+        ToastWidget.showError(context, '保存失败，请检查网络连接');
       }
     }
   }
@@ -136,10 +150,10 @@ class _SettingsPageState extends State<SettingsPage> {
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      await api.createSecret();
+      final secret = await api.createSecret();
       await _loadSecrets();
       if (mounted) {
-        ToastWidget.showSuccess(context, 'Secret 创建成功');
+        _showSecretKeyDialog(secret.secretKey);
       }
     } catch (e) {
       Logger.e('创建Secret失败', error: e);
@@ -149,6 +163,69 @@ class _SettingsPageState extends State<SettingsPage> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _showSecretKeyDialog(String secretKey) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.key, color: AppTheme.accentPurple),
+            SizedBox(width: 8),
+            Text('秘钥已生成', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              '请立即复制秘钥，关闭后无法再次查看：',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.accentPurple.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppTheme.accentPurple.withValues(alpha: 0.3)),
+              ),
+              child: SelectableText(
+                secretKey,
+                style: const TextStyle(
+                  color: AppTheme.accentPurple,
+                  fontFamily: 'monospace',
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('我已保存', style: TextStyle(color: AppTheme.textSecondary)),
+          ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.copy, size: 18),
+            label: const Text('复制秘钥'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.accentPurple,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: secretKey));
+              Navigator.pop(ctx);
+              ToastWidget.showSuccess(context, '秘钥已复制到剪贴板');
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _deleteSecret(int id) async {
@@ -837,12 +914,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           NeonSwitch(
                             value: _notificationsEnabled,
                             onChanged: (value) {
-                              setState(() => _notificationsEnabled = value);
                               _saveNotificationsSetting(value);
-                              ToastWidget.showInfo(
-                                context,
-                                value ? '已开启推送通知' : '已关闭推送通知',
-                              );
                             },
                           ),
                         ],
