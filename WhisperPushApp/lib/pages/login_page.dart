@@ -303,9 +303,9 @@ class _LoginPageState extends State<LoginPage> {
                                         Container(
                                           width: 24,
                                           height: 24,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                             borderRadius: AppTheme.borderRadiusSmall,
-                                            color: const Color.fromARGB(30, 6, 182, 212),
+                                            color: Color.fromARGB(30, 6, 182, 212),
                                           ),
                                           child: const Icon(
                                             Icons.cloud,
@@ -320,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   ? '${_serverUrlController.text.substring(0, 20)}...'
                                                   : _serverUrlController.text
                                               : '选择服务器',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: AppTheme.neonBlueLight,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w500,
@@ -641,7 +641,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
             if (widget.historyUrls.isNotEmpty)
               Column(
                 children: [
-                  Text(
+                  const Text(
                     '历史地址',
                     style: TextStyle(
                       fontSize: 14,
@@ -680,7 +680,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                             Expanded(
                               child: Text(
                                 url,
-                                style: TextStyle(color: AppTheme.textPrimary),
+                                style: const TextStyle(color: AppTheme.textPrimary),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -694,7 +694,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                                   color: AppTheme.techPurple.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   '当前',
                                   style: TextStyle(
                                     color: AppTheme.techPurple,
@@ -707,11 +707,11 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               )
             else
-              EmptyState(
+              const EmptyState(
                 icon: Icons.history,
                 title: '暂无历史地址',
                 description: '输入新地址并验证后会自动保存',

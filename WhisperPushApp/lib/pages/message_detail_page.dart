@@ -84,7 +84,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 '确认删除',
                 style: TextStyle(
                   fontSize: 20,
@@ -93,7 +93,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 '确定要删除这条消息吗？',
                 style: TextStyle(color: AppTheme.textTertiary),
               ),
@@ -196,32 +196,32 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
             }
           },
           styleSheet: MarkdownStyleSheet(
-            p: TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
-            strong: TextStyle(
+            p: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
+            strong: const TextStyle(
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            em: TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textSecondary),
-            h1: TextStyle(
+            em: const TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textSecondary),
+            h1: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            h2: TextStyle(
+            h2: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            h3: TextStyle(
+            h3: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppTheme.textSecondary,
             ),
-            blockquote: TextStyle(
+            blockquote: const TextStyle(
               color: AppTheme.textTertiary,
               fontStyle: FontStyle.italic,
             ),
-            code: TextStyle(
+            code: const TextStyle(
               backgroundColor: AppTheme.spaceBlue,
               color: AppTheme.neonBlue,
               fontFamily: 'Monospace',
@@ -268,7 +268,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       default:
         return Text(
           widget.message.body,
-          style: TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
+          style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
         );
     }
   }
@@ -363,7 +363,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
           const SizedBox(width: 4),
           Text(
             widget.message.group!,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.techPurple,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -431,7 +431,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                           children: [
                             Text(
                               widget.message.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.textPrimary,
@@ -451,8 +451,8 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                                     boxShadow: widget.message.read
                                         ? []
                                         : [
-                                            BoxShadow(
-                                              color: const Color.fromARGB(80, 139, 92, 246),
+                                            const BoxShadow(
+                                              color: Color.fromARGB(80, 139, 92, 246),
                                               blurRadius: 8,
                                               spreadRadius: 2,
                                             ),
@@ -475,7 +475,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                                 const SizedBox(width: 6),
                                 Text(
                                   widget.message.formattedDate,
-                                  style: TextStyle(fontSize: 13, color: AppTheme.textTertiary),
+                                  style: const TextStyle(fontSize: 13, color: AppTheme.textTertiary),
                                 ),
                               ],
                             ),
@@ -484,9 +484,9 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                       ),
                       Container(
                         padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(60, 30, 41, 59),
-                          borderRadius: const BorderRadius.only(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(60, 30, 41, 59),
+                          borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(16),
                             bottomRight: Radius.circular(16),
                           ),
@@ -567,11 +567,11 @@ class NeonButton extends StatelessWidget {
         foregroundColor = Colors.white;
         borderColor = Colors.transparent;
         boxShadow = [
-          BoxShadow(
-            color: const Color.fromARGB(100, 139, 92, 246),
+          const BoxShadow(
+            color: Color.fromARGB(100, 139, 92, 246),
             blurRadius: 15,
             spreadRadius: 3,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ];
         break;
@@ -586,11 +586,11 @@ class NeonButton extends StatelessWidget {
         foregroundColor = Colors.white;
         borderColor = Colors.transparent;
         boxShadow = [
-          BoxShadow(
-            color: const Color.fromARGB(100, 239, 68, 68),
+          const BoxShadow(
+            color: Color.fromARGB(100, 239, 68, 68),
             blurRadius: 15,
             spreadRadius: 3,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ];
         break;

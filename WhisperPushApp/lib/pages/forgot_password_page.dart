@@ -95,7 +95,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          Text(
+                          const Text(
                             '重置邮件已发送',
                             style: TextStyle(
                               fontSize: 24,
@@ -104,7 +104,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          const Text(
                             '请检查您的邮箱，点击邮件中的链接重置密码',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: AppTheme.textTertiary),
@@ -142,7 +142,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            Text(
+                            const Text(
                               '忘记密码',
                               style: TextStyle(
                                 fontSize: 28,
@@ -151,7 +151,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            Text(
+                            const Text(
                               '请输入您注册时使用的邮箱，我们会发送重置链接到您的邮箱',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppTheme.textTertiary),
@@ -179,7 +179,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             const SizedBox(height: 24),
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 '返回登录',
                                 style: TextStyle(color: AppTheme.techPurple),
                               ),

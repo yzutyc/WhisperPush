@@ -204,7 +204,7 @@ class _MessageListPageState extends State<MessageListPage> {
         title: const Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
         content: Text(
           '确定要删除选中的 ${_selectedMessageIds.length} 条消息吗？',
-          style: TextStyle(color: AppTheme.textSecondary),
+          style: const TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
@@ -311,7 +311,7 @@ class _MessageListPageState extends State<MessageListPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               '筛选消息',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
             ),
@@ -320,13 +320,13 @@ class _MessageListPageState extends State<MessageListPage> {
             GlassContainer(
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
-                value: _filterStatus,
-                hint: Text('状态', style: TextStyle(color: AppTheme.textTertiary)),
+                initialValue: _filterStatus,
+                hint: const Text('状态', style: TextStyle(color: AppTheme.textTertiary)),
                 dropdownColor: AppTheme.spaceIndigo,
-                items: [
-                  const DropdownMenuItem(value: 'all', child: Text('全部')),
-                  const DropdownMenuItem(value: 'unread', child: Text('未读')),
-                  const DropdownMenuItem(value: 'read', child: Text('已读')),
+                items: const [
+                  DropdownMenuItem(value: 'all', child: Text('全部')),
+                  DropdownMenuItem(value: 'unread', child: Text('未读')),
+                  DropdownMenuItem(value: 'read', child: Text('已读')),
                 ],
                 onChanged: (value) {
                   setState(() => _filterStatus = value);
@@ -336,7 +336,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                style: TextStyle(color: AppTheme.textPrimary),
+                style: const TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
@@ -344,14 +344,14 @@ class _MessageListPageState extends State<MessageListPage> {
             GlassContainer(
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
-                value: _filterLevel,
-                hint: Text('级别', style: TextStyle(color: AppTheme.textTertiary)),
+                initialValue: _filterLevel,
+                hint: const Text('级别', style: TextStyle(color: AppTheme.textTertiary)),
                 dropdownColor: AppTheme.spaceIndigo,
-                items: [
-                  const DropdownMenuItem(value: 'all', child: Text('全部')),
-                  const DropdownMenuItem(value: 'critical', child: Text('紧急')),
-                  const DropdownMenuItem(value: 'timeSensitive', child: Text('加急')),
-                  const DropdownMenuItem(value: 'active', child: Text('普通')),
+                items: const [
+                  DropdownMenuItem(value: 'all', child: Text('全部')),
+                  DropdownMenuItem(value: 'critical', child: Text('紧急')),
+                  DropdownMenuItem(value: 'timeSensitive', child: Text('加急')),
+                  DropdownMenuItem(value: 'active', child: Text('普通')),
                 ],
                 onChanged: (value) {
                   setState(() => _filterLevel = value);
@@ -361,7 +361,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                style: TextStyle(color: AppTheme.textPrimary),
+                style: const TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
@@ -369,8 +369,8 @@ class _MessageListPageState extends State<MessageListPage> {
             GlassContainer(
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
-                value: _filterGroup,
-                hint: Text('分组', style: TextStyle(color: AppTheme.textTertiary)),
+                initialValue: _filterGroup,
+                hint: const Text('分组', style: TextStyle(color: AppTheme.textTertiary)),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: [
                   const DropdownMenuItem(value: 'all', child: Text('全部')),
@@ -386,7 +386,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                style: TextStyle(color: AppTheme.textPrimary),
+                style: const TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 24),
@@ -410,7 +410,7 @@ class _MessageListPageState extends State<MessageListPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      side: BorderSide(color: AppTheme.borderColor),
+                      side: const BorderSide(color: AppTheme.borderColor),
                     ),
                     child: const Text('重置'),
                   ),

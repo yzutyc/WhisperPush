@@ -154,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                                 ),
                               ],
                             ),
-                            child: LogoWidget(size: 100),
+                            child: const LogoWidget(size: 100),
                           ),
                         ),
                         const SizedBox(height: 24),

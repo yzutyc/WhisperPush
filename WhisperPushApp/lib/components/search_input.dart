@@ -75,8 +75,8 @@ class _SearchInputState extends State<SearchInput> with SingleTickerProviderStat
                 ),
               ]
             : [
-                BoxShadow(
-                  color: const Color.fromARGB(20, 139, 92, 246),
+                const BoxShadow(
+                  color: Color.fromARGB(20, 139, 92, 246),
                   blurRadius: 10,
                   spreadRadius: 1,
                 ),
@@ -104,7 +104,7 @@ class _SearchInputState extends State<SearchInput> with SingleTickerProviderStat
                 fontSize: 15,
               ),
               prefixIcon: ScaleTransition(
-                scale: _isFocused ? _pulseAnimation : AlwaysStoppedAnimation(1.0),
+                scale: _isFocused ? _pulseAnimation : const AlwaysStoppedAnimation(1.0),
                 child: Icon(
                   Icons.search,
                   color: _isFocused ? AppTheme.techPurpleLight : AppTheme.textDisabled,

@@ -204,7 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(30, 75, 85, 99),
                         foregroundColor: AppTheme.textSecondary,
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius: AppTheme.borderRadius,
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -225,7 +225,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.dangerRed,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius: AppTheme.borderRadius,
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -243,7 +243,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ),
-    )) return;
+    )) {
+      return;
+    }
 
     setState(() => _isLoading = true);
     try {
@@ -296,7 +298,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 '确认退出',
                 style: TextStyle(
                   fontSize: 22,
@@ -305,7 +307,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 '确定要退出登录吗？',
                 style: TextStyle(
                   color: AppTheme.textSecondary,
@@ -315,7 +317,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 '您将需要重新输入凭据才能访问',
                 style: TextStyle(
                   color: AppTheme.textTertiary,
@@ -353,7 +355,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.dangerRed,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius: AppTheme.borderRadius,
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -371,7 +373,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ),
-    )) return;
+    )) {
+      return;
+    }
 
     setState(() => _isLoading = true);
     try {
@@ -425,7 +429,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(width: 10),
           Text(
             title.toUpperCase(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
               color: AppTheme.techPurpleLight,
@@ -477,8 +481,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     : const Color.fromARGB(45, 51, 65, 85),
                 boxShadow: isHighlighted
                     ? [
-                        BoxShadow(
-                          color: const Color.fromARGB(30, 139, 92, 246),
+                        const BoxShadow(
+                          color: Color.fromARGB(30, 139, 92, 246),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -508,7 +512,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   if (subtitle != null)
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 12.5, color: AppTheme.textTertiary, height: 1.4),
+                      style: const TextStyle(fontSize: 12.5, color: AppTheme.textTertiary, height: 1.4),
                     ),
                 ],
               ),
@@ -516,7 +520,7 @@ class _SettingsPageState extends State<SettingsPage> {
             if (trailing != null)
               trailing
             else
-              Icon(
+              const Icon(
                 Icons.arrow_forward_ios, 
                 size: 17, 
                 color: AppTheme.textTertiary,
@@ -556,27 +560,27 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     '服务器地址',
                     style: TextStyle(fontSize: 13, color: AppTheme.textTertiary),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     _serverUrl ?? '未设置',
-                    style: TextStyle(fontSize: 14, color: AppTheme.textPrimary),
+                    style: const TextStyle(fontSize: 14, color: AppTheme.textPrimary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            Row(
+            const Row(
               children: [
                 Text(
                   '切换',
                   style: TextStyle(fontSize: 13, color: AppTheme.techPurple),
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Icon(Icons.refresh, size: 16, color: AppTheme.techPurple),
               ],
             ),
@@ -626,16 +630,16 @@ class _SettingsPageState extends State<SettingsPage> {
                               Container(
                                 width: 70,
                                 height: 70,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
+                                  gradient: LinearGradient(
                                     colors: [AppTheme.techPurple, AppTheme.neonBlue],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color.fromARGB(60, 139, 92, 246),
+                                      color: Color.fromARGB(60, 139, 92, 246),
                                       blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
@@ -659,7 +663,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   children: [
                                     Text(
                                       _currentUser?.username ?? '用户名',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 19,
                                         fontWeight: FontWeight.bold,
                                         color: AppTheme.textPrimary,
@@ -668,7 +672,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     const SizedBox(height: 4),
                                     Text(
                                       _currentUser?.email ?? 'user@example.com',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         color: AppTheme.textTertiary,
                                       ),
@@ -722,7 +726,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         if (_secrets.isEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: EmptyState(
+                            child: const EmptyState(
                               icon: Icons.key_off,
                               title: '暂无 Secret',
                               description: '点击上方按钮创建新的 Secret',
@@ -761,11 +765,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                       children: [
                                         Text(
                                           secret.displayName,
-                                          style: TextStyle(color: AppTheme.textPrimary),
+                                          style: const TextStyle(color: AppTheme.textPrimary),
                                         ),
                                         Text(
                                           secret.formattedCreatedAt,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 12,
                                             color: AppTheme.textTertiary,
                                           ),
@@ -784,7 +788,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ],
                               ),
                             );
-                          }).toList(),
+                          }),
                       ],
                     ),
                   ),
@@ -811,7 +815,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                           ),
                           const SizedBox(width: 14),
-                          Expanded(
+                          const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -856,7 +860,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: '版本号',
                           trailing: Text(
                             _appVersion,
-                            style: TextStyle(color: AppTheme.textTertiary),
+                            style: const TextStyle(color: AppTheme.textTertiary),
                           ),
                         ),
                         _buildSettingItem(
@@ -894,7 +898,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         foregroundColor: AppTheme.dangerRed,
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius: AppTheme.borderRadius,
                           side: BorderSide(color: AppTheme.dangerRed),
                         ),

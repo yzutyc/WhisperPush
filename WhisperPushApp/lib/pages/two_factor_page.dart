@@ -122,7 +122,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 '确认禁用',
                 style: TextStyle(
                   fontSize: 20,
@@ -131,24 +131,24 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 '请输入您的密码以确认禁用双因素认证',
                 style: TextStyle(color: AppTheme.textTertiary),
               ),
               const SizedBox(height: 16),
               TextField(
                 obscureText: true,
-                style: TextStyle(color: AppTheme.textPrimary),
+                style: const TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   labelText: '密码',
-                  labelStyle: TextStyle(color: AppTheme.textTertiary),
+                  labelStyle: const TextStyle(color: AppTheme.textTertiary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.borderColor),
+                    borderSide: const BorderSide(color: AppTheme.borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.techPurple, width: 2),
+                    borderSide: const BorderSide(color: AppTheme.techPurple, width: 2),
                   ),
                   filled: true,
                   fillColor: AppTheme.spaceBlue,
@@ -298,7 +298,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               '服务暂不可用',
               style: TextStyle(
                 fontSize: 24,
@@ -307,14 +307,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               '双因素认证功能尚未在服务器端启用',
               style: TextStyle(color: AppTheme.textTertiary),
             ),
             const SizedBox(height: 8),
             Text(
               '错误信息: $_apiError',
-              style: TextStyle(color: AppTheme.textTertiary, fontSize: 12),
+              style: const TextStyle(color: AppTheme.textTertiary, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -377,7 +377,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       '双因素认证可以提高您账户的安全性',
                       style: TextStyle(color: AppTheme.textTertiary),
                     ),
@@ -388,14 +388,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 24),
-        GlassContainer(
+        const GlassContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.info_outline, color: AppTheme.techPurple),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info_outline, color: AppTheme.techPurple),
+                  SizedBox(width: 8),
                   Text(
                     '什么是双因素认证？',
                     style: TextStyle(
@@ -406,7 +406,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '双因素认证（2FA）是一种安全验证方式，除了密码之外，还需要额外的验证步骤才能登录您的账户。这可以有效防止他人在获取您密码后访问您的账户。',
                 style: TextStyle(height: 1.6, color: AppTheme.textTertiary),
@@ -415,14 +415,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 16),
-        GlassContainer(
+        const GlassContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.work, color: AppTheme.neonBlue),
-                  const SizedBox(width: 8),
+                  Icon(Icons.work, color: AppTheme.neonBlue),
+                  SizedBox(width: 8),
                   Text(
                     '工作原理',
                     style: TextStyle(
@@ -433,8 +433,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              const Column(
+              SizedBox(height: 12),
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -492,7 +492,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
 
     return Column(
       children: [
-        Text(
+        const Text(
           '扫描二维码',
           style: TextStyle(
             fontSize: 24,
@@ -501,7 +501,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 16),
-        Text(
+        const Text(
           '使用认证应用（如Google Authenticator）扫描下方二维码',
           style: TextStyle(color: AppTheme.textTertiary),
         ),
@@ -542,7 +542,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Text(
+              const Text(
                 '手动输入密钥（如果无法扫描）',
                 style: TextStyle(color: AppTheme.textTertiary),
               ),
@@ -556,7 +556,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 ),
                 child: SelectableText(
                   _secret ?? '',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Monospace',
                     fontSize: 16,
                     color: AppTheme.textPrimary,
@@ -568,7 +568,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
+        const Text(
           '输入验证码',
           style: TextStyle(
             fontSize: 18,
@@ -584,12 +584,12 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
-            style: TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: const InputDecoration(
               hintText: '6位验证码',
               hintStyle: TextStyle(color: AppTheme.textTertiary),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
+              contentPadding: EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 14,
               ),
@@ -633,7 +633,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
   Widget _buildRecoveryCodesSection() {
     return Column(
       children: [
-        Text(
+        const Text(
           '恢复码',
           style: TextStyle(
             fontSize: 24,
@@ -649,7 +649,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             border: Border.all(color: AppTheme.warningOrange),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Text(
+          child: const Text(
             '⚠️ 重要：请妥善保存这些恢复码！如果您丢失了认证设备，可以使用这些恢复码来登录您的账户。',
             style: TextStyle(color: AppTheme.warningOrange),
           ),
@@ -667,12 +667,12 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                         children: [
                           Text(
                             '${entry.key + 1}.',
-                            style: TextStyle(color: AppTheme.textTertiary),
+                            style: const TextStyle(color: AppTheme.textTertiary),
                           ),
                           const SizedBox(width: 12),
                           Text(
                             entry.value,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: 'Monospace',
                               fontSize: 14,
                               color: AppTheme.textPrimary,

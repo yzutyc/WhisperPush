@@ -135,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ],
                           ),
-                          child: LogoWidget(size: 80),
+                          child: const LogoWidget(size: 80),
                         ),
                         const SizedBox(height: 16),
                         const Text(
@@ -176,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Column(
                           children: [
                             const SizedBox(height: 16),
-                            Text(
+                            const Text(
                               '创建账户',
                               style: TextStyle(
                                 fontSize: 24,
@@ -185,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(
+                            const Text(
                               '请填写以下信息',
                               style: TextStyle(color: AppTheme.textTertiary),
                             ),
@@ -230,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          Text(
+                                          const Text(
                                             '密码强度: ',
                                             style: TextStyle(color: AppTheme.textTertiary),
                                           ),
@@ -317,7 +317,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
+                                const Text(
                                   '已有账户？',
                                   style: TextStyle(color: AppTheme.textTertiary),
                                 ),
@@ -336,7 +336,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text(
+                            const Text(
                               '注册即表示您同意我们的服务条款和隐私政策',
                               style: TextStyle(fontSize: 12, color: AppTheme.textTertiary),
                               textAlign: TextAlign.center,

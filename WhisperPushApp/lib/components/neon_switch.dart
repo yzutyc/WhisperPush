@@ -125,7 +125,7 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
                             curve: Curves.easeInOut,
                           ),
                         )
-                      : AlwaysStoppedAnimation(1.0),
+                      : const AlwaysStoppedAnimation(1.0),
                   child: Container(
                     width: widget.height - 4,
                     height: widget.height - 4,

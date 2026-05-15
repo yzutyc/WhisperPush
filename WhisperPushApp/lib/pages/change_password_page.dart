@@ -136,7 +136,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          Text(
+                          const Text(
                             '密码修改成功',
                             style: TextStyle(
                               fontSize: 24,
@@ -145,7 +145,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          const Text(
                             '请使用新密码重新登录',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: AppTheme.textTertiary),
@@ -178,7 +178,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            Text(
+                            const Text(
                               '修改密码',
                               style: TextStyle(
                                 fontSize: 28,
@@ -187,7 +187,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            Text(
+                            const Text(
                               '请输入当前密码和新密码',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppTheme.textTertiary),
@@ -234,7 +234,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             const SizedBox(height: 24),
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 '取消',
                                 style: TextStyle(color: AppTheme.textTertiary),
                               ),

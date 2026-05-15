@@ -27,7 +27,7 @@ class AppTheme {
   static ThemeData dark() {
     return ThemeData(
       primaryColor: techPurple,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: techPurple,
         secondary: neonBlue,
         surface: spaceIndigo,
@@ -53,33 +53,33 @@ class AppTheme {
           backgroundColor: techPurple,
         ),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: const OutlineInputBorder(
+      inputDecorationTheme: const InputDecorationTheme(
+        border: OutlineInputBorder(
           borderRadius: borderRadius,
           borderSide: BorderSide(color: borderColor),
         ),
-        focusedBorder: const OutlineInputBorder(
+        focusedBorder: OutlineInputBorder(
           borderRadius: borderRadius,
           borderSide: BorderSide(color: techPurple, width: 2),
         ),
-        enabledBorder: const OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: borderRadius,
           borderSide: BorderSide(color: borderColor),
         ),
-        errorBorder: const OutlineInputBorder(
+        errorBorder: OutlineInputBorder(
           borderRadius: borderRadius,
           borderSide: BorderSide(color: dangerRed, width: 2),
         ),
-        focusedErrorBorder: const OutlineInputBorder(
+        focusedErrorBorder: OutlineInputBorder(
           borderRadius: borderRadius,
           borderSide: BorderSide(color: dangerRed, width: 2),
         ),
         filled: true,
         fillColor: spaceIndigo,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        labelStyle: const TextStyle(color: textTertiary),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        labelStyle: TextStyle(color: textTertiary),
         prefixIconColor: textTertiary,
-        hintStyle: const TextStyle(color: textDisabled),
+        hintStyle: TextStyle(color: textDisabled),
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 32, color: textPrimary),
@@ -124,14 +124,14 @@ class AppTheme {
     color: const Color.fromARGB(180, 30, 41, 59),
     borderRadius: borderRadius,
     border: Border.all(color: const Color.fromARGB(80, 139, 92, 246)),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(60, 139, 92, 246),
+        color: Color.fromARGB(60, 139, 92, 246),
         blurRadius: 25,
         spreadRadius: 2,
       ),
       BoxShadow(
-        color: const Color.fromARGB(30, 6, 182, 212),
+        color: Color.fromARGB(30, 6, 182, 212),
         blurRadius: 15,
         spreadRadius: 1,
       ),
@@ -142,15 +142,15 @@ class AppTheme {
     color: const Color.fromARGB(200, 30, 41, 59),
     borderRadius: borderRadius,
     border: Border.all(color: const Color.fromARGB(100, 139, 92, 246)),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(40, 0, 0, 0),
+        color: Color.fromARGB(40, 0, 0, 0),
         blurRadius: 20,
         spreadRadius: 5,
-        offset: const Offset(0, 4),
+        offset: Offset(0, 4),
       ),
       BoxShadow(
-        color: const Color.fromARGB(30, 139, 92, 246),
+        color: Color.fromARGB(30, 139, 92, 246),
         blurRadius: 15,
         spreadRadius: 2,
       ),
@@ -161,14 +161,14 @@ class AppTheme {
     color: const Color.fromARGB(220, 30, 41, 59),
     borderRadius: borderRadius,
     border: Border.all(color: const Color.fromARGB(150, 139, 92, 246)),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(80, 139, 92, 246),
+        color: Color.fromARGB(80, 139, 92, 246),
         blurRadius: 30,
         spreadRadius: 8,
       ),
       BoxShadow(
-        color: const Color.fromARGB(40, 6, 182, 212),
+        color: Color.fromARGB(40, 6, 182, 212),
         blurRadius: 20,
         spreadRadius: 4,
       ),
@@ -179,30 +179,30 @@ class AppTheme {
     color: const Color.fromARGB(240, 51, 65, 85),
     borderRadius: borderRadiusSmall,
     border: Border.all(color: const Color.fromARGB(60, 139, 92, 246)),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(30, 139, 92, 246),
+        color: Color.fromARGB(30, 139, 92, 246),
         blurRadius: 10,
         spreadRadius: 2,
       ),
     ],
   );
 
-  static BoxDecoration neonGlow = BoxDecoration(
+  static BoxDecoration neonGlow = const BoxDecoration(
     borderRadius: borderRadius,
-    gradient: const LinearGradient(
+    gradient: LinearGradient(
       colors: [techPurple, neonBlue],
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
     ),
     boxShadow: [
       BoxShadow(
-        color: const Color.fromARGB(150, 139, 92, 246),
+        color: Color.fromARGB(150, 139, 92, 246),
         blurRadius: 20,
         spreadRadius: 5,
       ),
       BoxShadow(
-        color: const Color.fromARGB(100, 6, 182, 212),
+        color: Color.fromARGB(100, 6, 182, 212),
         blurRadius: 15,
         spreadRadius: 3,
       ),
@@ -224,47 +224,47 @@ class AppTheme {
       color: const Color.fromARGB(120, 139, 92, 246),
       width: 1,
     ),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(40, 139, 92, 246),
+        color: Color.fromARGB(40, 139, 92, 246),
         blurRadius: 15,
         spreadRadius: 3,
       ),
     ],
   );
 
-  static BoxDecoration neonButtonShadow = BoxDecoration(
+  static BoxDecoration neonButtonShadow = const BoxDecoration(
     borderRadius: borderRadius,
-    gradient: const LinearGradient(
+    gradient: LinearGradient(
       colors: [techPurple, Color(0xFF7C3AED)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
     boxShadow: [
       BoxShadow(
-        color: const Color.fromARGB(100, 139, 92, 246),
+        color: Color.fromARGB(100, 139, 92, 246),
         blurRadius: 15,
         spreadRadius: 3,
-        offset: const Offset(0, 4),
+        offset: Offset(0, 4),
       ),
     ],
   );
 
-  static BoxDecoration neonButtonHoverShadow = BoxDecoration(
+  static BoxDecoration neonButtonHoverShadow = const BoxDecoration(
     borderRadius: borderRadius,
-    gradient: const LinearGradient(
+    gradient: LinearGradient(
       colors: [techPurpleLight, neonBlueLight],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
     boxShadow: [
       BoxShadow(
-        color: const Color.fromARGB(150, 139, 92, 246),
+        color: Color.fromARGB(150, 139, 92, 246),
         blurRadius: 25,
         spreadRadius: 8,
       ),
       BoxShadow(
-        color: const Color.fromARGB(100, 6, 182, 212),
+        color: Color.fromARGB(100, 6, 182, 212),
         blurRadius: 15,
         spreadRadius: 4,
       ),
@@ -275,9 +275,9 @@ class AppTheme {
     color: const Color.fromARGB(200, 30, 41, 59),
     borderRadius: borderRadius,
     border: Border.all(color: const Color.fromARGB(60, 139, 92, 246)),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(20, 139, 92, 246),
+        color: Color.fromARGB(20, 139, 92, 246),
         blurRadius: 10,
         spreadRadius: 1,
       ),
@@ -288,14 +288,14 @@ class AppTheme {
     color: const Color.fromARGB(220, 30, 41, 59),
     borderRadius: borderRadius,
     border: Border.all(color: const Color.fromARGB(150, 139, 92, 246), width: 2),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
-        color: const Color.fromARGB(60, 139, 92, 246),
+        color: Color.fromARGB(60, 139, 92, 246),
         blurRadius: 20,
         spreadRadius: 5,
       ),
       BoxShadow(
-        color: const Color.fromARGB(30, 6, 182, 212),
+        color: Color.fromARGB(30, 6, 182, 212),
         blurRadius: 15,
         spreadRadius: 3,
       ),
