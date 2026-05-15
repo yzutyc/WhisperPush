@@ -224,7 +224,7 @@ class ApiService {
 
   Future<bool> getUserNotificationsSetting() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/users/me/settings'),
+      Uri.parse('$baseUrl/api/users/me/settings/'),
       headers: headers,
     );
     final data = _handleResponse(response);
@@ -233,7 +233,7 @@ class ApiService {
 
   Future<bool> updateUserNotificationsSetting(bool enabled) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/api/users/me/settings'),
+      Uri.parse('$baseUrl/api/users/me/settings/'),
       headers: headers,
       body: jsonEncode({'notifications_enabled': enabled}),
     );
