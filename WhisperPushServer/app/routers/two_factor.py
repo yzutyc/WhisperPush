@@ -4,7 +4,8 @@ import io
 
 import pyotp
 from fastapi import APIRouter, Depends, HTTPException
-from qrcode import QRCode, constants
+from qrcode.main import QRCode
+from qrcode import constants
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 

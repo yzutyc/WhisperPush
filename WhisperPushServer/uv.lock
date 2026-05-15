@@ -709,12 +709,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-qrcode"
-version = "0.3"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/8b/2f/4263fba93ae6a46776d6a8359ff1e192f38dffcc6f2925d29463375254fa/django-qrcode-0.3.tar.gz", hash = "sha256:88598af03087859c30b83ecd345dd3e988d739f13543e0bef9274eda18d55e0c", size = 4188, upload-time = "2011-12-13T10:03:08.524Z" }
-
-[[package]]
 name = "dnspython"
 version = "2.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2139,7 +2133,6 @@ dependencies = [
     { name = "aiohttp" },
     { name = "alembic" },
     { name = "bcrypt" },
-    { name = "django-qrcode" },
     { name = "email-validator" },
     { name = "fastapi" },
     { name = "httpx" },
@@ -2153,7 +2146,6 @@ dependencies = [
     { name = "qrcode", extra = ["pil"] },
     { name = "requests" },
     { name = "sqlalchemy" },
-    { name = "starlette" },
     { name = "uvicorn" },
 ]
 
@@ -2171,7 +2163,6 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.12.1,<1.14.0" },
     { name = "bcrypt", specifier = ">=5.0.0" },
     { name = "black", marker = "extra == 'dev'", specifier = ">=23.0.0" },
-    { name = "django-qrcode", specifier = ">=0.3" },
     { name = "email-validator", specifier = ">=2.1.0,<3.0.0" },
     { name = "fastapi", specifier = ">=0.109.0,<0.116.0" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=6.0.0" },
@@ -2188,7 +2179,6 @@ requires-dist = [
     { name = "qrcode", extras = ["pil"], specifier = ">=8.2" },
     { name = "requests", specifier = ">=2.34.0" },
     { name = "sqlalchemy", specifier = ">=2.0.25,<2.1.0" },
-    { name = "starlette", specifier = ">=0.46.2" },
     { name = "uvicorn", specifier = ">=0.27.1,<0.31.0" },
 ]
 provides-extras = ["dev"]
