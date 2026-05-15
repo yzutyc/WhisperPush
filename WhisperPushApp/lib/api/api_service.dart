@@ -13,7 +13,10 @@ class ApiService {
   ApiService({required this.baseUrl, this.token});
 
   Map<String, String> get headers {
-    final headers = {'Content-Type': 'application/json'};
+    final headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept-Charset': 'utf-8',
+    };
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
@@ -24,7 +27,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/api/health'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
       ).timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
@@ -196,7 +199,6 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/two-factor/disable'),
       headers: headers,
-      body: jsonEncode({'password': password}),
     );
     _handleResponse(response);
   }
@@ -232,7 +234,6 @@ class ApiService {
     final response = await http.put(
       Uri.parse('$baseUrl/api/users/me/settings'),
       headers: headers,
-      body: jsonEncode({'notifications_enabled': enabled}),
     );
     final data = _handleResponse(response);
     return data['notifications_enabled'] ?? enabled;
@@ -254,7 +255,9 @@ class ApiService {
   dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (response.body.isEmpty) return {};
-      return jsonDecode(response.body);
+      final bodyBytes = response.bodyBytes;
+      final decodedBody = utf8.decode(bodyBytes, allowMalformed: true);
+      return jsonDecode(decodedBody);
     }
     throw Exception('HTTP error ${response.statusCode}: ${response.body}');
   }
