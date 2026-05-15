@@ -20,11 +20,14 @@ WhisperPush/
 ## 技术栈
 
 ### 前端 (WhisperPushApp)
-- **框架**: Flutter 3.0+
+- **框架**: Flutter 3.19+
 - **状态管理**: Provider
 - **HTTP 客户端**: http
 - **存储**: shared_preferences
-- **UI 特效**: particles_flutter
+- **内容渲染**: flutter_markdown, flutter_html
+- **分享**: share_plus
+- **链接跳转**: url_launcher
+- **二维码**: qr_flutter
 
 ### 后端 (WhisperPushServer)
 - **框架**: FastAPI 0.109+
@@ -69,21 +72,23 @@ flutter run
 
 ## 功能特性
 
-- ✅ 用户注册与登录
-- ✅ 双因素认证 (2FA)
-- ✅ 端到端加密消息
-- ✅ 实时消息推送
-- ✅ 设备管理
-- ✅ 密码重置
-- ✅ 用户设置管理
+- 用户注册与登录
+- 双因素认证 (2FA)
+- 端到端加密消息
+- 实时消息推送
+- 设备管理
+- 密码重置
+- 用户设置管理
+- 多平台支持 (Android / iOS / Windows / Linux / macOS / Web)
 
 ## API 接口
 
 后端服务提供 RESTful API 和 WebSocket 接口：
 
-- **认证接口**: `/api/auth/`
-- **消息接口**: `/api/messages/`
-- **设备接口**: `/api/devices/`
+- **认证接口**: `/api/v1/auth/`
+- **消息接口**: `/api/v1/messages/`
+- **设备接口**: `/api/v1/devices/`
+- **健康检查**: `/health`
 - **WebSocket**: `/ws/`
 
 ## 安全特性
@@ -112,7 +117,7 @@ flutter test
 
 ## 许可证
 
-MIT License
+[MIT License](LICENSE)
 
 ## 贡献
 
