@@ -152,7 +152,7 @@ set -e
 
 # ---- 数据库连接检查 ----
 echo -n "检查数据库连接... "
-"$UV_PATH" run python -c "
+python -c "
 import sys
 from sqlalchemy import create_engine, text
 from app.config import settings
@@ -168,7 +168,7 @@ except Exception as e:
 
 # ---- 创建/更新数据库表 ----
 echo -n "同步数据库表... "
-"$UV_PATH" run python -c "
+python -c "
 from app.database import engine, Base
 import app.models
 Base.metadata.create_all(bind=engine)
@@ -197,14 +197,13 @@ User=${SERVICE_USER}
 Group=${SERVICE_GROUP}
 WorkingDirectory=${INSTALL_DIR}
 Environment="PATH=${INSTALL_DIR}/.venv/bin:/usr/local/bin:/usr/bin:/bin"
-Environment="UV_PATH=${UV_PATH}"
 EnvironmentFile=-${INSTALL_DIR}/.env
 
 # 启动前脚本：数据库连接检查 + 表同步
 ExecStartPre=/bin/bash ${INSTALL_DIR}/prestart.sh
 
 # 主进程: uvicorn 多 worker 模式
-ExecStart=${UV_PATH} run uvicorn app.main:app --host ${HOST} --port ${PORT} --workers ${WORKERS} --log-level info
+ExecStart=${INSTALL_DIR}/.venv/bin/uvicorn app.main:app --host ${HOST} --port ${PORT} --workers ${WORKERS} --log-level info
 
 # 优雅关闭
 ExecStop=/bin/kill -TERM \$MAINPID
