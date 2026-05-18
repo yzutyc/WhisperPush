@@ -141,8 +141,44 @@ install_deps() {
 }
 
 #===============================================================================
-# 5. 创建 systemd 服务文件
+# 4b. 创建服务启动前检查脚本
 #===============================================================================
+create_prestart_script() {
+    local prestart="${INSTALL_DIR}/prestart.sh"
+
+    cat > "$prestart" << 'PRESTART_EOF'
+#!/usr/bin/env bash
+set -e
+
+# ---- 数据库连接检查 ----
+echo -n "检查数据库连接... "
+"$UV_PATH" run python -c "
+import sys
+from sqlalchemy import create_engine, text
+from app.config import settings
+try:
+    engine = create_engine(settings.database_url)
+    with engine.begin() as conn:
+        conn.execute(text('SELECT 1'))
+    print('OK')
+except Exception as e:
+    print(f'FAILED: {e}', file=sys.stderr)
+    sys.exit(1)
+"
+
+# ---- 创建/更新数据库表 ----
+echo -n "同步数据库表... "
+"$UV_PATH" run python -c "
+from app.database import engine, Base
+import app.models
+Base.metadata.create_all(bind=engine)
+print('OK')
+"
+PRESTART_EOF
+
+    chmod +x "$prestart"
+    log_info "已创建启动前检查脚本: ${prestart}"
+}
 create_systemd_service() {
     local service_file="/etc/systemd/system/${SERVICE_NAME}.service"
 
@@ -161,30 +197,11 @@ User=${SERVICE_USER}
 Group=${SERVICE_GROUP}
 WorkingDirectory=${INSTALL_DIR}
 Environment="PATH=${INSTALL_DIR}/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="UV_PATH=${UV_PATH}"
 EnvironmentFile=-${INSTALL_DIR}/.env
 
-# 启动前检查数据库连接
-ExecStartPre=${UV_PATH} run python -c "
-import sys
-from sqlalchemy import create_engine, text
-from app.config import settings
-try:
-    engine = create_engine(settings.database_url)
-    with engine.begin() as conn:
-        conn.execute(text('SELECT 1'))
-    print('数据库连接成功')
-except Exception as e:
-    print(f'数据库连接失败: {e}', file=sys.stderr)
-    sys.exit(1)
-"
-
-# 启动前创建/更新数据库表
-ExecStartPre=${UV_PATH} run python -c "
-from app.database import engine, Base
-import app.models  # 确保所有模型表注册到 Base.metadata
-Base.metadata.create_all(bind=engine)
-print('数据库表就绪')
-"
+# 启动前脚本：数据库连接检查 + 表同步
+ExecStartPre=/bin/bash ${INSTALL_DIR}/prestart.sh
 
 # 主进程: uvicorn 多 worker 模式
 ExecStart=${UV_PATH} run uvicorn app.main:app --host ${HOST} --port ${PORT} --workers ${WORKERS} --log-level info
@@ -314,6 +331,7 @@ main() {
             create_service_user
             deploy_project
             install_deps
+            create_prestart_script
             create_systemd_service
             set_permissions
             enable_and_start

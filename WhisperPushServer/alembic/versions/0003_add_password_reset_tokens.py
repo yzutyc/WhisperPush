@@ -15,6 +15,12 @@ depends_on = None
 
 
 def upgrade() -> None:
+    # 幂等检查：如果表已存在（例如 Base.metadata.create_all 创建），跳过
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    if 'password_reset_tokens' in inspector.get_table_names():
+        return
+
     op.create_table(
         'password_reset_tokens',
         sa.Column('id', sa.Integer(), nullable=False),
