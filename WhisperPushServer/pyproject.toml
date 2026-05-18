@@ -1,6 +1,6 @@
 [project]
 name = "whisperpush-server"
-version = "0.1.7"
+version = "0.1.8"
 description = "消息推送系统后端服务，基于 FastAPI + SQLAlchemy + PostgreSQL 构建"
 readme = "README.md"
 requires-python = ">=3.10"

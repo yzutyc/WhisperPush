@@ -6,7 +6,7 @@ from starlette.requests import Request
 from app.middleware.logging_middleware import RequestLoggingMiddleware
 from app.routers import auth, secrets, messages, devices, two_factor, user_settings
 
-app = FastAPI(title="WhisperPush API", version="0.1.7")
+app = FastAPI(title="WhisperPush API", version="0.1.8")
 
 class DynamicCORSMiddleware(BaseHTTPMiddleware):
 
