@@ -11,7 +11,7 @@ SERVICE_GROUP="whisperpush"
 INSTALL_DIR="/opt/${SERVICE_NAME}"
 UV_PATH="${UV_PATH:-$(command -v uv 2>/dev/null || echo '')}"
 HOST="0.0.0.0"
-PORT="${PORT:-8000}"
+PORT="${PORT:-8001}"
 WORKERS="${WORKERS:-4}"
 
 # ---- 颜色输出 ----
@@ -324,7 +324,29 @@ uninstall() {
 # main
 #===============================================================================
 main() {
-    case "${1:-install}" in
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -p|--port)
+                PORT="$2"; shift 2 ;;
+            -w|--workers)
+                WORKERS="$2"; shift 2 ;;
+            --uv-path)
+                UV_PATH="$2"; shift 2 ;;
+            -h|--help)
+                show_help; exit 0 ;;
+            install|uninstall)
+                ACTION="$1"; shift ;;
+            *)
+                echo "未知选项: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+
+    ACTION="${ACTION:-install}"
+
+    case "$ACTION" in
         install)
             require_root
             detect_uv
@@ -341,19 +363,27 @@ main() {
             require_root
             uninstall
             ;;
-        *)
-            echo "用法: $0 {install|uninstall}"
-            echo ""
-            echo "  install   - 安装并启动 systemd 服务（默认）"
-            echo "  uninstall - 停止并移除 systemd 服务"
-            echo ""
-            echo "环境变量:"
-            echo "  PORT      - 监听端口（默认 8000）"
-            echo "  WORKERS   - uvicorn worker 数量（默认 4）"
-            echo "  UV_PATH   - uv 可执行文件路径（默认自动检测）"
-            exit 1
-            ;;
     esac
+}
+
+show_help() {
+    echo "用法: $0 [选项] {install|uninstall}"
+    echo ""
+    echo "命令:"
+    echo "  install     安装并启动 systemd 服务（默认）"
+    echo "  uninstall   停止并移除 systemd 服务"
+    echo ""
+    echo "选项:"
+    echo "  -p, --port PORT       监听端口（默认 8001）"
+    echo "  -w, --workers N       uvicorn worker 数量（默认 4）"
+    echo "  --uv-path PATH        uv 可执行文件路径（默认自动检测）"
+    echo "  -h, --help            显示此帮助信息"
+    echo ""
+    echo "示例:"
+    echo "  sudo $0                          # 默认端口 8001 安装"
+    echo "  sudo $0 -p 9000                  # 自定义端口 9000 安装"
+    echo "  sudo $0 -p 9000 -w 2             # 端口 9000，2 worker"
+    echo "  sudo $0 uninstall                # 卸载服务"
 }
 
 main "${@}"

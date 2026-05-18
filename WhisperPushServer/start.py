@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 import uvicorn
@@ -50,7 +51,8 @@ def main():
         sys.exit(1)
     
     logger.info("启动服务...")
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", "8001"))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)
 
 
 if __name__ == "__main__":
