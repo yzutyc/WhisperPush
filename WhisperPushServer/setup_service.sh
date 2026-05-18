@@ -181,6 +181,7 @@ except Exception as e:
 # 启动前创建/更新数据库表
 ExecStartPre=${UV_PATH} run python -c "
 from app.database import engine, Base
+import app.models  # 确保所有模型表注册到 Base.metadata
 Base.metadata.create_all(bind=engine)
 print('数据库表就绪')
 "

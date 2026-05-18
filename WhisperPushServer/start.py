@@ -29,6 +29,7 @@ def check_database_connection():
 def create_tables():
     try:
         from app.database import engine, Base
+        import app.models  # noqa: F401 — 确保所有模型表注册到 Base.metadata
         Base.metadata.create_all(bind=engine)
         logger.info("数据库表创建成功")
         return True
