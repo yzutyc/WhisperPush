@@ -17,6 +17,14 @@ class Settings(BaseSettings):
     apns_private_key_path: Optional[str] = None
     apns_use_sandbox: bool = True
 
+    # SMTP 邮件配置
+    smtp_host: str = "localhost"
+    smtp_port: int = 587
+    smtp_username: Optional[str] = None
+    smtp_password: Optional[str] = None
+    smtp_from_address: str = "noreply@whisperpush.io"
+    smtp_use_tls: bool = True
+
     class Config:
         def __init__(self):
             pass
