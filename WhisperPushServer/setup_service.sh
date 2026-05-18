@@ -39,8 +39,23 @@ require_root() {
 #===============================================================================
 detect_uv() {
     if [[ -z "$UV_PATH" ]]; then
-        # 尝试常见路径
-        for candidate in "$HOME/.local/bin/uv" "$HOME/.cargo/bin/uv" /usr/local/bin/uv /usr/bin/uv; do
+        # sudo 环境下 SUDO_USER 是原始用户，从原用户 HOME 查找
+        local search_paths=(
+            "/usr/local/bin/uv"
+            "/usr/bin/uv"
+            "$HOME/.local/bin/uv"
+            "$HOME/.cargo/bin/uv"
+        )
+        if [[ -n "${SUDO_USER:-}" ]]; then
+            local sudo_home
+            sudo_home=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+            search_paths+=(
+                "${sudo_home}/.local/bin/uv"
+                "${sudo_home}/.cargo/bin/uv"
+            )
+        fi
+
+        for candidate in "${search_paths[@]}"; do
             if [[ -x "$candidate" ]]; then
                 UV_PATH="$candidate"
                 break
@@ -49,7 +64,9 @@ detect_uv() {
     fi
 
     if [[ -z "$UV_PATH" ]] || [[ ! -x "$UV_PATH" ]]; then
-        log_error "未找到 uv 包管理器，请先安装: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        log_error "未找到 uv 包管理器"
+        log_error "可通过以下命令安装: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        log_error "或通过 UV_PATH 环境变量指定: sudo UV_PATH=/path/to/uv $0"
         exit 1
     fi
     log_info "uv 路径: ${UV_PATH}"
