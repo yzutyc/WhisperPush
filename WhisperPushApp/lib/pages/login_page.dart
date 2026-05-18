@@ -83,7 +83,8 @@ class _LoginPageState extends State<LoginPage> {
         _serverAvailable = false;
         _serverStatus = '✗ 连接失败';
       });
-      ToastWidget.showError(context, '连接失败: ${e.toString()}');
+      final errorMessage = e.toString().replaceFirst('Exception: ', '');
+      ToastWidget.showError(context, '连接失败: $errorMessage');
     } finally {
       setState(() => _isCheckingServer = false);
     }
@@ -125,7 +126,8 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       if (mounted) {
-        ToastWidget.showError(context, '登录失败: ${e.toString()}');
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        ToastWidget.showError(context, '登录失败: $errorMessage');
       }
     } finally {
       setState(() => _isLoading = false);

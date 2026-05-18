@@ -10,16 +10,17 @@ import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import 'login_page.dart';
 
-class ChangePasswordPage extends StatefulWidget {
-  const ChangePasswordPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  final String resetToken;
+
+  const ResetPasswordPage({super.key, required this.resetToken});
 
   @override
-  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
@@ -53,13 +54,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final api = ApiService(
-        baseUrl: authProvider.serverUrl!,
-        token: authProvider.token,
-      );
+      final api = ApiService(baseUrl: authProvider.serverUrl!);
 
-      await api.changePassword(
-        _currentPasswordController.text,
+      await api.resetPassword(
+        widget.resetToken,
         _newPasswordController.text,
       );
 
@@ -70,21 +68,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     } catch (e) {
       if (mounted) {
         final errorMessage = e.toString().replaceFirst('Exception: ', '');
-        ToastWidget.showError(context, '修改失败: $errorMessage');
+        ToastWidget.showError(context, '重置失败: $errorMessage');
       }
       setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _logoutAndRedirect() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.logout();
-
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
     }
   }
 
@@ -93,7 +79,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text('修改密码', style: TextStyle(color: AppTheme.textPrimary)),
+        title: const Text('重置密码', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
@@ -134,7 +120,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ),
                           const SizedBox(height: 24),
                           const Text(
-                            '密码修改成功',
+                            '密码重置成功',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -143,14 +129,20 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ),
                           const SizedBox(height: 12),
                           const Text(
-                            '请使用新密码重新登录',
+                            '请使用新密码登录您的账户',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: AppTheme.textTertiary),
                           ),
                           const SizedBox(height: 32),
                           NeonButton(
-                            text: '重新登录',
-                            onPressed: _logoutAndRedirect,
+                            text: '返回登录',
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
+                                (route) => false,
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -166,17 +158,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppTheme.neonBlue.withValues(alpha: 0.2),
+                                color: AppTheme.techPurple.withValues(alpha: 0.2),
                               ),
                               child: const Icon(
-                                Icons.key,
+                                Icons.lock_reset,
                                 size: 40,
-                                color: AppTheme.neonBlue,
+                                color: AppTheme.techPurple,
                               ),
                             ),
                             const SizedBox(height: 24),
                             const Text(
-                              '修改密码',
+                              '重置密码',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -185,20 +177,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             ),
                             const SizedBox(height: 12),
                             const Text(
-                              '请输入当前密码和新密码',
+                              '请输入您的新密码',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppTheme.textTertiary),
                             ),
                             const SizedBox(height: 48),
-                            FormInput(
-                              controller: _currentPasswordController,
-                              labelText: '当前密码',
-                              prefixIcon: Icons.lock,
-                              obscureText: true,
-                              validator: (value) =>
-                                  value?.isEmpty ?? true ? '请输入当前密码' : null,
-                            ),
-                            const SizedBox(height: 16),
                             FormInput(
                               controller: _newPasswordController,
                               labelText: '新密码',
@@ -224,17 +207,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             ),
                             const SizedBox(height: 32),
                             NeonButton(
-                              text: '修改密码',
+                              text: '重置密码',
                               onPressed: _submit,
                               isLoading: _isLoading,
-                            ),
-                            const SizedBox(height: 24),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                '取消',
-                                style: TextStyle(color: AppTheme.textTertiary),
-                              ),
                             ),
                           ],
                         ),

@@ -149,11 +149,23 @@ class ApiService {
     _handleResponse(response);
   }
 
-  Future<void> forgotPassword(String email) async {
+  Future<Map<String, dynamic>> forgotPassword(String email) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/forgot-password'),
       headers: headers,
       body: jsonEncode({'email': email}),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<void> resetPassword(String token, String newPassword) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/auth/reset-password'),
+      headers: headers,
+      body: jsonEncode({
+        'token': token,
+        'new_password': newPassword,
+      }),
     );
     _handleResponse(response);
   }
@@ -261,6 +273,21 @@ class ApiService {
       final decodedBody = utf8.decode(bodyBytes, allowMalformed: true);
       return jsonDecode(decodedBody);
     }
-    throw Exception('HTTP error ${response.statusCode}: ${response.body}');
+
+    // Parse error response body for a user-friendly message
+    String errorMessage;
+    try {
+      final bodyBytes = response.bodyBytes;
+      final decodedBody = utf8.decode(bodyBytes, allowMalformed: true);
+      final errorData = jsonDecode(decodedBody);
+      if (errorData is Map && errorData.containsKey('detail')) {
+        errorMessage = errorData['detail'].toString();
+      } else {
+        errorMessage = 'HTTP error ${response.statusCode}';
+      }
+    } catch (_) {
+      errorMessage = 'HTTP error ${response.statusCode}';
+    }
+    throw Exception(errorMessage);
   }
 }

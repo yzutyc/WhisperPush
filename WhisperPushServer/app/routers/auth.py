@@ -8,7 +8,7 @@ from app import models, schemas
 from app.config import settings
 from app.database import get_db
 from app.security import verify_password, get_password_hash, create_access_token, get_user_by_email, \
-    get_user_by_username
+    get_user_by_username, create_password_reset_token, verify_reset_token, consume_reset_token
 
 router = APIRouter()
 
@@ -124,24 +124,63 @@ def forgot_password(
 ):
     """
     忘记密码接口
-    
-    验证用户邮箱并发送密码重置链接（预留接口）。
-    
+
+    验证用户邮箱，生成密码重置令牌并返回。
+    生产环境中应通过邮件发送令牌，当前直接返回令牌供客户端使用。
+
     Args:
         request: 包含用户邮箱的请求
         db: 数据库会话
-    
+
     Returns:
-        dict: 包含状态和消息的响应
-    
+        dict: 包含重置令牌和状态消息的响应
+
     Raises:
         HTTPException: 404 - 用户不存在
     """
     user = get_user_by_email(db, email=request.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    return {"status": "success", "message": "Password reset link sent to your email"}
+
+    reset_token = create_password_reset_token(db, user.id)
+
+    return {
+        "status": "success",
+        "message": "Password reset token generated",
+        "reset_token": reset_token,
+    }
+
+
+@router.post("/reset-password")
+def reset_password(
+    request: schemas.ResetPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    重置密码接口
+
+    使用密码重置令牌验证用户身份并设置新密码。
+
+    Args:
+        request: 重置密码请求，包含 token 和 new_password
+        db: 数据库会话
+
+    Returns:
+        dict: 包含状态和消息的响应
+
+    Raises:
+        HTTPException: 400 - 令牌无效或已过期
+    """
+    user = verify_reset_token(db, request.token)
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+
+    new_password_hash = get_password_hash(request.new_password)
+    user.password_hash = new_password_hash
+    consume_reset_token(db, request.token)
+    db.commit()
+
+    return {"status": "success", "message": "Password reset successfully"}
 
 
 @router.post("/change-password")

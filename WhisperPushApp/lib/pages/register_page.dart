@@ -7,6 +7,7 @@ import '../components/glass_container.dart';
 import '../components/logo_widget.dart';
 import '../components/neon_button.dart';
 import '../components/particle_background.dart';
+import '../components/toast_widget.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import 'login_page.dart';
@@ -95,12 +96,9 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('注册失败: ${e.toString()}'),
-            backgroundColor: AppTheme.spaceIndigo,
-          ),
-        );
+        // Strip "Exception: " prefix if present
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        ToastWidget.showError(context, '注册失败: $errorMessage');
       }
     } finally {
       setState(() => _isLoading = false);

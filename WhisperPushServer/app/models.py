@@ -67,3 +67,14 @@ class RecoveryCode(Base):
     code_hash = Column(String(64))
     used = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, index=True)
+    token_hash = Column(String(128), unique=True, index=True)
+    expires_at = Column(DateTime(timezone=True))
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

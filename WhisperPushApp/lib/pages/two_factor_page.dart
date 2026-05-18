@@ -76,7 +76,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
       });
     } catch (e) {
       if (mounted) {
-        ToastWidget.showError(context, '启用失败: ${e.toString()}');
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        ToastWidget.showError(context, '启用失败: $errorMessage');
       }
     } finally {
       setState(() => _isEnabling = false);
@@ -112,7 +113,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
       ToastWidget.showSuccess(context, '双因素认证已启用');
     } catch (e) {
       if (mounted) {
-        ToastWidget.showError(context, '验证失败: ${e.toString()}');
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+      ToastWidget.showError(context, '验证失败: $errorMessage');
       }
     } finally {
       setState(() => _isLoading = false);
@@ -218,7 +220,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
       ToastWidget.showSuccess(context, '双因素认证已禁用');
     } catch (e) {
       if (mounted) {
-        ToastWidget.showError(context, '禁用失败: ${e.toString()}');
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        ToastWidget.showError(context, '禁用失败: $errorMessage');
       }
     } finally {
       setState(() => _isLoading = false);
@@ -248,7 +251,8 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
       ToastWidget.showSuccess(context, '恢复码已重新生成');
     } catch (e) {
       if (mounted) {
-        ToastWidget.showError(context, '生成失败: ${e.toString()}');
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        ToastWidget.showError(context, '生成失败: $errorMessage');
       }
     } finally {
       setState(() => _isLoading = false);
