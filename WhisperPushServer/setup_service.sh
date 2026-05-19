@@ -262,9 +262,24 @@ SYSTEMD_EOF
 #===============================================================================
 set_permissions() {
     chown -R "${SERVICE_USER}:${SERVICE_GROUP}" "$INSTALL_DIR"
-    # .env 可能包含敏感信息，限制为仅 owner 可读
+    
+    # 设置目录权限为 755
+    find "$INSTALL_DIR" -type d -exec chmod 755 {} \;
+    
+    # 设置文件权限为 644
+    find "$INSTALL_DIR" -type f -exec chmod 644 {} \;
+    
+    # 为 .venv/bin/ 下所有可执行文件添加执行权限
+    if [[ -d "${INSTALL_DIR}/.venv/bin" ]]; then
+        chmod 755 "${INSTALL_DIR}/.venv/bin"/*
+    fi
+    
+    # 确保 prestart.sh 和其他脚本可执行
+    chmod 755 "${INSTALL_DIR}/prestart.sh" 2>/dev/null || true
+    
+    # .env 包含敏感信息，限制为仅 owner 可读
     chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true
-    chmod 755 "$INSTALL_DIR"
+    
     log_info "文件权限设置完成"
 }
 
