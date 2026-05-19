@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Deploy reason'
+        required: false
+        default: 'Manual deployment'
 
 env:
   APP_NAME: whisperpush-server
