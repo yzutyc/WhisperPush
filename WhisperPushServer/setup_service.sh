@@ -73,7 +73,29 @@ detect_uv() {
 }
 
 #===============================================================================
-# 2. 创建系统用户
+# 2. 确保 uv 系统级可访问
+#===============================================================================
+ensure_system_uv() {
+    local system_uv="/usr/local/bin/uv"
+
+    if [[ -x "$system_uv" ]]; then
+        log_info "uv 已安装在系统路径: ${system_uv}"
+        UV_PATH="$system_uv"
+        return
+    fi
+
+    if [[ "$UV_PATH" == /root/* ]] || [[ "$UV_PATH" == /home/* ]]; then
+        log_warn "uv 位于用户 HOME 目录 (${UV_PATH})，服务用户可能无法访问"
+        log_info "复制 uv 到 ${system_uv} ..."
+        cp "$UV_PATH" "$system_uv"
+        chmod 755 "$system_uv"
+        UV_PATH="$system_uv"
+        log_info "uv 已安装到系统路径"
+    fi
+}
+
+#===============================================================================
+# 3. 创建系统用户
 #===============================================================================
 create_service_user() {
     if id "$SERVICE_USER" &>/dev/null; then
@@ -85,7 +107,7 @@ create_service_user() {
 }
 
 #===============================================================================
-# 3. 部署项目文件
+# 4. 部署项目文件
 #===============================================================================
 deploy_project() {
     local src_dir
@@ -123,7 +145,7 @@ deploy_project() {
 }
 
 #===============================================================================
-# 4. 安装依赖 & 数据库迁移
+# 5. 安装依赖 & 数据库迁移
 #===============================================================================
 install_deps() {
     cd "$INSTALL_DIR"
@@ -141,18 +163,18 @@ install_deps() {
 }
 
 #===============================================================================
-# 4b. 创建服务启动前检查脚本
+# 5b. 创建服务启动前检查脚本
 #===============================================================================
 create_prestart_script() {
     local prestart="${INSTALL_DIR}/prestart.sh"
 
-    cat > "$prestart" << 'PRESTART_EOF'
+    cat > "$prestart" << PRESTART_EOF
 #!/usr/bin/env bash
 set -e
 
 # ---- 数据库连接检查 ----
 echo -n "检查数据库连接... "
-python -c "
+${INSTALL_DIR}/.venv/bin/python -c "
 import sys
 from sqlalchemy import create_engine, text
 from app.config import settings
@@ -168,7 +190,7 @@ except Exception as e:
 
 # ---- 创建/更新数据库表 ----
 echo -n "同步数据库表... "
-python -c "
+${INSTALL_DIR}/.venv/bin/python -c "
 from app.database import engine, Base
 import app.models
 Base.metadata.create_all(bind=engine)
@@ -349,6 +371,7 @@ main() {
         install)
             require_root
             detect_uv
+            ensure_system_uv
             create_service_user
             deploy_project
             install_deps
