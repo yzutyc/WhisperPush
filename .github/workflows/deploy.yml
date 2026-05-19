@@ -14,7 +14,7 @@ on:
 
 env:
   APP_NAME: whisperpush-server
-  INSTALL_DIR: /opt/${{ env.APP_NAME }}
+  INSTALL_DIR: /opt/whisperpush-server
   SERVICE_USER: whisperpush
   SERVICE_GROUP: whisperpush
 
@@ -22,7 +22,7 @@ jobs:
   deploy:
     name: Deploy to Server
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,140 +44,26 @@ jobs:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          APP_NAME: ${{ env.APP_NAME }}
+          INSTALL_DIR: ${{ env.INSTALL_DIR }}
+          SERVICE_USER: ${{ env.SERVICE_USER }}
+          SERVICE_GROUP: ${{ env.SERVICE_GROUP }}
         run: |
-          ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} << 'EOF'
-            set -e
-
-            echo "=== 1. 安装 uv 包管理器 ==="
-            if ! command -v uv &> /dev/null; then
-              curl -LsSf https://astral.sh/uv/install.sh | sh
-              export PATH="$HOME/.local/bin:$PATH"
-            fi
-
-            echo "=== 2. 创建服务用户 ==="
-            if ! id "${{ env.SERVICE_USER }}" &>/dev/null; then
-              sudo useradd --system --no-create-home --shell /usr/sbin/nologin "${{ env.SERVICE_USER }}"
-            fi
-
-            echo "=== 3. 创建安装目录 ==="
-            sudo mkdir -p ${{ env.INSTALL_DIR }}
-            sudo chown -R "${{ env.SERVICE_USER }}:${{ env.SERVICE_GROUP }}" ${{ env.INSTALL_DIR }}
-
-            echo "=== 4. 同步代码 ==="
-            cd ${{ env.INSTALL_DIR }}
-            git clone https://github.com/${{ github.repository }}.git . || git pull origin ${{ github.ref_name }}
-
-            echo "=== 5. 安装依赖 ==="
-            uv sync --frozen
-
-            echo "=== 6. 创建/更新 .env 文件 ==="
-            cat > ${{ env.INSTALL_DIR }}/.env << ENVEOF
-DATABASE_URL=${DATABASE_URL}
-SECRET_KEY=${SECRET_KEY}
-JWT_SECRET_KEY=${JWT_SECRET_KEY}
-SMTP_SERVER=${SMTP_SERVER}
-SMTP_PORT=${SMTP_PORT}
-SMTP_USERNAME=${SMTP_USERNAME}
-SMTP_PASSWORD=${SMTP_PASSWORD}
-EMAIL_FROM=${EMAIL_FROM}
-ENVEOF
-            sudo chmod 600 ${{ env.INSTALL_DIR }}/.env
-            sudo chown ${{ env.SERVICE_USER }}:${{ env.SERVICE_GROUP }} ${{ env.INSTALL_DIR }}/.env
-
-            echo "=== 7. 数据库迁移 ==="
-            uv run alembic upgrade head
-
-            echo "=== 8. 创建预启动脚本 ==="
-            cat > ${{ env.INSTALL_DIR }}/prestart.sh << PRESTART_EOF
-#!/usr/bin/env bash
-set -e
-
-echo -n "检查数据库连接... "
-${{ env.INSTALL_DIR }}/.venv/bin/python -c "
-import sys
-from sqlalchemy import create_engine, text
-from app.config import settings
-try:
-    engine = create_engine(settings.database_url)
-    with engine.begin() as conn:
-        conn.execute(text('SELECT 1'))
-    print('OK')
-except Exception as e:
-    print(f'FAILED: {e}', file=sys.stderr)
-    sys.exit(1)
-"
-
-echo -n "同步数据库表... "
-${{ env.INSTALL_DIR }}/.venv/bin/python -c "
-from app.database import engine, Base
-import app.models
-Base.metadata.create_all(bind=engine)
-print('OK')
-"
-PRESTART_EOF
-            chmod +x ${{ env.INSTALL_DIR }}/prestart.sh
-
-            echo "=== 9. 创建 systemd 服务 ==="
-            cat > /etc/systemd/system/${{ env.APP_NAME }}.service << SYSTEMD_EOF
-[Unit]
-Description=WhisperPush Server - 消息推送系统后端服务
-Documentation=https://github.com/${{ github.repository }}
-After=network.target network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=${{ env.SERVICE_USER }}
-Group=${{ env.SERVICE_GROUP }}
-WorkingDirectory=${{ env.INSTALL_DIR }}
-Environment="PATH=${{ env.INSTALL_DIR }}/.venv/bin:/usr/local/bin:/usr/bin:/bin"
-EnvironmentFile=-${{ env.INSTALL_DIR }}/.env
-
-ExecStartPre=/bin/bash ${{ env.INSTALL_DIR }}/prestart.sh
-
-ExecStart=${{ env.INSTALL_DIR }}/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4 --log-level info
-
-ExecStop=/bin/kill -TERM \$MAINPID
-KillMode=mixed
-KillSignal=SIGTERM
-TimeoutStopSec=30
-
-Restart=on-failure
-RestartSec=5s
-
-NoNewPrivileges=yes
-PrivateTmp=yes
-ProtectSystem=strict
-ProtectHome=yes
-ReadWritePaths=${{ env.INSTALL_DIR }}
-ReadOnlyPaths=${{ env.INSTALL_DIR }}/.env
-
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=${{ env.APP_NAME }}
-
-[Install]
-WantedBy=multi-user.target
-SYSTEMD_EOF
-
-            echo "=== 10. 设置权限 ==="
-            sudo chown -R "${{ env.SERVICE_USER }}:${{ env.SERVICE_GROUP }}" ${{ env.INSTALL_DIR }}
-            sudo find ${{ env.INSTALL_DIR }} -type d -exec chmod 755 {} \;
-            sudo find ${{ env.INSTALL_DIR }} -type f -exec chmod 644 {} \;
-            sudo chmod 755 ${{ env.INSTALL_DIR }}/.venv/bin/*
-
-            echo "=== 11. 启动服务 ==="
-            sudo systemctl daemon-reload
-            sudo systemctl enable ${{ env.APP_NAME }}
-            sudo systemctl restart ${{ env.APP_NAME }}
-
-            echo "=== 12. 检查服务状态 ==="
-            sleep 2
-            if sudo systemctl is-active --quiet ${{ env.APP_NAME }}; then
-              echo "✅ 服务启动成功"
-            else
-              echo "❌ 服务启动失败，查看日志:"
-              sudo journalctl -u ${{ env.APP_NAME }} -n 50
-              exit 1
-            fi
-          EOF
+          ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} \
+            APP_NAME="${APP_NAME}" \
+            INSTALL_DIR="${INSTALL_DIR}" \
+            SERVICE_USER="${SERVICE_USER}" \
+            SERVICE_GROUP="${SERVICE_GROUP}" \
+            GITHUB_REPOSITORY="${GITHUB_REPOSITORY}" \
+            GITHUB_REF_NAME="${GITHUB_REF_NAME}" \
+            DATABASE_URL="${DATABASE_URL}" \
+            SECRET_KEY="${SECRET_KEY}" \
+            JWT_SECRET_KEY="${JWT_SECRET_KEY}" \
+            SMTP_SERVER="${SMTP_SERVER}" \
+            SMTP_PORT="${SMTP_PORT}" \
+            SMTP_USERNAME="${SMTP_USERNAME}" \
+            SMTP_PASSWORD="${SMTP_PASSWORD}" \
+            EMAIL_FROM="${EMAIL_FROM}" \
+            bash -s < WhisperPushServer/scripts/deploy.sh
