@@ -11,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> loadFromStorage() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token');
-    _serverUrl = prefs.getString('server_url') ?? 'http://localhost:8000';
+    _serverUrl = prefs.getString('server_url') ?? 'https://whisperpush.yangtze.asia';
     notifyListeners();
   }
 

@@ -189,7 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             const SizedBox(height: 32),
                             GlassContainer(
-                              padding: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.all(10),
                               child: Column(
                                 children: [
                                   FormInput(

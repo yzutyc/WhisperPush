@@ -11,6 +11,8 @@ class GlassContainer extends StatelessWidget {
   final Color? borderColor;
   final Color? backgroundColor;
   final EdgeInsets padding;
+  final EdgeInsets? margin;
+  final VoidCallback? onTap;
 
   const GlassContainer({
     super.key,
@@ -20,20 +22,23 @@ class GlassContainer extends StatelessWidget {
     this.borderColor,
     this.backgroundColor,
     this.padding = const EdgeInsets.all(16),
+    this.margin,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    Widget content = Container(
+      margin: margin,
       decoration: BoxDecoration(
         color: backgroundColor ?? AppTheme.spaceIndigo.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: borderColor ?? AppTheme.techPurple.withValues(alpha:0.2),
+          color: borderColor ?? AppTheme.techPurple.withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.techPurple.withValues(alpha:0.1),
+            color: AppTheme.techPurple.withValues(alpha: 0.1),
             blurRadius: blur,
             spreadRadius: 5,
           ),
@@ -43,12 +48,15 @@ class GlassContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Padding(
-            padding: padding,
-            child: child,
-          ),
+          child: Padding(padding: padding, child: child),
         ),
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(onTap: onTap, child: content);
+    }
+
+    return content;
   }
 }
