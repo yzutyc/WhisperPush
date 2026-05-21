@@ -188,7 +188,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               style: TextStyle(color: AppTheme.textTertiary),
                             ),
                             const SizedBox(height: 32),
-                            GlassContainer(
+                            Container(
+                              color: AppTheme.spaceBlue,
                               padding: const EdgeInsets.all(10),
                               child: Column(
                                 children: [

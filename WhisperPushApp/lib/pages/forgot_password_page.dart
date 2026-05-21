@@ -153,7 +153,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 style: TextStyle(color: AppTheme.textTertiary),
                               ),
                               const SizedBox(height: 32),
-                              GlassContainer(
+                              Container(
+                                color: AppTheme.spaceBlue,
                                 padding: const EdgeInsets.all(10),
                                 child: FormInput(
                                   controller: _emailController,

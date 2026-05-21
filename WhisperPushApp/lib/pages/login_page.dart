@@ -204,7 +204,8 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(color: AppTheme.textTertiary),
                               ),
                               const SizedBox(height: 32),
-                              GlassContainer(
+                              Container(
+                                color: AppTheme.spaceBlue,
                                 padding: const EdgeInsets.all(10),
                                 child: Column(
                                   children: [
@@ -436,7 +437,8 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
               style: TextStyle(color: AppTheme.textTertiary),
             ),
             const SizedBox(height: 32),
-            GlassContainer(
+            Container(
+              color: AppTheme.spaceBlue,
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
