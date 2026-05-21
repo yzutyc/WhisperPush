@@ -297,14 +297,13 @@ class MessageCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  _buildReadStatus(),
-                  const SizedBox(width: 12),
+                  SizedBox(width: isMultiSelectMode ? 12 : 0),
                   Expanded(
                     child: Text(
                       message.title,
                       style: TextStyle(
                         fontWeight: message.read ? FontWeight.normal : FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 20,
                         color: message.read ? AppTheme.textSecondary : AppTheme.textPrimary,
                         height: 1.3,
                       ),
@@ -312,8 +311,6 @@ class MessageCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  _buildLevelBadge(),
                 ],
               ),
               const SizedBox(height: 12),
@@ -322,6 +319,8 @@ class MessageCard extends StatelessWidget {
               Row(
                 children: [
                   _buildGroupTag(),
+                  if (message.group != null) const SizedBox(width: 8),
+                  _buildLevelBadge(),
                   const Spacer(),
                   Text(
                     message.formattedTime,

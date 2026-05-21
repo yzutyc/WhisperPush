@@ -43,9 +43,9 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       await api.markMessageRead(widget.message.id);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('标记失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('标记失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isMarkingRead = false);
@@ -63,17 +63,17 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       );
 
       await api.markMessageUnread(widget.message.id);
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('已标记为未读')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('已标记为未读')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('标记失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('标记失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isMarkingUnread = false);
@@ -81,67 +81,69 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
   }
 
   Future<void> _deleteMessage() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: GlassContainer(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                '确认删除',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '确定要删除这条消息吗？',
-                style: TextStyle(color: AppTheme.textTertiary),
-              ),
-              const SizedBox(height: 24),
-              Row(
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: GlassContainer(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.spaceIndigo,
-                        foregroundColor: AppTheme.textPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: const Text('取消'),
+                  const Text(
+                    '确认删除',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.dangerRed,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '确定要删除这条消息吗？',
+                    style: TextStyle(color: AppTheme.textTertiary),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.spaceIndigo,
+                            foregroundColor: AppTheme.textPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text('取消'),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text('删除'),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.dangerRed,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text('删除'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ) ?? false;
+        ) ??
+        false;
 
     if (!mounted) return;
     if (!confirmed) return;
@@ -156,16 +158,16 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       await api.deleteMessage(widget.message.id);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('已删除消息')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('已删除消息')));
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('删除失败: ${e.toString()}')));
       }
     }
   }
@@ -173,9 +175,9 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
   Future<void> _copyToClipboard() async {
     await Clipboard.setData(ClipboardData(text: widget.message.body));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('已复制到剪贴板')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('已复制到剪贴板')));
   }
 
   Future<void> _shareMessage() async {
@@ -188,9 +190,9 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       await launchUrl(uri);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('无法打开链接: $url')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('无法打开链接: $url')));
       }
     }
   }
@@ -206,12 +208,19 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
             }
           },
           styleSheet: MarkdownStyleSheet(
-            p: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
+            p: const TextStyle(
+              fontSize: 15,
+              color: AppTheme.textSecondary,
+              height: 1.6,
+            ),
             strong: const TextStyle(
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            em: const TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textSecondary),
+            em: const TextStyle(
+              fontStyle: FontStyle.italic,
+              color: AppTheme.textSecondary,
+            ),
             h1: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -278,7 +287,11 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       default:
         return Text(
           widget.message.body,
-          style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, height: 1.6),
+          style: const TextStyle(
+            fontSize: 15,
+            color: AppTheme.textSecondary,
+            height: 1.6,
+          ),
         );
     }
   }
@@ -305,9 +318,9 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
         icon = Icons.check_circle;
         break;
       default:
-        glowColor = AppTheme.textTertiary;
-        label = '未知';
-        icon = null;
+        glowColor = AppTheme.pulseGreen;
+        label = '普通';
+        icon = Icons.check_circle;
     }
 
     return Container(
@@ -397,22 +410,44 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text('消息详情', style: TextStyle(color: AppTheme.textPrimary)),
+        title: const Text(
+          '消息详情',
+          style: TextStyle(color: AppTheme.textPrimary),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.copy, color: AppTheme.textPrimary),
             onPressed: _copyToClipboard,
             tooltip: '复制内容',
           ),
+          IconButton(
+            icon: const Icon(
+              Icons.mark_email_unread,
+              color: AppTheme.textPrimary,
+            ),
+            onPressed: _isMarkingUnread ? null : _markAsUnread,
+            tooltip: '标记未读',
+          ),
+          IconButton(
+            icon: const Icon(Icons.share, color: AppTheme.textPrimary),
+            onPressed: _shareMessage,
+            tooltip: '分享',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: AppTheme.dangerRed),
+            onPressed: _deleteMessage,
+            tooltip: '删除',
+          ),
         ],
       ),
       body: Container(
         decoration: AppTheme.gradientBackground,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: GlassCard(
                   padding: const EdgeInsets.all(0),
                   enableHover: false,
@@ -420,218 +455,62 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: AppTheme.borderColor.withValues(alpha: 0.5)),
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                        child: Text(
+                          widget.message.title,
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                            height: 1.3,
                           ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
                         ),
                         child: Row(
                           children: [
                             _buildGroupTag(),
-                            if (widget.message.group != null) const SizedBox(width: 12),
+                            if (widget.message.group != null)
+                              const SizedBox(width: 12),
                             _buildLevelBadge(),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            const Spacer(),
+                            const Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: AppTheme.textTertiary,
+                            ),
+                            const SizedBox(width: 8),
                             Text(
-                              widget.message.title,
+                              widget.message.formattedDate,
                               style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textPrimary,
+                                fontSize: 14,
+                                color: AppTheme.textTertiary,
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    color: widget.message.read
-                                        ? AppTheme.textTertiary
-                                        : AppTheme.techPurple,
-                                    borderRadius: BorderRadius.circular(3),
-                                    boxShadow: widget.message.read
-                                        ? []
-                                        : [
-                                            const BoxShadow(
-                                              color: Color.fromARGB(80, 139, 92, 246),
-                                              blurRadius: 8,
-                                              spreadRadius: 2,
-                                            ),
-                                          ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  widget.message.read ? '已读' : '未读',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: widget.message.read
-                                        ? AppTheme.textTertiary
-                                        : AppTheme.techPurpleLight,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                const Icon(Icons.access_time, size: 14, color: AppTheme.textTertiary),
-                                const SizedBox(width: 6),
-                                Text(
-                                  widget.message.formattedDate,
-                                  style: const TextStyle(fontSize: 13, color: AppTheme.textTertiary),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(60, 30, 41, 59),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(16),
-                            bottomRight: Radius.circular(16),
-                          ),
-                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        height: 1,
+                        color: AppTheme.borderColor.withValues(alpha: 0.5),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                         child: _buildContent(),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-            GlassCard(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(0),
-              enableHover: false,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: NeonButton(
-                        onPressed: _isMarkingUnread ? null : _markAsUnread,
-                        variant: NeonButtonVariant.outline,
-                        child: _isMarkingUnread
-                            ? const CircularProgressIndicator(color: AppTheme.textPrimary)
-                            : const Text('标记未读'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: NeonButton(
-                        onPressed: _shareMessage,
-                        variant: NeonButtonVariant.primary,
-                        child: const Text('分享'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: NeonButton(
-                        onPressed: _deleteMessage,
-                        variant: NeonButtonVariant.danger,
-                        child: const Text('删除'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
   }
-}
-
-class NeonButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final Widget child;
-  final NeonButtonVariant variant;
-
-  const NeonButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.variant = NeonButtonVariant.primary,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    Color backgroundColor;
-    Color foregroundColor;
-    Color borderColor;
-    List<BoxShadow> boxShadow;
-
-    switch (variant) {
-      case NeonButtonVariant.primary:
-        backgroundColor = AppTheme.techPurple;
-        foregroundColor = Colors.white;
-        borderColor = Colors.transparent;
-        boxShadow = [
-          const BoxShadow(
-            color: Color.fromARGB(100, 139, 92, 246),
-            blurRadius: 15,
-            spreadRadius: 3,
-            offset: Offset(0, 4),
-          ),
-        ];
-        break;
-      case NeonButtonVariant.outline:
-        backgroundColor = Colors.transparent;
-        foregroundColor = AppTheme.textPrimary;
-        borderColor = AppTheme.borderColor;
-        boxShadow = [];
-        break;
-      case NeonButtonVariant.danger:
-        backgroundColor = AppTheme.dangerRed;
-        foregroundColor = Colors.white;
-        borderColor = Colors.transparent;
-        boxShadow = [
-          const BoxShadow(
-            color: Color.fromARGB(100, 239, 68, 68),
-            blurRadius: 15,
-            spreadRadius: 3,
-            offset: Offset(0, 4),
-          ),
-        ];
-        break;
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor),
-        boxShadow: boxShadow,
-      ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: foregroundColor,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-        ),
-        child: child,
-      ),
-    );
-  }
-}
-
-enum NeonButtonVariant {
-  primary,
-  outline,
-  danger,
 }
