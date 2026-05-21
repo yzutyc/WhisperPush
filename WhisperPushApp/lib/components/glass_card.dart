@@ -3,7 +3,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/theme_provider.dart';
 import '../theme/app_theme.dart';
 
 class GlassCard extends StatefulWidget {
@@ -68,6 +70,9 @@ class _GlassCardState extends State<GlassCard> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDark = themeProvider.isDarkMode;
+    
     return MouseRegion(
       onEnter: (_) {
         if (widget.enableHover) {
@@ -86,66 +91,108 @@ class _GlassCardState extends State<GlassCard> with SingleTickerProviderStateMix
           curve: Curves.easeOut,
           margin: widget.margin,
           padding: widget.padding,
-          decoration: BoxDecoration(
-            color: _isHovered
-                ? const Color.fromARGB(240, 30, 41, 59)
-                : const Color.fromARGB(200, 30, 41, 59),
-            borderRadius: AppTheme.borderRadius,
-            border: widget.showBorder
-                ? Border.all(
-                    color: _isHovered
-                        ? const Color.fromARGB(180, 139, 92, 246)
-                        : const Color.fromARGB(100, 139, 92, 246),
-                    width: _isHovered ? 1.5 : 1,
-                  )
-                : Border.all(color: Colors.transparent),
-            boxShadow: widget.enableGlow
-                ? [
-                    BoxShadow(
-                      color: const Color.fromARGB(50, 0, 0, 0),
-                      blurRadius: _isHovered ? 25 : 20,
-                      spreadRadius: _isHovered ? 8 : 5,
-                      offset: const Offset(0, 4),
-                    ),
-                    BoxShadow(
-                      color: const Color.fromARGB(60, 139, 92, 246),
-                      blurRadius: _isHovered ? 30 : 15,
-                      spreadRadius: _isHovered ? 10 : 3,
-                    ),
-                    BoxShadow(
-                      color: const Color.fromARGB(40, 6, 182, 212),
-                      blurRadius: _isHovered ? 20 : 10,
-                      spreadRadius: _isHovered ? 6 : 2,
-                    ),
-                  ]
-                : [
-                    const BoxShadow(
-                      color: Color.fromARGB(40, 0, 0, 0),
-                      blurRadius: 15,
-                      spreadRadius: 3,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-          ),
+          decoration: isDark
+              ? BoxDecoration(
+                  color: _isHovered
+                      ? const Color.fromARGB(240, 30, 41, 59)
+                      : const Color.fromARGB(200, 30, 41, 59),
+                  borderRadius: AppTheme.borderRadius,
+                  border: widget.showBorder
+                      ? Border.all(
+                          color: _isHovered
+                              ? const Color.fromARGB(180, 139, 92, 246)
+                              : const Color.fromARGB(100, 139, 92, 246),
+                          width: _isHovered ? 1.5 : 1,
+                        )
+                      : Border.all(color: Colors.transparent),
+                  boxShadow: widget.enableGlow
+                      ? [
+                          BoxShadow(
+                            color: const Color.fromARGB(50, 0, 0, 0),
+                            blurRadius: _isHovered ? 25 : 20,
+                            spreadRadius: _isHovered ? 8 : 5,
+                            offset: const Offset(0, 4),
+                          ),
+                          BoxShadow(
+                            color: const Color.fromARGB(60, 139, 92, 246),
+                            blurRadius: _isHovered ? 30 : 15,
+                            spreadRadius: _isHovered ? 10 : 3,
+                          ),
+                          BoxShadow(
+                            color: const Color.fromARGB(40, 6, 182, 212),
+                            blurRadius: _isHovered ? 20 : 10,
+                            spreadRadius: _isHovered ? 6 : 2,
+                          ),
+                        ]
+                      : [
+                          const BoxShadow(
+                            color: Color.fromARGB(40, 0, 0, 0),
+                            blurRadius: 15,
+                            spreadRadius: 3,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                )
+              : BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: AppTheme.borderRadius,
+                  border: widget.showBorder
+                      ? Border.all(
+                          color: _isHovered
+                              ? AppTheme.techPurple
+                              : AppTheme.borderColor,
+                          width: _isHovered ? 1.5 : 1,
+                        )
+                      : Border.all(color: Colors.transparent),
+                  boxShadow: widget.enableGlow
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(_isHovered ? 0.1 : 0.06),
+                            blurRadius: _isHovered ? 20 : 15,
+                            offset: const Offset(0, 4),
+                          ),
+                          if (_isHovered)
+                            BoxShadow(
+                              color: AppTheme.techPurple.withOpacity(0.15),
+                              blurRadius: 15,
+                              offset: const Offset(0, 2),
+                            ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                ),
           transform: _isHovered
               ? Matrix4.translationValues(0, -4, 10)
               : Matrix4.translationValues(0, 0, 0),
-          child: ClipRRect(
-            borderRadius: AppTheme.borderRadius,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: _isHovered ? 20 : 15,
-                sigmaY: _isHovered ? 20 : 15,
-              ),
-              child: widget.onTap != null
+          child: isDark
+              ? ClipRRect(
+                  borderRadius: AppTheme.borderRadius,
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: _isHovered ? 20 : 15,
+                      sigmaY: _isHovered ? 20 : 15,
+                    ),
+                    child: widget.onTap != null
+                        ? InkWell(
+                            onTap: widget.onTap,
+                            borderRadius: AppTheme.borderRadius,
+                            child: widget.child,
+                          )
+                        : widget.child,
+                  ),
+                )
+              : (widget.onTap != null
                   ? InkWell(
                       onTap: widget.onTap,
                       borderRadius: AppTheme.borderRadius,
                       child: widget.child,
                     )
-                  : widget.child,
-            ),
-          ),
+                  : widget.child),
         ),
       ),
     );
@@ -172,41 +219,66 @@ class GlassCardWithBorder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDark = themeProvider.isDarkMode;
+    
     return Container(
       margin: margin,
       padding: padding,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(180, 30, 41, 59),
-        borderRadius: AppTheme.borderRadius,
-        border: Border.all(color: borderColor, width: borderWidth),
-        boxShadow: enableGlow
-            ? [
-                const BoxShadow(
-                  color: Color.fromARGB(30, 0, 0, 0),
-                  blurRadius: 15,
-                  spreadRadius: 3,
-                ),
-                BoxShadow(
-                  color: borderColor.withValues(alpha: 0.4),
-                  blurRadius: 15,
-                  spreadRadius: 3,
-                ),
-              ]
-            : [
-                const BoxShadow(
-                  color: Color.fromARGB(30, 0, 0, 0),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ],
-      ),
-      child: ClipRRect(
-        borderRadius: AppTheme.borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: child,
-        ),
-      ),
+      decoration: isDark
+          ? BoxDecoration(
+              color: const Color.fromARGB(180, 30, 41, 59),
+              borderRadius: AppTheme.borderRadius,
+              border: Border.all(color: borderColor, width: borderWidth),
+              boxShadow: enableGlow
+                  ? [
+                      const BoxShadow(
+                        color: Color.fromARGB(30, 0, 0, 0),
+                        blurRadius: 15,
+                        spreadRadius: 3,
+                      ),
+                      BoxShadow(
+                        color: borderColor.withValues(alpha: 0.4),
+                        blurRadius: 15,
+                        spreadRadius: 3,
+                      ),
+                    ]
+                  : [
+                      const BoxShadow(
+                        color: Color.fromARGB(30, 0, 0, 0),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+            )
+          : BoxDecoration(
+              color: Colors.white,
+              borderRadius: AppTheme.borderRadius,
+              border: Border.all(
+                color: borderColor != const Color.fromARGB(120, 139, 92, 246)
+                    ? borderColor
+                    : AppTheme.borderColor,
+                width: borderWidth,
+              ),
+              boxShadow: enableGlow
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : [],
+            ),
+      child: isDark
+          ? ClipRRect(
+              borderRadius: AppTheme.borderRadius,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: child,
+              ),
+            )
+          : child,
     );
   }
 }

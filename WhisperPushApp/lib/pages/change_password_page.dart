@@ -93,9 +93,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text('修改密码', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('修改密码', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -126,14 +126,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.check_circle,
                               size: 50,
                               color: AppTheme.pulseGreen,
                             ),
                           ),
                           const SizedBox(height: 24),
-                          const Text(
+                          Text(
                             '密码修改成功',
                             style: TextStyle(
                               fontSize: 24,
@@ -142,7 +142,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          const Text(
+                          Text(
                             '请使用新密码重新登录',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: AppTheme.textTertiary),
@@ -168,14 +168,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 shape: BoxShape.circle,
                                 color: AppTheme.neonBlue.withValues(alpha: 0.2),
                               ),
-                              child: const Icon(
-                                Icons.key,
-                                size: 40,
-                                color: AppTheme.neonBlue,
-                              ),
+                              child: Icon(
+                              Icons.key,
+                              size: 40,
+                              color: AppTheme.neonBlue,
+                            ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
+                            Text(
                               '修改密码',
                               style: TextStyle(
                                 fontSize: 28,
@@ -184,7 +184,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text(
+                            Text(
                               '请输入当前密码和新密码',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppTheme.textTertiary),
@@ -231,10 +231,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             const SizedBox(height: 24),
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                '取消',
-                                style: TextStyle(color: AppTheme.textTertiary),
-                              ),
+                              child: Text(
+                              '取消',
+                              style: TextStyle(color: AppTheme.textTertiary),
+                            ),
                             ),
                           ],
                         ),

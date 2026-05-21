@@ -51,7 +51,7 @@ def main():
         sys.exit(1)
     
     logger.info("启动服务...")
-    port = int(os.environ.get("PORT", "8001"))
+    port = int(os.environ.get("PORT", "8000"))
     uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)
 
 

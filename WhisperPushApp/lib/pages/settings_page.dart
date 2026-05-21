@@ -12,6 +12,7 @@ import '../components/toast_widget.dart';
 import '../models/secret.dart';
 import '../models/user.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/logger.dart';
 import 'change_password_page.dart';
@@ -70,10 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       await api.updateUserNotificationsSetting(enabled);
       if (mounted) {
-        ToastWidget.showInfo(
-          context,
-          enabled ? '已开启推送通知' : '已关闭推送通知',
-        );
+        ToastWidget.showInfo(context, enabled ? '已开启推送通知' : '已关闭推送通知');
       }
     } catch (e) {
       Logger.e('保存推送设置失败', error: e);
@@ -160,23 +158,26 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showSecretKeyDialog(String secretKey) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDark = themeProvider.isDarkMode;
+    
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: isDark ? const Color(0xFF1A1A2E) : AppTheme.spaceIndigo,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.key, color: AppTheme.techPurple),
             SizedBox(width: 8),
-            Text('秘钥已生成', style: TextStyle(color: Colors.white)),
+            Text('秘钥已生成', style: TextStyle(color: isDark ? Colors.white : AppTheme.textPrimary)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               '请立即复制秘钥，关闭后无法再次查看：',
               style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
             ),
@@ -184,13 +185,15 @@ class _SettingsPageState extends State<SettingsPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.techPurple.withValues(alpha: 0.1),
+                color: AppTheme.techPurple.withValues(alpha: isDark ? 0.1 : 0.08),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.techPurple.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppTheme.techPurple.withValues(alpha: isDark ? 0.3 : 0.2),
+                ),
               ),
               child: SelectableText(
                 secretKey,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.techPurple,
                   fontFamily: 'monospace',
                   fontSize: 14,
@@ -202,10 +205,11 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           ElevatedButton.icon(
             icon: const Icon(Icons.copy, size: 14),
-            label: const Text(''),
+            label: const Text('复制秘钥'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.techPurple,
               foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: secretKey));
@@ -239,14 +243,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: BoxShape.circle,
                   color: AppTheme.dangerRed.withValues(alpha: 0.15),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.delete,
                   color: AppTheme.dangerRed,
                   size: 28,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 '确认删除',
                 style: TextStyle(
                   fontSize: 22,
@@ -255,7 +259,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 '确定要删除这个 Secret 吗？',
                 style: TextStyle(
                   color: AppTheme.textSecondary,
@@ -361,14 +365,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: AppTheme.dangerRed.withValues(alpha: 0.3),
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.logout,
                   color: AppTheme.dangerRed,
                   size: 28,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 '确认退出',
                 style: TextStyle(
                   fontSize: 22,
@@ -377,7 +381,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 '确定要退出登录吗？',
                 style: TextStyle(
                   color: AppTheme.textSecondary,
@@ -387,12 +391,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '您将需要重新输入凭据才能访问',
-                style: TextStyle(
-                  color: AppTheme.textTertiary,
-                  fontSize: 13,
-                ),
+                style: TextStyle(color: AppTheme.textTertiary, fontSize: 13),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 28),
@@ -454,7 +455,7 @@ class _SettingsPageState extends State<SettingsPage> {
         token: authProvider.token,
       );
       await api.logout();
-      
+
       await authProvider.logout();
 
       if (mounted) {
@@ -489,15 +490,16 @@ class _SettingsPageState extends State<SettingsPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: const Color.fromARGB(20, 139, 92, 246),
-                border: Border.all(color: const Color.fromARGB(77, 139, 92, 246)),
+                border: Border.all(
+                  color: const Color.fromARGB(77, 139, 92, 246),
+                ),
               ),
               child: Icon(icon, color: AppTheme.techPurple, size: 18),
             ),
-          if (icon != null)
-            const SizedBox(width: 10),
+          if (icon != null) const SizedBox(width: 10),
           Text(
             title.toUpperCase(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
               color: AppTheme.techPurpleLight,
@@ -508,9 +510,9 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             height: 1,
             width: 40,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color.fromARGB(128, 139, 92, 246), Colors.transparent],
+                colors: [const Color.fromARGB(128, 139, 92, 246), Colors.transparent],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -534,9 +536,7 @@ class _SettingsPageState extends State<SettingsPage> {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
             Container(
@@ -544,7 +544,7 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 46,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                color: isHighlighted 
+                color: isHighlighted
                     ? const Color.fromARGB(35, 139, 92, 246)
                     : const Color.fromARGB(45, 51, 65, 85),
                 boxShadow: isHighlighted
@@ -558,8 +558,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     : null,
               ),
               child: Icon(
-                icon, 
-                color: isHighlighted ? AppTheme.techPurpleLight : AppTheme.textSecondary,
+                icon,
+                color: isHighlighted
+                    ? AppTheme.techPurpleLight
+                    : AppTheme.textSecondary,
                 size: 21,
               ),
             ),
@@ -572,15 +574,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     title,
                     style: TextStyle(
                       fontSize: 15.5,
-                      fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.normal,
-                      color: isHighlighted ? AppTheme.techPurpleLight : AppTheme.textPrimary,
+                      fontWeight: isHighlighted
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                      color: isHighlighted
+                          ? AppTheme.techPurpleLight
+                          : AppTheme.textPrimary,
                       height: 1.3,
                     ),
                   ),
                   if (subtitle != null)
                     Text(
                       subtitle,
-                      style: const TextStyle(fontSize: 12.5, color: AppTheme.textTertiary, height: 1.4),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: AppTheme.textTertiary,
+                        height: 1.4,
+                      ),
                     ),
                 ],
               ),
@@ -588,9 +598,9 @@ class _SettingsPageState extends State<SettingsPage> {
             if (trailing != null)
               trailing
             else
-              const Icon(
-                Icons.arrow_forward_ios, 
-                size: 17, 
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 17,
                 color: AppTheme.textTertiary,
               ),
           ],
@@ -621,28 +631,38 @@ class _SettingsPageState extends State<SettingsPage> {
                 borderRadius: BorderRadius.circular(12),
                 color: const Color.fromARGB(30, 6, 182, 212),
               ),
-              child: const Icon(Icons.cloud, color: AppTheme.neonBlue, size: 20),
+              child: Icon(
+                Icons.cloud,
+                color: AppTheme.neonBlue,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '服务器地址',
-                    style: TextStyle(fontSize: 13, color: AppTheme.textTertiary),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppTheme.textTertiary,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     _serverUrl ?? '未设置',
-                    style: const TextStyle(fontSize: 14, color: AppTheme.textPrimary),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textPrimary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            const Row(
+            Row(
               children: [
                 Text(
                   '切换',
@@ -663,16 +683,16 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text('设置', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('设置', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Container(
         decoration: AppTheme.gradientBackground,
         child: _isLoading
-            ? const Center(
+            ? Center(
                 child: CircularProgressIndicator(color: AppTheme.techPurple),
               )
             : ListView(
@@ -681,16 +701,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildServerInfoCard(),
                   _buildSectionHeader('账户', icon: Icons.account_circle),
                   GlassCard(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     padding: const EdgeInsets.all(0),
                     enableHover: false,
                     child: Column(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                          decoration: const BoxDecoration(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 20,
+                          ),
+                          decoration: BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(color: Color.fromARGB(77, 75, 85, 99)),
+                              bottom: BorderSide(
+                                color: const Color.fromARGB(77, 75, 85, 99)),
                             ),
                           ),
                           child: Row(
@@ -698,16 +725,19 @@ class _SettingsPageState extends State<SettingsPage> {
                               Container(
                                 width: 70,
                                 height: 70,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: LinearGradient(
-                                    colors: [AppTheme.techPurple, AppTheme.neonBlue],
+                                    colors: [
+                                      AppTheme.techPurple,
+                                      AppTheme.neonBlue,
+                                    ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Color.fromARGB(60, 139, 92, 246),
+                                      color: const Color.fromARGB(60, 139, 92, 246),
                                       blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
@@ -715,7 +745,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    _currentUser?.username[0].toUpperCase() ?? 'U',
+                                    _currentUser?.username[0].toUpperCase() ??
+                                        'U',
                                     style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
@@ -731,7 +762,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   children: [
                                     Text(
                                       _currentUser?.username ?? '用户名',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 19,
                                         fontWeight: FontWeight.bold,
                                         color: AppTheme.textPrimary,
@@ -740,7 +771,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     const SizedBox(height: 4),
                                     Text(
                                       _currentUser?.email ?? 'user@example.com',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         color: AppTheme.textTertiary,
                                       ),
@@ -758,7 +789,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ChangePasswordPage(),
+                              ),
                             );
                           },
                         ),
@@ -769,7 +803,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const TwoFactorPage()),
+                              MaterialPageRoute(
+                                builder: (context) => const TwoFactorPage(),
+                              ),
                             );
                           },
                         ),
@@ -778,7 +814,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   _buildSectionHeader('Secret 管理', icon: Icons.key),
                   GlassCard(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     padding: const EdgeInsets.all(0),
                     enableHover: false,
                     child: Column(
@@ -803,11 +842,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         else
                           ..._secrets.map((secret) {
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              decoration: const BoxDecoration(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: Color.fromARGB(77, 75, 85, 99),
+                                    color: const Color.fromARGB(77, 75, 85, 99),
                                   ),
                                 ),
                               ),
@@ -818,9 +860,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                     height: 44,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
-                                      color: const Color.fromARGB(30, 139, 92, 246),
+                                      color: const Color.fromARGB(
+                                        30,
+                                        139,
+                                        92,
+                                        246,
+                                      ),
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.key,
                                       color: AppTheme.techPurple,
                                       size: 20,
@@ -829,15 +876,18 @@ class _SettingsPageState extends State<SettingsPage> {
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           secret.displayName,
-                                          style: const TextStyle(color: AppTheme.textPrimary),
+                                          style: TextStyle(
+                                            color: AppTheme.textPrimary,
+                                          ),
                                         ),
                                         Text(
                                           secret.formattedCreatedAt,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
                                             color: AppTheme.textTertiary,
                                           ),
@@ -846,7 +896,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.delete,
                                       color: AppTheme.dangerRed,
                                       size: 20,
@@ -862,11 +912,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   _buildSectionHeader('安全设置', icon: Icons.security),
                   GlassCard(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     padding: const EdgeInsets.all(0),
                     enableHover: false,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -876,14 +932,14 @@ class _SettingsPageState extends State<SettingsPage> {
                               borderRadius: BorderRadius.circular(12),
                               color: const Color.fromARGB(40, 51, 65, 85),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.notifications,
                               color: AppTheme.textSecondary,
                               size: 20,
                             ),
                           ),
                           const SizedBox(width: 14),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -912,9 +968,79 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                   ),
+                  _buildSectionHeader('外观设置', icon: Icons.palette),
+                  GlassCard(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    padding: const EdgeInsets.all(0),
+                    enableHover: false,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      child: Consumer<ThemeProvider>(
+                        builder: (context, themeProvider, child) {
+                          return Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: const Color.fromARGB(40, 51, 65, 85),
+                                ),
+                                child: Icon(
+                                  themeProvider.isDarkMode
+                                      ? Icons.dark_mode
+                                      : Icons.light_mode,
+                                  color: AppTheme.textSecondary,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '深色模式',
+                                      style: TextStyle(
+                                        color: AppTheme.textPrimary,
+                                      ),
+                                    ),
+                                    Text(
+                                      themeProvider.isDarkMode
+                                          ? '当前使用深色主题'
+                                          : '当前使用浅色主题',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppTheme.textTertiary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              NeonSwitch(
+                                value: themeProvider.isDarkMode,
+                                onChanged: (value) {
+                                  themeProvider.toggleTheme();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                   _buildSectionHeader('关于', icon: Icons.info),
                   GlassCard(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     padding: const EdgeInsets.all(0),
                     enableHover: false,
                     child: Column(
@@ -924,7 +1050,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: '版本号',
                           trailing: Text(
                             _appVersion,
-                            style: const TextStyle(color: AppTheme.textTertiary),
+                            style: TextStyle(
+                              color: AppTheme.textTertiary,
+                            ),
                           ),
                         ),
                         _buildSettingItem(
@@ -934,7 +1062,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const TermsOfServicePage(),
+                                builder: (context) =>
+                                    const TermsOfServicePage(),
                               ),
                             );
                           },
@@ -962,7 +1091,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         foregroundColor: AppTheme.dangerRed,
-                        shape: const RoundedRectangleBorder(
+                        shape: RoundedRectangleBorder(
                           borderRadius: AppTheme.borderRadius,
                           side: BorderSide(color: AppTheme.dangerRed),
                         ),
@@ -978,3 +1107,4 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
+

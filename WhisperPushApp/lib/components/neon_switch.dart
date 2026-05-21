@@ -67,7 +67,7 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.height / 2),
             gradient: widget.value
-                ? const LinearGradient(
+                ? LinearGradient(
                     colors: [AppTheme.techPurple, AppTheme.neonBlue],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,

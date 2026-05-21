@@ -113,7 +113,7 @@ class _SearchInputState extends State<SearchInput> with SingleTickerProviderStat
               ),
               suffixIcon: widget.controller.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, color: AppTheme.textTertiary, size: 18),
+                      icon: Icon(Icons.clear, color: AppTheme.textTertiary, size: 18),
                       onPressed: () {
                         widget.controller.clear();
                         widget.onChanged?.call('');

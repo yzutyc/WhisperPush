@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/theme_provider.dart';
 import '../theme/app_theme.dart';
 
 enum ToastType { success, error, warning, info }
@@ -163,6 +165,8 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDark = themeProvider.isDarkMode;
     final colorScheme = _getColorScheme();
 
     return Positioned(
@@ -179,69 +183,117 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
               padding: const EdgeInsets.all(0),
               decoration: BoxDecoration(
                 borderRadius: AppTheme.borderRadius,
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.glowColor,
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 15,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                boxShadow: isDark
+                    ? [
+                        BoxShadow(
+                          color: colorScheme.glowColor,
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
               ),
               child: ClipRRect(
                 borderRadius: AppTheme.borderRadius,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(200, 30, 41, 59),
-                      borderRadius: AppTheme.borderRadius,
-                      border: Border.all(
-                        color: colorScheme.borderColor.withValues(alpha: 0.6),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
+                child: isDark
+                    ? BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorScheme.iconBg,
-                            boxShadow: [
-                              BoxShadow(
-                                color: colorScheme.iconColor.withValues(alpha: 0.3),
-                                blurRadius: 10,
+                            color: const Color.fromARGB(200, 30, 41, 59),
+                            borderRadius: AppTheme.borderRadius,
+                            border: Border.all(
+                              color: colorScheme.borderColor.withValues(alpha: 0.6),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colorScheme.iconBg,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: colorScheme.iconColor.withValues(alpha: 0.3),
+                                      blurRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  _getIcon(),
+                                  color: colorScheme.iconColor,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  widget.message,
+                                  style: TextStyle(
+                                    color: AppTheme.textPrimary,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          child: Icon(
-                            _getIcon(),
-                            color: colorScheme.iconColor,
-                            size: 18,
+                        ),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: AppTheme.borderRadius,
+                          border: Border.all(
+                            color: colorScheme.borderColor.withValues(alpha: isDark ? 0.6 : 0.4),
+                            width: 1.5,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            widget.message,
-                            style: const TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: colorScheme.iconBg,
+                              ),
+                              child: Icon(
+                                _getIcon(),
+                                color: colorScheme.iconColor,
+                                size: 18,
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                widget.message,
+                                style: TextStyle(
+                                  color: AppTheme.textPrimary,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
               ),
             ),
           ),

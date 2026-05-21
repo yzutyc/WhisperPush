@@ -92,14 +92,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               width: 2,
                             ),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.lock_open,
                             size: 40,
                             color: AppTheme.techPurple,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           '忘记密码',
                           style: TextStyle(
                             fontSize: 28,
@@ -108,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           '我们将发送重置链接',
                           style: TextStyle(
                             fontSize: 14,
@@ -124,9 +124,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   child: SingleChildScrollView(
                     child: Container(
                       width: double.infinity,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppTheme.spaceBlue,
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(32),
                           topRight: Radius.circular(32),
                         ),
@@ -139,7 +139,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 '重置密码',
                                 style: TextStyle(
                                   fontSize: 24,
@@ -148,7 +148,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 '请输入您注册时使用的邮箱',
                                 style: TextStyle(color: AppTheme.textTertiary),
                               ),
@@ -182,13 +182,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
+                                  Text(
                                     '想起密码了？',
                                     style: TextStyle(color: AppTheme.textTertiary),
                                   ),
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
-                                    child: const Text(
+                                    child: Text(
                                       '返回登录',
                                       style: TextStyle(
                                         color: AppTheme.techPurple,

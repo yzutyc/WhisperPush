@@ -1,34 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
 
 from app.middleware.logging_middleware import RequestLoggingMiddleware
 from app.routers import auth, secrets, messages, devices, two_factor, user_settings
 
 app = FastAPI(title="WhisperPush API", version="0.1.9")
 
-class DynamicCORSMiddleware(BaseHTTPMiddleware):
-
-    @classmethod
-    async def dispatch(cls, request: Request, call_next):
-        origin = request.headers.get("origin", "")
-        if origin.startswith("http://localhost") or origin.startswith("http://127.0.0.1"):
-            response = await call_next(request)
-            response.headers["Access-Control-Allow-Origin"] = origin
-            response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "*"
-            response.headers["Access-Control-Allow-Headers"] = "*"
-            return response
-        return await call_next(request)
-
 app.add_middleware(RequestLoggingMiddleware)
-app.add_middleware(DynamicCORSMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -131,7 +131,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 '确认禁用',
                 style: TextStyle(
                   fontSize: 20,
@@ -140,24 +140,24 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 '请输入您的密码以确认禁用双因素认证',
                 style: TextStyle(color: AppTheme.textTertiary),
               ),
               const SizedBox(height: 16),
               TextField(
                 obscureText: true,
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   labelText: '密码',
-                  labelStyle: const TextStyle(color: AppTheme.textTertiary),
+                  labelStyle: TextStyle(color: AppTheme.textTertiary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppTheme.borderColor),
+                    borderSide: BorderSide(color: AppTheme.borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppTheme.techPurple, width: 2),
+                    borderSide: BorderSide(color: AppTheme.techPurple, width: 2),
                   ),
                   filled: true,
                   fillColor: AppTheme.spaceBlue,
@@ -264,16 +264,16 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text('双因素认证', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('双因素认证', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Container(
         decoration: AppTheme.gradientBackground,
         child: _isLoading
-            ? const Center(
+            ? Center(
                 child: CircularProgressIndicator(color: AppTheme.techPurple),
               )
             : !_apiAvailable
@@ -310,14 +310,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 borderRadius: BorderRadius.circular(60),
                 border: Border.all(color: AppTheme.borderColor),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.cloud_off,
                 size: 64,
                 color: AppTheme.textTertiary,
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               '服务暂不可用',
               style: TextStyle(
                 fontSize: 24,
@@ -326,14 +326,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               '双因素认证功能尚未在服务器端启用',
               style: TextStyle(color: AppTheme.textTertiary),
             ),
             const SizedBox(height: 8),
             Text(
               '错误信息: $_apiError',
-              style: const TextStyle(color: AppTheme.textTertiary, fontSize: 12),
+              style: TextStyle(color: AppTheme.textTertiary, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -396,7 +396,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       '双因素认证可以提高您账户的安全性',
                       style: TextStyle(color: AppTheme.textTertiary),
                     ),
@@ -407,14 +407,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 24),
-        const GlassContainer(
+        GlassContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Icon(Icons.info_outline, color: AppTheme.techPurple),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     '什么是双因素认证？',
                     style: TextStyle(
@@ -425,7 +425,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 '双因素认证（2FA）是一种安全验证方式，除了密码之外，还需要额外的验证步骤才能登录您的账户。这可以有效防止他人在获取您密码后访问您的账户。',
                 style: TextStyle(height: 1.6, color: AppTheme.textTertiary),
@@ -434,14 +434,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 16),
-        const GlassContainer(
+        GlassContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Icon(Icons.work, color: AppTheme.neonBlue),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     '工作原理',
                     style: TextStyle(
@@ -452,7 +452,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -460,12 +460,12 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                     '1. 启用双因素认证后，系统会生成一个二维码',
                     style: TextStyle(color: AppTheme.textSecondary),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     '2. 使用认证应用（如Google Authenticator）扫描二维码',
                     style: TextStyle(color: AppTheme.textSecondary),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     '3. 每次登录时，除了密码外还需要输入认证应用生成的6位验证码',
                     style: TextStyle(color: AppTheme.textSecondary),
@@ -511,7 +511,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
 
     return Column(
       children: [
-        const Text(
+        Text(
           '扫描二维码',
           style: TextStyle(
             fontSize: 24,
@@ -520,7 +520,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           '使用认证应用（如Google Authenticator）扫描下方二维码',
           style: TextStyle(color: AppTheme.textTertiary),
         ),
@@ -541,14 +541,14 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: AppTheme.borderColor),
                     ),
-                    child: const Icon(
-                      Icons.qr_code,
-                      size: 64,
-                      color: AppTheme.textTertiary,
-                    ),
+                    child: Icon(
+              Icons.qr_code,
+              size: 64,
+              color: AppTheme.textTertiary,
+            ),
                   ),
                 )
-              : const SizedBox(
+              : SizedBox(
                   width: 200,
                   height: 200,
                   child: Center(
@@ -561,7 +561,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              const Text(
+              Text(
                 '手动输入密钥（如果无法扫描）',
                 style: TextStyle(color: AppTheme.textTertiary),
               ),
@@ -575,7 +575,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 ),
                 child: SelectableText(
                   _secret ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Monospace',
                     fontSize: 16,
                     color: AppTheme.textPrimary,
@@ -587,7 +587,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           '输入验证码',
           style: TextStyle(
             fontSize: 18,
@@ -603,17 +603,17 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: const InputDecoration(
-              hintText: '6位验证码',
-              hintStyle: TextStyle(color: AppTheme.textTertiary),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              counterText: '',
+            style: TextStyle(color: AppTheme.textPrimary),
+          decoration: InputDecoration(
+            hintText: '6位验证码',
+            hintStyle: TextStyle(color: AppTheme.textTertiary),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
             ),
+            counterText: '',
+          ),
             textAlign: TextAlign.center,
           ),
         ),
@@ -652,7 +652,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
   Widget _buildRecoveryCodesSection() {
     return Column(
       children: [
-        const Text(
+        Text(
           '恢复码',
           style: TextStyle(
             fontSize: 24,
@@ -668,7 +668,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             border: Border.all(color: AppTheme.warningOrange),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Text(
+          child: Text(
             '⚠️ 重要：请妥善保存这些恢复码！如果您丢失了认证设备，可以使用这些恢复码来登录您的账户。',
             style: TextStyle(color: AppTheme.warningOrange),
           ),
@@ -686,12 +686,12 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                         children: [
                           Text(
                             '${entry.key + 1}.',
-                            style: const TextStyle(color: AppTheme.textTertiary),
+                            style: TextStyle(color: AppTheme.textTertiary),
                           ),
                           const SizedBox(width: 12),
                           Text(
                             entry.value,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Monospace',
                               fontSize: 14,
                               color: AppTheme.textPrimary,

@@ -40,7 +40,7 @@ class FormInput extends StatelessWidget {
       onChanged: onChanged,
       onFieldSubmitted: onFieldSubmitted,
       enabled: enabled,
-      style: const TextStyle(fontSize: 16, color: AppTheme.textPrimary),
+      style: TextStyle(fontSize: 16, color: AppTheme.textPrimary),
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
@@ -48,30 +48,30 @@ class FormInput extends StatelessWidget {
         errorText: errorText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.borderColor),
+          borderSide: BorderSide(color: AppTheme.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.techPurple, width: 2),
+          borderSide: BorderSide(color: AppTheme.techPurple, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.borderColor),
+          borderSide: BorderSide(color: AppTheme.borderColor),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.dangerRed, width: 2),
+          borderSide: BorderSide(color: AppTheme.dangerRed, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.dangerRed, width: 2),
+          borderSide: BorderSide(color: AppTheme.dangerRed, width: 2),
         ),
         filled: true,
         fillColor: AppTheme.spaceIndigo,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-        labelStyle: const TextStyle(color: AppTheme.textTertiary),
-        hintStyle: const TextStyle(color: AppTheme.textTertiary),
-        errorStyle: const TextStyle(color: AppTheme.dangerRed),
+        labelStyle: TextStyle(color: AppTheme.textTertiary),
+        hintStyle: TextStyle(color: AppTheme.textTertiary),
+        errorStyle: TextStyle(color: AppTheme.dangerRed),
       ),
     );
   }

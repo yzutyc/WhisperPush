@@ -91,7 +91,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     '确认删除',
                     style: TextStyle(
                       fontSize: 20,
@@ -100,7 +100,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     '确定要删除这条消息吗？',
                     style: TextStyle(color: AppTheme.textTertiary),
                   ),
@@ -208,39 +208,39 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
             }
           },
           styleSheet: MarkdownStyleSheet(
-            p: const TextStyle(
+            p: TextStyle(
               fontSize: 15,
               color: AppTheme.textSecondary,
               height: 1.6,
             ),
-            strong: const TextStyle(
+            strong: TextStyle(
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            em: const TextStyle(
+            em: TextStyle(
               fontStyle: FontStyle.italic,
               color: AppTheme.textSecondary,
             ),
-            h1: const TextStyle(
+            h1: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            h2: const TextStyle(
+            h2: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-            h3: const TextStyle(
+            h3: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppTheme.textSecondary,
             ),
-            blockquote: const TextStyle(
+            blockquote: TextStyle(
               color: AppTheme.textTertiary,
               fontStyle: FontStyle.italic,
             ),
-            code: const TextStyle(
+            code: TextStyle(
               backgroundColor: AppTheme.spaceBlue,
               color: AppTheme.neonBlue,
               fontFamily: 'Monospace',
@@ -287,7 +287,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       default:
         return Text(
           widget.message.body,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             color: AppTheme.textSecondary,
             height: 1.6,
@@ -386,7 +386,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
           const SizedBox(width: 4),
           Text(
             widget.message.group!,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.techPurple,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -410,18 +410,18 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text(
+        title: Text(
           '消息详情',
           style: TextStyle(color: AppTheme.textPrimary),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.copy, color: AppTheme.textPrimary),
+            icon: Icon(Icons.copy, color: AppTheme.textPrimary),
             onPressed: _copyToClipboard,
             tooltip: '复制内容',
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.mark_email_unread,
               color: AppTheme.textPrimary,
             ),
@@ -429,12 +429,12 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
             tooltip: '标记未读',
           ),
           IconButton(
-            icon: const Icon(Icons.share, color: AppTheme.textPrimary),
+            icon: Icon(Icons.share, color: AppTheme.textPrimary),
             onPressed: _shareMessage,
             tooltip: '分享',
           ),
           IconButton(
-            icon: const Icon(Icons.delete, color: AppTheme.dangerRed),
+            icon: Icon(Icons.delete, color: AppTheme.dangerRed),
             onPressed: _deleteMessage,
             tooltip: '删除',
           ),
@@ -458,7 +458,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                         padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                         child: Text(
                           widget.message.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textPrimary,
@@ -478,7 +478,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                               const SizedBox(width: 12),
                             _buildLevelBadge(),
                             const Spacer(),
-                            const Icon(
+                            Icon(
                               Icons.access_time,
                               size: 16,
                               color: AppTheme.textTertiary,
@@ -486,7 +486,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
                             const SizedBox(width: 8),
                             Text(
                               widget.message.formattedDate,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 color: AppTheme.textTertiary,
                               ),

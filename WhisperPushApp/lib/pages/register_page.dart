@@ -84,8 +84,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('注册成功，请登录'),
+          SnackBar(
+            content: const Text('注册成功，请登录'),
             backgroundColor: AppTheme.spaceIndigo,
           ),
         );
@@ -134,7 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: const LogoWidget(size: 80),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'WhisperPush',
                         style: TextStyle(
                           fontSize: 28,
@@ -143,7 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Secure Push Notifications',
                         style: TextStyle(
                           fontSize: 14,
@@ -159,9 +159,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: SingleChildScrollView(
                   child: Container(
                     width: double.infinity,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppTheme.spaceBlue,
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(32),
                         topRight: Radius.circular(32),
                       ),
@@ -174,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               '创建账户',
                               style: TextStyle(
                                 fontSize: 24,
@@ -183,7 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               '请填写以下信息',
                               style: TextStyle(color: AppTheme.textTertiary),
                             ),
@@ -229,7 +229,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          const Text(
+                                          Text(
                                             '密码强度: ',
                                             style: TextStyle(color: AppTheme.textTertiary),
                                           ),
@@ -316,7 +316,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
+                                Text(
                                   '已有账户？',
                                   style: TextStyle(color: AppTheme.textTertiary),
                                 ),
@@ -324,7 +324,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: const Text(
+                                  child: Text(
                                     '立即登录',
                                     style: TextStyle(
                                       color: AppTheme.techPurple,
@@ -335,7 +335,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               '注册即表示您同意我们的服务条款和隐私政策',
                               style: TextStyle(fontSize: 12, color: AppTheme.textTertiary),
                               textAlign: TextAlign.center,

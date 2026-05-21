@@ -100,7 +100,7 @@ EnvironmentFile=${INSTALL_DIR}/.env
 
 ExecStartPre=/bin/bash ${INSTALL_DIR}/prestart.sh
 
-ExecStart=${INSTALL_DIR}/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4 --log-level info
+ExecStart=${INSTALL_DIR}/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --log-level info
 
 ExecStop=/bin/kill -TERM \$MAINPID
 KillMode=mixed
@@ -140,7 +140,7 @@ sleep 3
 if sudo systemctl is-active --quiet "${APP_NAME}"; then
   echo "✅ 服务启动成功"
   echo "服务状态: 运行中"
-  echo "监听端口: 8001"
+  echo "监听端口: 8000"
 else
   echo "❌ 服务启动失败，查看日志:"
   sudo journalctl -u "${APP_NAME}" -n 50

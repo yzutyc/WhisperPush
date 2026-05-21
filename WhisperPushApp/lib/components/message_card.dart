@@ -132,7 +132,7 @@ class MessageCard extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             message.group!,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.techPurpleLight,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -168,9 +168,9 @@ class MessageCard extends StatelessWidget {
         return MarkdownBody(
           data: preview,
           styleSheet: MarkdownStyleSheet(
-            p: const TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
-            strong: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textSecondary),
-            em: const TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textTertiary),
+            p: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
+            strong: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textSecondary),
+            em: TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textTertiary),
           ),
         );
       case 'html':
@@ -190,7 +190,7 @@ class MessageCard extends StatelessWidget {
       default:
         return Text(
           preview,
-          style: const TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
+          style: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
         );
     }
   }
@@ -324,7 +324,7 @@ class MessageCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     message.formattedTime,
-                    style: const TextStyle(fontSize: 12, color: AppTheme.textDisabled),
+                    style: TextStyle(fontSize: 12, color: AppTheme.textDisabled),
                   ),
                 ],
               ),

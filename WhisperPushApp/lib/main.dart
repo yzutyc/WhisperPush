@@ -8,6 +8,7 @@ import 'package:window_manager/window_manager.dart';
 import 'components/web_container.dart';
 import 'pages/splash_screen.dart';
 import 'providers/auth_provider.dart';
+import 'providers/theme_provider.dart';
 import 'theme/app_theme.dart';
 
 const double kMinWindowWidth = 390.0;
@@ -46,20 +47,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget app = ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
-      child: MaterialApp(
-        title: 'WhisperPush',
-        theme: AppTheme.dark(),
-        home: const SplashScreen(),
-        debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          // 确保 AppTheme 与 ThemeProvider 同步
+          AppTheme.setThemeMode(themeProvider.isDarkMode);
+          
+          Widget materialApp = MaterialApp(
+            key: ValueKey(themeProvider.isDarkMode), // 强制重建
+            title: 'WhisperPush',
+            theme: AppTheme.currentTheme,
+            home: const SplashScreen(),
+            debugShowCheckedModeBanner: false,
+          );
+
+          if (kIsWeb) {
+            return WebContainer(child: materialApp);
+          }
+
+          return materialApp;
+        },
       ),
     );
-
-    if (kIsWeb) {
-      app = WebContainer(child: app);
-    }
-
-    return app;
   }
 }

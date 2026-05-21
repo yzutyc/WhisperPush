@@ -16,7 +16,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -38,7 +39,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: const Interval(0.2, 0.8)),
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.8),
+      ),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
@@ -46,10 +50,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const SawTooth(3),
-      ),
+      CurvedAnimation(parent: _animationController, curve: const SawTooth(3)),
     );
 
     _particleAnimation = Tween<double>(begin: 0, end: 1).animate(
@@ -158,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Text(
+                        Text(
                           'WhisperPush',
                           style: TextStyle(
                             fontSize: 36,
@@ -168,7 +169,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Secure Push Notifications',
                           style: TextStyle(
                             fontSize: 14,
@@ -181,7 +182,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         const SizedBox(height: 16),
                         Text(
                           _version,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             color: AppTheme.textTertiary,
                           ),
@@ -243,11 +244,7 @@ class _ParticlePainter extends CustomPainter {
         92,
         246,
       );
-      canvas.drawCircle(
-        Offset(particle.x, particle.y),
-        particle.size,
-        paint,
-      );
+      canvas.drawCircle(Offset(particle.x, particle.y), particle.size, paint);
     }
   }
 
@@ -262,7 +259,7 @@ class NeonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: 50,
       height: 50,
       child: CircularProgressIndicator(

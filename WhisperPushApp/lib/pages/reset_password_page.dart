@@ -79,9 +79,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: const Text('重置密码', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('重置密码', style: TextStyle(color: AppTheme.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -112,14 +112,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.check_circle,
                               size: 50,
                               color: AppTheme.pulseGreen,
                             ),
                           ),
                           const SizedBox(height: 24),
-                          const Text(
+                          Text(
                             '密码重置成功',
                             style: TextStyle(
                               fontSize: 24,
@@ -128,7 +128,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          const Text(
+                          Text(
                             '请使用新密码登录您的账户',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: AppTheme.textTertiary),
@@ -160,14 +160,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                 shape: BoxShape.circle,
                                 color: AppTheme.techPurple.withValues(alpha: 0.2),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.lock_reset,
                                 size: 40,
                                 color: AppTheme.techPurple,
                               ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
+                            Text(
                               '重置密码',
                               style: TextStyle(
                                 fontSize: 28,
@@ -176,7 +176,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const Text(
+                            Text(
                               '请输入您的新密码',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppTheme.textTertiary),

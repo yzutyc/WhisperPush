@@ -57,7 +57,7 @@ class EmptyState extends StatelessWidget {
           const SizedBox(height: 28),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
@@ -69,7 +69,7 @@ class EmptyState extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14.5,
                 color: AppTheme.textTertiary,
                 height: 1.6,
@@ -85,7 +85,7 @@ class EmptyState extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   foregroundColor: AppTheme.techPurpleLight,
-                  shape: const RoundedRectangleBorder(
+                  shape: RoundedRectangleBorder(
                     borderRadius: AppTheme.borderRadius,
                     side: BorderSide(color: AppTheme.techPurple, width: 1.5),
                   ),

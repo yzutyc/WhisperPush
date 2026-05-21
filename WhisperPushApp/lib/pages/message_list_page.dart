@@ -206,19 +206,19 @@ class _MessageListPageState extends State<MessageListPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.spaceIndigo,
-        title: const Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
         content: Text(
           '确定要删除选中的 ${_selectedMessageIds.length} 条消息吗？',
-          style: const TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消', style: TextStyle(color: AppTheme.textTertiary)),
+            child: Text('取消', style: TextStyle(color: AppTheme.textTertiary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除', style: TextStyle(color: AppTheme.dangerRed)),
+            child: Text('删除', style: TextStyle(color: AppTheme.dangerRed)),
           ),
         ],
       ),
@@ -326,7 +326,7 @@ class _MessageListPageState extends State<MessageListPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               '筛选消息',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
             ),
@@ -336,7 +336,7 @@ class _MessageListPageState extends State<MessageListPage> {
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
                 initialValue: _filterStatus,
-                hint: const Text('状态', style: TextStyle(color: AppTheme.textTertiary)),
+                hint: Text('状态', style: TextStyle(color: AppTheme.textTertiary)),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: const [
                   DropdownMenuItem(value: 'all', child: Text('全部')),
@@ -351,7 +351,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
@@ -360,7 +360,7 @@ class _MessageListPageState extends State<MessageListPage> {
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
                 initialValue: _filterLevel,
-                hint: const Text('级别', style: TextStyle(color: AppTheme.textTertiary)),
+                hint: Text('级别', style: TextStyle(color: AppTheme.textTertiary)),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: const [
                   DropdownMenuItem(value: 'all', child: Text('全部')),
@@ -376,7 +376,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
@@ -385,7 +385,7 @@ class _MessageListPageState extends State<MessageListPage> {
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
                 initialValue: _filterGroup,
-                hint: const Text('分组', style: TextStyle(color: AppTheme.textTertiary)),
+                hint: Text('分组', style: TextStyle(color: AppTheme.textTertiary)),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: [
                   const DropdownMenuItem(value: 'all', child: Text('全部')),
@@ -401,7 +401,7 @@ class _MessageListPageState extends State<MessageListPage> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                style: const TextStyle(color: AppTheme.textPrimary),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 24),
@@ -425,7 +425,7 @@ class _MessageListPageState extends State<MessageListPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      side: const BorderSide(color: AppTheme.borderColor),
+                      side: BorderSide(color: AppTheme.borderColor),
                     ),
                     child: const Text('重置'),
                   ),
@@ -473,11 +473,11 @@ class _MessageListPageState extends State<MessageListPage> {
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
         title: _isMultiSelectMode
-            ? Text('已选择 ${_selectedMessageIds.length} 条', style: const TextStyle(color: AppTheme.textPrimary))
-            : const Text('消息', style: TextStyle(color: AppTheme.textPrimary)),
+            ? Text('已选择 ${_selectedMessageIds.length} 条', style: TextStyle(color: AppTheme.textPrimary))
+            : Text('消息', style: TextStyle(color: AppTheme.textPrimary)),
         leading: _isMultiSelectMode
             ? IconButton(
-                icon: const Icon(Icons.close, color: AppTheme.textPrimary),
+                icon: Icon(Icons.close, color: AppTheme.textPrimary),
                 onPressed: _exitMultiSelectMode,
               )
             : null,
@@ -486,12 +486,12 @@ class _MessageListPageState extends State<MessageListPage> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.mark_email_read, color: AppTheme.textPrimary),
+                  icon: Icon(Icons.mark_email_read, color: AppTheme.textPrimary),
                   onPressed: _markSelectedAsRead,
                   tooltip: '标记为已读',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: AppTheme.dangerRed),
+                  icon: Icon(Icons.delete, color: AppTheme.dangerRed),
                   onPressed: _deleteSelected,
                   tooltip: '删除',
                 ),
@@ -501,12 +501,12 @@ class _MessageListPageState extends State<MessageListPage> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.filter_alt, color: AppTheme.textPrimary),
+                  icon: Icon(Icons.filter_alt, color: AppTheme.textPrimary),
                   onPressed: _showFilterDialog,
                   tooltip: '筛选',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings, color: AppTheme.textPrimary),
+                  icon: Icon(Icons.settings, color: AppTheme.textPrimary),
                   onPressed: () {
                     Navigator.push(
                       context,

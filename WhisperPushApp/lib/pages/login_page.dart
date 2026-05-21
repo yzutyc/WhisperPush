@@ -141,7 +141,9 @@ class _LoginPageState extends State<LoginPage> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.techPurple.withValues(alpha: 0.4),
+                                color: AppTheme.techPurple.withValues(
+                                  alpha: 0.4,
+                                ),
                                 blurRadius: 30,
                                 spreadRadius: 10,
                               ),
@@ -150,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: const LogoWidget(size: 80),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'WhisperPush',
                           style: TextStyle(
                             fontSize: 28,
@@ -159,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Secure Push Notifications',
                           style: TextStyle(
                             fontSize: 14,
@@ -175,9 +177,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: SingleChildScrollView(
                     child: Container(
                       width: double.infinity,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppTheme.spaceBlue,
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(32),
                           topRight: Radius.circular(32),
                         ),
@@ -190,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 '欢迎回来',
                                 style: TextStyle(
                                   fontSize: 24,
@@ -199,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 '请登录您的账户',
                                 style: TextStyle(color: AppTheme.textTertiary),
                               ),
@@ -214,7 +216,9 @@ class _LoginPageState extends State<LoginPage> {
                                       labelText: '用户名或邮箱',
                                       prefixIcon: Icons.person,
                                       validator: (value) =>
-                                          value?.isEmpty ?? true ? '请输入用户名或邮箱' : null,
+                                          value?.isEmpty ?? true
+                                              ? '请输入用户名或邮箱'
+                                              : null,
                                     ),
                                     const SizedBox(height: 16),
                                     FormInput(
@@ -223,7 +227,9 @@ class _LoginPageState extends State<LoginPage> {
                                       prefixIcon: Icons.lock,
                                       obscureText: true,
                                       validator: (value) =>
-                                          value?.isEmpty ?? true ? '请输入密码' : null,
+                                          value?.isEmpty ?? true
+                                              ? '请输入密码'
+                                              : null,
                                       onFieldSubmitted: (_) => _submit(),
                                     ),
                                   ],
@@ -231,11 +237,12 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextButton(
                                     onPressed: _showServerSelector,
-                                    child: const Text(
+                                    child: Text(
                                       '选择服务器',
                                       style: TextStyle(
                                         color: AppTheme.textTertiary,
@@ -248,11 +255,12 @@ class _LoginPageState extends State<LoginPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => const ForgotPasswordPage(),
+                                          builder: (context) =>
+                                              const ForgotPasswordPage(),
                                         ),
                                       );
                                     },
-                                    child: const Text(
+                                    child: Text(
                                       '忘记密码？',
                                       style: TextStyle(
                                         color: AppTheme.textTertiary,
@@ -272,20 +280,23 @@ class _LoginPageState extends State<LoginPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
+                                  Text(
                                     '还没有账户？',
-                                    style: TextStyle(color: AppTheme.textTertiary),
+                                    style: TextStyle(
+                                      color: AppTheme.textTertiary,
+                                    ),
                                   ),
                                   TextButton(
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => const RegisterPage(),
+                                          builder: (context) =>
+                                              const RegisterPage(),
                                         ),
                                       );
                                     },
-                                    child: const Text(
+                                    child: Text(
                                       '立即注册',
                                       style: TextStyle(
                                         color: AppTheme.techPurple,
@@ -401,9 +412,9 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.65,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.spaceBlue,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
@@ -423,7 +434,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               '选择服务器',
               style: TextStyle(
                 fontSize: 20,
@@ -432,7 +443,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '或输入新地址',
               style: TextStyle(color: AppTheme.textTertiary),
             ),
@@ -469,7 +480,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                           ),
                         const SizedBox(width: 8),
                         _isChecking
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
@@ -501,7 +512,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
             if (widget.historyUrls.isNotEmpty)
               Column(
                 children: [
-                  const Text(
+                  Text(
                     '历史地址',
                     style: TextStyle(
                       fontSize: 14,
@@ -530,7 +541,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                                 borderRadius: BorderRadius.circular(10),
                                 color: const Color.fromARGB(30, 6, 182, 212),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.cloud,
                                 color: AppTheme.neonBlue,
                                 size: 18,
@@ -540,7 +551,9 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                             Expanded(
                               child: Text(
                                 url,
-                                style: const TextStyle(color: AppTheme.textPrimary),
+                                style: TextStyle(
+                                  color: AppTheme.textPrimary,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -551,10 +564,12 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.techPurple.withValues(alpha: 0.2),
+                                  color: AppTheme.techPurple.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '当前',
                                   style: TextStyle(
                                     color: AppTheme.techPurple,
@@ -577,10 +592,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                 description: '输入新地址并验证后会自动保存',
               ),
             const SizedBox(height: 32),
-            NeonButton(
-              text: '确认',
-              onPressed: _confirm,
-            ),
+            NeonButton(text: '确认', onPressed: _confirm),
             const SizedBox(height: 32),
           ],
         ),
