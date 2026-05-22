@@ -31,11 +31,19 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(project.properties["RELEASE_STORE_FILE"] ?: "")
-            storePassword = project.properties["RELEASE_STORE_PASSWORD"] as String?
-            keyAlias = project.properties["RELEASE_KEY_ALIAS"] as String?
-            keyPassword = project.properties["RELEASE_KEY_PASSWORD"] as String?
+        val storeFileProp = project.properties["RELEASE_STORE_FILE"] as String?
+        val storePasswordProp = project.properties["RELEASE_STORE_PASSWORD"] as String?
+        val keyAliasProp = project.properties["RELEASE_KEY_ALIAS"] as String?
+        val keyPasswordProp = project.properties["RELEASE_KEY_PASSWORD"] as String?
+        
+        if (!storeFileProp.isNullOrEmpty() && !storePasswordProp.isNullOrEmpty() && 
+            !keyAliasProp.isNullOrEmpty() && !keyPasswordProp.isNullOrEmpty()) {
+            create("release") {
+                storeFile = file(storeFileProp)
+                storePassword = storePasswordProp
+                keyAlias = keyAliasProp
+                keyPassword = keyPasswordProp
+            }
         }
     }
 
