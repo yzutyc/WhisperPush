@@ -55,3 +55,4 @@ docker-compose.override.yml
 **/*keystore*.txt
 **/*keystore*.base64
 **/keystore-base64.txt
+**/local.properties
