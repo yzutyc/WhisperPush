@@ -26,17 +26,22 @@ class ApiService {
 
   Future<bool> checkServerStatus() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/health'),
-        headers: {'Content-Type': 'application/json; charset=utf-8'},
-      ).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(
+            Uri.parse('$baseUrl/health'),
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+          )
+          .timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
       return false;
     }
   }
 
-  Future<Map<String, dynamic>> login(String usernameOrEmail, String password) async {
+  Future<Map<String, dynamic>> login(
+    String usernameOrEmail,
+    String password,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/login'),
       headers: headers,
@@ -163,15 +168,15 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/reset-password'),
       headers: headers,
-      body: jsonEncode({
-        'token': token,
-        'new_password': newPassword,
-      }),
+      body: jsonEncode({'token': token, 'new_password': newPassword}),
     );
     _handleResponse(response);
   }
 
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/change-password'),
       headers: headers,
@@ -254,7 +259,11 @@ class ApiService {
     return data['notifications_enabled'] ?? enabled;
   }
 
-  Future<Map<String, dynamic>> loginWithTwoFactor(String usernameOrEmail, String password, String twoFactorCode) async {
+  Future<Map<String, dynamic>> loginWithTwoFactor(
+    String usernameOrEmail,
+    String password,
+    String twoFactorCode,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/login'),
       headers: headers,

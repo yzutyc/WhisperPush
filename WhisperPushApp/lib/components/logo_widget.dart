@@ -32,11 +32,7 @@ class LogoWidget extends StatelessWidget {
           color: Colors.white,
           size: size * 0.5,
           shadows: const [
-            Shadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(1, 1),
-            ),
+            Shadow(color: Colors.black12, blurRadius: 4, offset: Offset(1, 1)),
           ],
         ),
       ),

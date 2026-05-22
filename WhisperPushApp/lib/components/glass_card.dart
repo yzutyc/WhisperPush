@@ -32,7 +32,8 @@ class GlassCard extends StatefulWidget {
   State<GlassCard> createState() => _GlassCardState();
 }
 
-class _GlassCardState extends State<GlassCard> with SingleTickerProviderStateMixin {
+class _GlassCardState extends State<GlassCard>
+    with SingleTickerProviderStateMixin {
   bool _isHovered = false;
   late AnimationController _animationController;
   late Animation<double> _glowAnimation;
@@ -72,7 +73,7 @@ class _GlassCardState extends State<GlassCard> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
-    
+
     return MouseRegion(
       onEnter: (_) {
         if (widget.enableHover) {
@@ -147,20 +148,22 @@ class _GlassCardState extends State<GlassCard> with SingleTickerProviderStateMix
                   boxShadow: widget.enableGlow
                       ? [
                           BoxShadow(
-                            color: Colors.black.withOpacity(_isHovered ? 0.1 : 0.06),
+                            color: Colors.black.withValues(
+                              alpha: _isHovered ? 0.1 : 0.06,
+                            ),
                             blurRadius: _isHovered ? 20 : 15,
                             offset: const Offset(0, 4),
                           ),
                           if (_isHovered)
                             BoxShadow(
-                              color: AppTheme.techPurple.withOpacity(0.15),
+                              color: AppTheme.techPurple.withValues(alpha: 0.15),
                               blurRadius: 15,
                               offset: const Offset(0, 2),
                             ),
                         ]
                       : [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 12,
                             offset: const Offset(0, 2),
                           ),
@@ -187,12 +190,12 @@ class _GlassCardState extends State<GlassCard> with SingleTickerProviderStateMix
                   ),
                 )
               : (widget.onTap != null
-                  ? InkWell(
-                      onTap: widget.onTap,
-                      borderRadius: AppTheme.borderRadius,
-                      child: widget.child,
-                    )
-                  : widget.child),
+                    ? InkWell(
+                        onTap: widget.onTap,
+                        borderRadius: AppTheme.borderRadius,
+                        child: widget.child,
+                      )
+                    : widget.child),
         ),
       ),
     );
@@ -221,7 +224,7 @@ class GlassCardWithBorder extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
-    
+
     return Container(
       margin: margin,
       padding: padding,
@@ -263,7 +266,7 @@ class GlassCardWithBorder extends StatelessWidget {
               boxShadow: enableGlow
                   ? [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 12,
                         offset: const Offset(0, 2),
                       ),

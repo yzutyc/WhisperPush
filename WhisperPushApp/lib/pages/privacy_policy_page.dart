@@ -26,10 +26,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 24),
-                Text(
-                  '生效日期：2026年5月15日',
-                  style: TextStyle(color: Colors.grey),
-                ),
+                Text('生效日期：2026年5月15日', style: TextStyle(color: Colors.grey)),
                 SizedBox(height: 32),
                 Text(
                   '1. 引言',

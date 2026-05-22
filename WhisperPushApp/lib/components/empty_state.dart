@@ -32,7 +32,10 @@ class EmptyState extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: const Color.fromARGB(25, 139, 92, 246),
-              border: Border.all(color: AppTheme.techPurple.withValues(alpha:0.4), width: 1.5),
+              border: Border.all(
+                color: AppTheme.techPurple.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
               boxShadow: enableGlow
                   ? [
                       const BoxShadow(
@@ -48,11 +51,7 @@ class EmptyState extends StatelessWidget {
                     ]
                   : null,
             ),
-            child: Icon(
-              icon,
-              size: 48,
-              color: AppTheme.techPurpleLight,
-            ),
+            child: Icon(icon, size: 48, color: AppTheme.techPurpleLight),
           ),
           const SizedBox(height: 28),
           Text(
@@ -89,11 +88,17 @@ class EmptyState extends StatelessWidget {
                     borderRadius: AppTheme.borderRadius,
                     side: BorderSide(color: AppTheme.techPurple, width: 1.5),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 14,
+                  ),
                 ),
                 child: Text(
                   actionText!,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ),

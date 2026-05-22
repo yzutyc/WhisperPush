@@ -48,7 +48,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_newPasswordError.isNotEmpty || _confirmPasswordError.isNotEmpty) return;
+    if (_newPasswordError.isNotEmpty || _confirmPasswordError.isNotEmpty) {
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -56,10 +58,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final api = ApiService(baseUrl: authProvider.serverUrl!);
 
-      await api.resetPassword(
-        widget.resetToken,
-        _newPasswordController.text,
-      );
+      await api.resetPassword(widget.resetToken, _newPasswordController.text);
 
       setState(() {
         _isChanged = true;
@@ -106,7 +105,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               color: AppTheme.pulseGreen.withValues(alpha: 0.2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.pulseGreen.withValues(alpha: 0.3),
+                                  color: AppTheme.pulseGreen.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   blurRadius: 15,
                                   spreadRadius: 5,
                                 ),
@@ -139,7 +140,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             onPressed: () {
                               Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (context) => const LoginPage()),
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
+                                ),
                                 (route) => false,
                               );
                             },
@@ -158,7 +161,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppTheme.techPurple.withValues(alpha: 0.2),
+                                color: AppTheme.techPurple.withValues(
+                                  alpha: 0.2,
+                                ),
                               ),
                               child: Icon(
                                 Icons.lock_reset,
@@ -188,7 +193,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               prefixIcon: Icons.lock_outline,
                               obscureText: true,
                               onChanged: (value) => _validatePasswords(),
-                              errorText: _newPasswordError.isNotEmpty ? _newPasswordError : null,
+                              errorText: _newPasswordError.isNotEmpty
+                                  ? _newPasswordError
+                                  : null,
                               validator: (value) {
                                 if (value?.isEmpty ?? true) return '请输入新密码';
                                 return null;
@@ -201,7 +208,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               prefixIcon: Icons.lock_outline,
                               obscureText: true,
                               onChanged: (value) => _validatePasswords(),
-                              errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
+                              errorText: _confirmPasswordError.isNotEmpty
+                                  ? _confirmPasswordError
+                                  : null,
                               validator: (value) =>
                                   value?.isEmpty ?? true ? '请确认新密码' : null,
                             ),

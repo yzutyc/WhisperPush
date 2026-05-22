@@ -26,7 +26,8 @@ class NeonSwitch extends StatefulWidget {
   State<NeonSwitch> createState() => _NeonSwitchState();
 }
 
-class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateMixin {
+class _NeonSwitchState extends State<NeonSwitch>
+    with SingleTickerProviderStateMixin {
   late bool _isHovered;
   late AnimationController _glowController;
   late Animation<double> _glowAnimation;
@@ -147,7 +148,9 @@ class _NeonSwitchState extends State<NeonSwitch> with SingleTickerProviderStateM
                       boxShadow: widget.value
                           ? [
                               BoxShadow(
-                                color: AppTheme.techPurple.withValues(alpha: 0.6),
+                                color: AppTheme.techPurple.withValues(
+                                  alpha: 0.6,
+                                ),
                                 blurRadius: 10,
                                 spreadRadius: 3,
                               ),

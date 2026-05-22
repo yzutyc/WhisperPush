@@ -33,6 +33,7 @@ class Settings(BaseSettings):
             pass
 
         env_file = ".env"
+        extra = "allow"
 
 
 settings = Settings()

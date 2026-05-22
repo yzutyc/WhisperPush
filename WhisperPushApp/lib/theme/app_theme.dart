@@ -54,27 +54,44 @@ class AppTheme {
   }
 
   static Color get spaceBlue => _isDarkMode ? darkSpaceBlue : lightSpaceBlue;
-  static Color get spaceIndigo => _isDarkMode ? darkSpaceIndigo : lightSpaceIndigo;
+  static Color get spaceIndigo =>
+      _isDarkMode ? darkSpaceIndigo : lightSpaceIndigo;
   static Color get spaceSlate => _isDarkMode ? darkSpaceSlate : lightSpaceSlate;
   static Color get spaceLight => _isDarkMode ? darkSpaceLight : lightSpaceLight;
   static Color get techPurple => _isDarkMode ? darkTechPurple : lightTechPurple;
-  static Color get techPurpleLight => _isDarkMode ? darkTechPurpleLight : lightTechPurpleLight;
+  static Color get techPurpleLight =>
+      _isDarkMode ? darkTechPurpleLight : lightTechPurpleLight;
   static Color get neonBlue => _isDarkMode ? darkNeonBlue : lightNeonBlue;
-  static Color get neonBlueLight => _isDarkMode ? darkNeonBlueLight : lightNeonBlueLight;
+  static Color get neonBlueLight =>
+      _isDarkMode ? darkNeonBlueLight : lightNeonBlueLight;
   static Color get pulseGreen => _isDarkMode ? darkPulseGreen : lightPulseGreen;
-  static Color get pulseGreenLight => _isDarkMode ? darkPulseGreenLight : lightPulseGreenLight;
-  static Color get warningOrange => _isDarkMode ? darkWarningOrange : lightWarningOrange;
+  static Color get pulseGreenLight =>
+      _isDarkMode ? darkPulseGreenLight : lightPulseGreenLight;
+  static Color get warningOrange =>
+      _isDarkMode ? darkWarningOrange : lightWarningOrange;
   static Color get dangerRed => _isDarkMode ? darkDangerRed : lightDangerRed;
-  static Color get textPrimary => _isDarkMode ? darkTextPrimary : lightTextPrimary;
-  static Color get textSecondary => _isDarkMode ? darkTextSecondary : lightTextSecondary;
-  static Color get textTertiary => _isDarkMode ? darkTextTertiary : lightTextTertiary;
-  static Color get textDisabled => _isDarkMode ? darkTextDisabled : lightTextDisabled;
-  static Color get borderColor => _isDarkMode ? darkBorderColor : lightBorderColor;
-  static Color get borderLight => _isDarkMode ? darkBorderLight : lightBorderLight;
+  static Color get textPrimary =>
+      _isDarkMode ? darkTextPrimary : lightTextPrimary;
+  static Color get textSecondary =>
+      _isDarkMode ? darkTextSecondary : lightTextSecondary;
+  static Color get textTertiary =>
+      _isDarkMode ? darkTextTertiary : lightTextTertiary;
+  static Color get textDisabled =>
+      _isDarkMode ? darkTextDisabled : lightTextDisabled;
+  static Color get borderColor =>
+      _isDarkMode ? darkBorderColor : lightBorderColor;
+  static Color get borderLight =>
+      _isDarkMode ? darkBorderLight : lightBorderLight;
 
-  static const BorderRadius borderRadius = BorderRadius.all(Radius.circular(12));
-  static const BorderRadius borderRadiusSmall = BorderRadius.all(Radius.circular(6));
-  static const BorderRadius borderRadiusLarge = BorderRadius.all(Radius.circular(16));
+  static const BorderRadius borderRadius = BorderRadius.all(
+    Radius.circular(12),
+  );
+  static const BorderRadius borderRadiusSmall = BorderRadius.all(
+    Radius.circular(6),
+  );
+  static const BorderRadius borderRadiusLarge = BorderRadius.all(
+    Radius.circular(16),
+  );
 
   static ThemeData get currentTheme => _isDarkMode ? dark() : light();
 
@@ -136,10 +153,26 @@ class AppTheme {
         hintStyle: TextStyle(color: darkTextDisabled),
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 32, color: darkTextPrimary),
-        headlineMedium: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: darkTextPrimary),
-        titleLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: darkTextPrimary),
-        titleMedium: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: darkTextPrimary),
+        headlineLarge: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 32,
+          color: darkTextPrimary,
+        ),
+        headlineMedium: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+          color: darkTextPrimary,
+        ),
+        titleLarge: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: darkTextPrimary,
+        ),
+        titleMedium: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: darkTextPrimary,
+        ),
         bodyLarge: TextStyle(fontSize: 16, color: darkTextSecondary),
         bodyMedium: TextStyle(fontSize: 14, color: darkTextTertiary),
         bodySmall: TextStyle(fontSize: 12, color: darkTextDisabled),
@@ -232,10 +265,26 @@ class AppTheme {
         hintStyle: TextStyle(color: lightTextDisabled),
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 32, color: lightTextPrimary),
-        headlineMedium: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: lightTextPrimary),
-        titleLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: lightTextPrimary),
-        titleMedium: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: lightTextPrimary),
+        headlineLarge: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 32,
+          color: lightTextPrimary,
+        ),
+        headlineMedium: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+          color: lightTextPrimary,
+        ),
+        titleLarge: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: lightTextPrimary,
+        ),
+        titleMedium: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: lightTextPrimary,
+        ),
         bodyLarge: TextStyle(fontSize: 16, color: lightTextSecondary),
         bodyMedium: TextStyle(fontSize: 14, color: lightTextTertiary),
         bodySmall: TextStyle(fontSize: 12, color: lightTextDisabled),
@@ -271,30 +320,29 @@ class AppTheme {
   }
 
   static BoxDecoration get glassDecoration => BoxDecoration(
-    color: _isDarkMode 
-        ? const Color.fromARGB(180, 30, 41, 59)
-        : Colors.white,
+    color: _isDarkMode ? const Color.fromARGB(180, 30, 41, 59) : Colors.white,
     borderRadius: borderRadius,
     border: Border.all(
-        color: _isDarkMode
-            ? const Color.fromARGB(80, 139, 92, 246)
-            : lightBorderColor),
+      color: _isDarkMode
+          ? const Color.fromARGB(80, 139, 92, 246)
+          : lightBorderColor,
+    ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(60, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(60, 139, 92, 246),
               blurRadius: 25,
               spreadRadius: 2,
             ),
-            BoxShadow(
-              color: const Color.fromARGB(30, 6, 182, 212),
+            const BoxShadow(
+              color: Color.fromARGB(30, 6, 182, 212),
               blurRadius: 15,
               spreadRadius: 1,
             ),
           ]
         : [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -302,31 +350,30 @@ class AppTheme {
   );
 
   static BoxDecoration get glassCardDecoration => BoxDecoration(
-    color: _isDarkMode
-        ? const Color.fromARGB(200, 30, 41, 59)
-        : Colors.white,
+    color: _isDarkMode ? const Color.fromARGB(200, 30, 41, 59) : Colors.white,
     borderRadius: borderRadius,
     border: Border.all(
-        color: _isDarkMode
-            ? const Color.fromARGB(100, 139, 92, 246)
-            : lightBorderColor),
+      color: _isDarkMode
+          ? const Color.fromARGB(100, 139, 92, 246)
+          : lightBorderColor,
+    ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(40, 0, 0, 0),
+            const BoxShadow(
+              color: Color.fromARGB(40, 0, 0, 0),
               blurRadius: 20,
               spreadRadius: 5,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
-            BoxShadow(
-              color: const Color.fromARGB(30, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(30, 139, 92, 246),
               blurRadius: 15,
               spreadRadius: 2,
             ),
           ]
         : [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 15,
               offset: const Offset(0, 2),
             ),
@@ -334,30 +381,29 @@ class AppTheme {
   );
 
   static BoxDecoration get glassCardHoverDecoration => BoxDecoration(
-    color: _isDarkMode
-        ? const Color.fromARGB(220, 30, 41, 59)
-        : Colors.white,
+    color: _isDarkMode ? const Color.fromARGB(220, 30, 41, 59) : Colors.white,
     borderRadius: borderRadius,
     border: Border.all(
-        color: _isDarkMode
-            ? const Color.fromARGB(150, 139, 92, 246)
-            : lightTechPurple),
+      color: _isDarkMode
+          ? const Color.fromARGB(150, 139, 92, 246)
+          : lightTechPurple,
+    ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(80, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(80, 139, 92, 246),
               blurRadius: 30,
               spreadRadius: 8,
             ),
-            BoxShadow(
-              color: const Color.fromARGB(40, 6, 182, 212),
+            const BoxShadow(
+              color: Color.fromARGB(40, 6, 182, 212),
               blurRadius: 20,
               spreadRadius: 4,
             ),
           ]
         : [
             BoxShadow(
-              color: lightTechPurple.withOpacity(0.15),
+              color: lightTechPurple.withValues(alpha: 0.15),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -370,13 +416,14 @@ class AppTheme {
         : lightSpaceSlate,
     borderRadius: borderRadiusSmall,
     border: Border.all(
-        color: _isDarkMode
-            ? const Color.fromARGB(60, 139, 92, 246)
-            : lightBorderColor),
+      color: _isDarkMode
+          ? const Color.fromARGB(60, 139, 92, 246)
+          : lightBorderColor,
+    ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(30, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(30, 139, 92, 246),
               blurRadius: 10,
               spreadRadius: 2,
             ),
@@ -395,20 +442,20 @@ class AppTheme {
     ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(150, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(150, 139, 92, 246),
               blurRadius: 20,
               spreadRadius: 5,
             ),
-            BoxShadow(
-              color: const Color.fromARGB(100, 6, 182, 212),
+            const BoxShadow(
+              color: Color.fromARGB(100, 6, 182, 212),
               blurRadius: 15,
               spreadRadius: 3,
             ),
           ]
         : [
             BoxShadow(
-              color: lightTechPurple.withOpacity(0.3),
+              color: lightTechPurple.withValues(alpha: 0.3),
               blurRadius: 15,
               offset: const Offset(0, 4),
             ),
@@ -418,8 +465,8 @@ class AppTheme {
   static BoxDecoration get gradientBackground => BoxDecoration(
     color: _isDarkMode ? null : lightSpaceBlue,
     gradient: _isDarkMode
-        ? LinearGradient(
-            colors: [darkSpaceBlue, const Color(0xFF1E1B4B), darkSpaceBlue],
+        ? const LinearGradient(
+            colors: [darkSpaceBlue, Color(0xFF1E1B4B), darkSpaceBlue],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           )
@@ -437,8 +484,8 @@ class AppTheme {
     ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(40, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(40, 139, 92, 246),
               blurRadius: 15,
               spreadRadius: 3,
             ),
@@ -457,16 +504,16 @@ class AppTheme {
     ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(100, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(100, 139, 92, 246),
               blurRadius: 15,
               spreadRadius: 3,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ]
         : [
             BoxShadow(
-              color: lightTechPurple.withOpacity(0.25),
+              color: lightTechPurple.withValues(alpha: 0.25),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -479,24 +526,25 @@ class AppTheme {
       colors: _isDarkMode
           ? [darkTechPurpleLight, darkNeonBlueLight]
           : [lightTechPurpleLight, lightNeonBlueLight],
-      begin: Alignment.topLeft, end: Alignment.bottomRight,
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
     ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(150, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(150, 139, 92, 246),
               blurRadius: 25,
               spreadRadius: 8,
             ),
-            BoxShadow(
-              color: const Color.fromARGB(100, 6, 182, 212),
+            const BoxShadow(
+              color: Color.fromARGB(100, 6, 182, 212),
               blurRadius: 15,
               spreadRadius: 4,
             ),
           ]
         : [
             BoxShadow(
-              color: lightTechPurple.withOpacity(0.35),
+              color: lightTechPurple.withValues(alpha: 0.35),
               blurRadius: 18,
               offset: const Offset(0, 6),
             ),
@@ -504,25 +552,24 @@ class AppTheme {
   );
 
   static BoxDecoration get searchInputDecoration => BoxDecoration(
-    color: _isDarkMode
-        ? const Color.fromARGB(200, 30, 41, 59)
-        : Colors.white,
+    color: _isDarkMode ? const Color.fromARGB(200, 30, 41, 59) : Colors.white,
     borderRadius: borderRadius,
     border: Border.all(
-        color: _isDarkMode
-            ? const Color.fromARGB(60, 139, 92, 246)
-            : lightBorderColor),
+      color: _isDarkMode
+          ? const Color.fromARGB(60, 139, 92, 246)
+          : lightBorderColor,
+    ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(20, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(20, 139, 92, 246),
               blurRadius: 10,
               spreadRadius: 1,
             ),
           ]
         : [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -530,31 +577,30 @@ class AppTheme {
   );
 
   static BoxDecoration get searchInputFocusedDecoration => BoxDecoration(
-    color: _isDarkMode
-        ? const Color.fromARGB(220, 30, 41, 59)
-        : Colors.white,
+    color: _isDarkMode ? const Color.fromARGB(220, 30, 41, 59) : Colors.white,
     borderRadius: borderRadius,
     border: Border.all(
-        color: _isDarkMode
-            ? const Color.fromARGB(150, 139, 92, 246)
-            : lightTechPurple,
-        width: 2),
+      color: _isDarkMode
+          ? const Color.fromARGB(150, 139, 92, 246)
+          : lightTechPurple,
+      width: 2,
+    ),
     boxShadow: _isDarkMode
         ? [
-            BoxShadow(
-              color: const Color.fromARGB(60, 139, 92, 246),
+            const BoxShadow(
+              color: Color.fromARGB(60, 139, 92, 246),
               blurRadius: 20,
               spreadRadius: 5,
             ),
-            BoxShadow(
-              color: const Color.fromARGB(30, 6, 182, 212),
+            const BoxShadow(
+              color: Color.fromARGB(30, 6, 182, 212),
               blurRadius: 15,
               spreadRadius: 3,
             ),
           ]
         : [
             BoxShadow(
-              color: lightTechPurple.withOpacity(0.2),
+              color: lightTechPurple.withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 2),
             ),

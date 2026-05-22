@@ -47,7 +47,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_newPasswordError.isNotEmpty || _confirmPasswordError.isNotEmpty) return;
+    if (_newPasswordError.isNotEmpty || _confirmPasswordError.isNotEmpty) {
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -120,7 +122,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               color: AppTheme.pulseGreen.withValues(alpha: 0.2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.pulseGreen.withValues(alpha: 0.3),
+                                  color: AppTheme.pulseGreen.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   blurRadius: 15,
                                   spreadRadius: 5,
                                 ),
@@ -169,10 +173,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 color: AppTheme.neonBlue.withValues(alpha: 0.2),
                               ),
                               child: Icon(
-                              Icons.key,
-                              size: 40,
-                              color: AppTheme.neonBlue,
-                            ),
+                                Icons.key,
+                                size: 40,
+                                color: AppTheme.neonBlue,
+                              ),
                             ),
                             const SizedBox(height: 24),
                             Text(
@@ -205,7 +209,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               prefixIcon: Icons.lock_outline,
                               obscureText: true,
                               onChanged: (value) => _validatePasswords(),
-                              errorText: _newPasswordError.isNotEmpty ? _newPasswordError : null,
+                              errorText: _newPasswordError.isNotEmpty
+                                  ? _newPasswordError
+                                  : null,
                               validator: (value) {
                                 if (value?.isEmpty ?? true) return '请输入新密码';
                                 return null;
@@ -218,7 +224,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               prefixIcon: Icons.lock_outline,
                               obscureText: true,
                               onChanged: (value) => _validatePasswords(),
-                              errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
+                              errorText: _confirmPasswordError.isNotEmpty
+                                  ? _confirmPasswordError
+                                  : null,
                               validator: (value) =>
                                   value?.isEmpty ?? true ? '请确认新密码' : null,
                             ),
@@ -232,9 +240,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: Text(
-                              '取消',
-                              style: TextStyle(color: AppTheme.textTertiary),
-                            ),
+                                '取消',
+                                style: TextStyle(color: AppTheme.textTertiary),
+                              ),
                             ),
                           ],
                         ),

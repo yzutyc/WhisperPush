@@ -43,29 +43,19 @@ class CustomButton extends StatelessWidget {
         child: isLoading
             ? const CircularProgressIndicator(color: Colors.white)
             : isGradient
-                ? Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      gradient: const LinearGradient(
-                        colors: [Colors.indigo, Color(0xFF5C6BC0)],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        text,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  )
-                : Text(
+            ? Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  gradient: const LinearGradient(
+                    colors: [Colors.indigo, Color(0xFF5C6BC0)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
                     text,
                     style: TextStyle(
                       color: textColor,
@@ -73,6 +63,16 @@ class CustomButton extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
+              )
+            : Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
     );
   }

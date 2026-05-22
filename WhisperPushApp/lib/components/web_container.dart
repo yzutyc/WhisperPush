@@ -22,8 +22,10 @@ class WebContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
-    final backgroundColor = isDark ? const Color(0xFF0F172A) : AppTheme.spaceBlue;
-    
+    final backgroundColor = isDark
+        ? const Color(0xFF0F172A)
+        : AppTheme.spaceBlue;
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -37,9 +39,9 @@ class WebContainer extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             boxShadow: [
               BoxShadow(
-                color: isDark 
+                color: isDark
                     ? Colors.black.withValues(alpha: 0.3)
-                    : Colors.black.withOpacity(0.1),
+                    : Colors.black.withValues(alpha: 0.1),
                 blurRadius: isDark ? 20 : 15,
                 spreadRadius: isDark ? 5 : 0,
               ),

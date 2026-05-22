@@ -217,8 +217,8 @@ class _LoginPageState extends State<LoginPage> {
                                       prefixIcon: Icons.person,
                                       validator: (value) =>
                                           value?.isEmpty ?? true
-                                              ? '请输入用户名或邮箱'
-                                              : null,
+                                          ? '请输入用户名或邮箱'
+                                          : null,
                                     ),
                                     const SizedBox(height: 16),
                                     FormInput(
@@ -228,8 +228,8 @@ class _LoginPageState extends State<LoginPage> {
                                       obscureText: true,
                                       validator: (value) =>
                                           value?.isEmpty ?? true
-                                              ? '请输入密码'
-                                              : null,
+                                          ? '请输入密码'
+                                          : null,
                                       onFieldSubmitted: (_) => _submit(),
                                     ),
                                   ],
@@ -443,10 +443,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              '或输入新地址',
-              style: TextStyle(color: AppTheme.textTertiary),
-            ),
+            Text('或输入新地址', style: TextStyle(color: AppTheme.textTertiary)),
             const SizedBox(height: 32),
             Container(
               color: AppTheme.spaceBlue,
@@ -551,9 +548,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                             Expanded(
                               child: Text(
                                 url,
-                                style: TextStyle(
-                                  color: AppTheme.textPrimary,
-                                ),
+                                style: TextStyle(color: AppTheme.textPrimary),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),

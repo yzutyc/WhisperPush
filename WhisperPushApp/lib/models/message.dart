@@ -43,7 +43,7 @@ class Message {
   String get formattedTime {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
-    
+
     if (difference.inDays > 0) {
       return DateFormat('MM-dd').format(createdAt);
     } else if (difference.inHours > 0) {

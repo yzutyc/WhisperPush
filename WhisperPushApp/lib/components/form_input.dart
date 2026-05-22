@@ -44,7 +44,9 @@ class FormInput extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: AppTheme.textTertiary) : null,
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon, color: AppTheme.textTertiary)
+            : null,
         errorText: errorText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -68,7 +70,10 @@ class FormInput extends StatelessWidget {
         ),
         filled: true,
         fillColor: AppTheme.spaceIndigo,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
         labelStyle: TextStyle(color: AppTheme.textTertiary),
         hintStyle: TextStyle(color: AppTheme.textTertiary),
         errorStyle: TextStyle(color: AppTheme.dangerRed),

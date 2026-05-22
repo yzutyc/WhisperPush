@@ -10,6 +10,7 @@ import 'pages/splash_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'theme/app_theme.dart';
+import 'utils/push_service.dart';
 
 const double kMinWindowWidth = 390.0;
 const double kMinWindowHeight = 844.0;
@@ -18,6 +19,11 @@ const double kMaxWindowHeight = 932.0;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化推送服务
+  final PushService pushService = PushService();
+  await pushService.initializePush();
+  debugPrint('推送服务初始化完成');
 
   if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
     await windowManager.ensureInitialized();
@@ -56,7 +62,7 @@ class MyApp extends StatelessWidget {
         builder: (context, themeProvider, child) {
           // 确保 AppTheme 与 ThemeProvider 同步
           AppTheme.setThemeMode(themeProvider.isDarkMode);
-          
+
           Widget materialApp = MaterialApp(
             key: ValueKey(themeProvider.isDarkMode), // 强制重建
             title: 'WhisperPush',

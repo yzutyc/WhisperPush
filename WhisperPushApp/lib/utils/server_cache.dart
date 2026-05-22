@@ -14,14 +14,14 @@ class ServerCache {
   static Future<void> addUrl(String url) async {
     final prefs = await SharedPreferences.getInstance();
     final urls = await getHistoryUrls();
-    
+
     urls.remove(url);
     urls.insert(0, url);
-    
+
     if (urls.length > _maxCacheSize) {
       urls.removeLast();
     }
-    
+
     await prefs.setStringList(_keyServerUrls, urls);
   }
 

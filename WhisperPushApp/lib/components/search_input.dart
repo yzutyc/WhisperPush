@@ -22,7 +22,8 @@ class SearchInput extends StatefulWidget {
   State<SearchInput> createState() => _SearchInputState();
 }
 
-class _SearchInputState extends State<SearchInput> with SingleTickerProviderStateMixin {
+class _SearchInputState extends State<SearchInput>
+    with SingleTickerProviderStateMixin {
   bool _isFocused = false;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -100,20 +101,30 @@ class _SearchInputState extends State<SearchInput> with SingleTickerProviderStat
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: TextStyle(
-                color: _isFocused ? AppTheme.textTertiary : AppTheme.textDisabled,
+                color: _isFocused
+                    ? AppTheme.textTertiary
+                    : AppTheme.textDisabled,
                 fontSize: 15,
               ),
               prefixIcon: ScaleTransition(
-                scale: _isFocused ? _pulseAnimation : const AlwaysStoppedAnimation(1.0),
+                scale: _isFocused
+                    ? _pulseAnimation
+                    : const AlwaysStoppedAnimation(1.0),
                 child: Icon(
                   Icons.search,
-                  color: _isFocused ? AppTheme.techPurpleLight : AppTheme.textDisabled,
+                  color: _isFocused
+                      ? AppTheme.techPurpleLight
+                      : AppTheme.textDisabled,
                   size: 20,
                 ),
               ),
               suffixIcon: widget.controller.text.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear, color: AppTheme.textTertiary, size: 18),
+                      icon: Icon(
+                        Icons.clear,
+                        color: AppTheme.textTertiary,
+                        size: 18,
+                      ),
                       onPressed: () {
                         widget.controller.clear();
                         widget.onChanged?.call('');
@@ -122,7 +133,10 @@ class _SearchInputState extends State<SearchInput> with SingleTickerProviderStat
                     )
                   : null,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
             ),
             onChanged: widget.onChanged,
             onTap: () {

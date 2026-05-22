@@ -77,10 +77,8 @@ class MessageCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null)
-            Icon(icon, size: 13, color: glowColor),
-          if (icon != null)
-            const SizedBox(width: 5),
+          if (icon != null) Icon(icon, size: 13, color: glowColor),
+          if (icon != null) const SizedBox(width: 5),
           Text(
             label,
             style: TextStyle(
@@ -143,22 +141,9 @@ class MessageCard extends StatelessWidget {
     );
   }
 
-  Widget _buildReadStatus() {
-    return message.read
-        ? Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: AppTheme.textDisabled,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          )
-        : const _UnreadIndicator();
-  }
-
   Widget _buildContentPreview() {
     String preview = message.body;
-    
+
     if (preview.length > 120) {
       preview = '${preview.substring(0, 120)}...';
     }
@@ -168,9 +153,19 @@ class MessageCard extends StatelessWidget {
         return MarkdownBody(
           data: preview,
           styleSheet: MarkdownStyleSheet(
-            p: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
-            strong: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textSecondary),
-            em: TextStyle(fontStyle: FontStyle.italic, color: AppTheme.textTertiary),
+            p: TextStyle(
+              fontSize: 14,
+              color: AppTheme.textTertiary,
+              height: 1.5,
+            ),
+            strong: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textSecondary,
+            ),
+            em: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: AppTheme.textTertiary,
+            ),
           ),
         );
       case 'html':
@@ -190,7 +185,11 @@ class MessageCard extends StatelessWidget {
       default:
         return Text(
           preview,
-          style: TextStyle(fontSize: 14, color: AppTheme.textTertiary, height: 1.5),
+          style: TextStyle(
+            fontSize: 14,
+            color: AppTheme.textTertiary,
+            height: 1.5,
+          ),
         );
     }
   }
@@ -199,8 +198,8 @@ class MessageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key('message-${message.id}'),
-      direction: onDismissed != null || onMarkToggle != null 
-          ? DismissDirection.horizontal 
+      direction: onDismissed != null || onMarkToggle != null
+          ? DismissDirection.horizontal
           : DismissDirection.none,
       background: onDismissed != null
           ? Container(
@@ -245,7 +244,8 @@ class MessageCard extends StatelessWidget {
       onDismissed: (direction) {
         if (direction == DismissDirection.startToEnd && onDismissed != null) {
           onDismissed!();
-        } else if (direction == DismissDirection.endToStart && onMarkToggle != null) {
+        } else if (direction == DismissDirection.endToStart &&
+            onMarkToggle != null) {
           onMarkToggle!();
         }
       },
@@ -292,7 +292,9 @@ class MessageCard extends StatelessWidget {
                         activeColor: AppTheme.techPurple,
                         checkColor: Colors.white,
                         side: BorderSide(
-                          color: isSelected ? AppTheme.techPurple : AppTheme.textDisabled,
+                          color: isSelected
+                              ? AppTheme.techPurple
+                              : AppTheme.textDisabled,
                           width: 2,
                         ),
                       ),
@@ -302,9 +304,13 @@ class MessageCard extends StatelessWidget {
                     child: Text(
                       message.title,
                       style: TextStyle(
-                        fontWeight: message.read ? FontWeight.normal : FontWeight.bold,
+                        fontWeight: message.read
+                            ? FontWeight.normal
+                            : FontWeight.bold,
                         fontSize: 20,
-                        color: message.read ? AppTheme.textSecondary : AppTheme.textPrimary,
+                        color: message.read
+                            ? AppTheme.textSecondary
+                            : AppTheme.textPrimary,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -324,7 +330,10 @@ class MessageCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     message.formattedTime,
-                    style: TextStyle(fontSize: 12, color: AppTheme.textDisabled),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.textDisabled,
+                    ),
                   ),
                 ],
               ),
@@ -343,7 +352,8 @@ class _UnreadIndicator extends StatefulWidget {
   State<_UnreadIndicator> createState() => _UnreadIndicatorState();
 }
 
-class _UnreadIndicatorState extends State<_UnreadIndicator> with SingleTickerProviderStateMixin {
+class _UnreadIndicatorState extends State<_UnreadIndicator>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
   late Animation<double> _scaleAnimation;
@@ -356,19 +366,15 @@ class _UnreadIndicatorState extends State<_UnreadIndicator> with SingleTickerPro
       duration: const Duration(seconds: 2),
     )..repeat();
 
-    _pulseAnimation = Tween<double>(begin: 0.7, end: 1.3).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const SawTooth(2),
-      ),
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 0.7,
+      end: 1.3,
+    ).animate(CurvedAnimation(parent: _controller, curve: const SawTooth(2)));
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

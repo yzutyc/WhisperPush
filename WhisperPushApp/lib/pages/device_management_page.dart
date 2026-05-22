@@ -202,9 +202,9 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
   Widget _buildDeviceItem(Device device, bool isCurrentDevice) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: const Color.fromARGB(77, 75, 85, 99)),
+          bottom: BorderSide(color: Color.fromARGB(77, 75, 85, 99)),
         ),
       ),
       child: Row(
@@ -446,10 +446,10 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
                         Container(
                           height: 1,
                           width: 40,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                const Color.fromARGB(128, 139, 92, 246),
+                                Color.fromARGB(128, 139, 92, 246),
                                 Colors.transparent,
                               ],
                               begin: Alignment.centerLeft,

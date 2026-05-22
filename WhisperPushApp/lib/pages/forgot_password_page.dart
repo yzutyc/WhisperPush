@@ -4,13 +4,11 @@ import 'package:provider/provider.dart';
 
 import '../api/api_service.dart';
 import '../components/form_input.dart';
-import '../components/glass_container.dart';
 import '../components/neon_button.dart';
 import '../components/particle_background.dart';
 import '../components/toast_widget.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
-import 'login_page.dart';
 import 'reset_password_page.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -162,7 +160,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   prefixIcon: Icons.email,
                                   keyboardType: TextInputType.emailAddress,
                                   validator: (value) {
-                                    if (value?.isEmpty ?? true) return '请输入邮箱地址';
+                                    if (value?.isEmpty ?? true) {
+                                      return '请输入邮箱地址';
+                                    }
                                     if (!RegExp(
                                       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                                     ).hasMatch(value!)) {
@@ -184,7 +184,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 children: [
                                   Text(
                                     '想起密码了？',
-                                    style: TextStyle(color: AppTheme.textTertiary),
+                                    style: TextStyle(
+                                      color: AppTheme.textTertiary,
+                                    ),
                                   ),
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),

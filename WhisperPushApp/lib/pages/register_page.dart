@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../api/api_service.dart';
 import '../components/form_input.dart';
-import '../components/glass_container.dart';
 import '../components/logo_widget.dart';
 import '../components/neon_button.dart';
 import '../components/particle_background.dart';
@@ -32,7 +31,10 @@ class _RegisterPageState extends State<RegisterPage> {
   String _getPasswordStrength(String password) {
     if (password.length < 6) return '弱';
     if (password.length < 8) return '中';
-    if (RegExp(r'[A-Z]').hasMatch(password) && RegExp(r'[0-9]').hasMatch(password)) return '强';
+    if (RegExp(r'[A-Z]').hasMatch(password) &&
+        RegExp(r'[0-9]').hasMatch(password)) {
+      return '强';
+    }
     return '中';
   }
 
@@ -57,7 +59,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _passwordError = '';
       }
 
-      if (_confirmPasswordController.text.isNotEmpty && 
+      if (_confirmPasswordController.text.isNotEmpty &&
           _confirmPasswordController.text != _passwordController.text) {
         _confirmPasswordError = '两次输入的密码不一致';
       } else {
@@ -197,8 +199,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                     controller: _usernameController,
                                     labelText: '用户名',
                                     prefixIcon: Icons.person,
-                                    validator: (value) =>
-                                        value?.isEmpty ?? true ? '请输入用户名' : null,
+                                    validator: (value) => value?.isEmpty ?? true
+                                        ? '请输入用户名'
+                                        : null,
                                   ),
                                   const SizedBox(height: 16),
                                   FormInput(
@@ -207,8 +210,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                     prefixIcon: Icons.email,
                                     keyboardType: TextInputType.emailAddress,
                                     validator: (value) {
-                                      if (value?.isEmpty ?? true) return '请输入邮箱';
-                                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                                      if (value?.isEmpty ?? true) {
+                                        return '请输入邮箱';
+                                      }
+                                      if (!RegExp(
+                                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                      ).hasMatch(value!)) {
                                         return '请输入有效的邮箱地址';
                                       }
                                       return null;
@@ -216,27 +223,39 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   const SizedBox(height: 16),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       FormInput(
                                         controller: _passwordController,
                                         labelText: '密码',
                                         prefixIcon: Icons.lock,
                                         obscureText: true,
-                                        onChanged: (value) => _validatePasswords(),
-                                        errorText: _passwordError.isNotEmpty ? _passwordError : null,
+                                        onChanged: (value) =>
+                                            _validatePasswords(),
+                                        errorText: _passwordError.isNotEmpty
+                                            ? _passwordError
+                                            : null,
                                       ),
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
                                           Text(
                                             '密码强度: ',
-                                            style: TextStyle(color: AppTheme.textTertiary),
+                                            style: TextStyle(
+                                              color: AppTheme.textTertiary,
+                                            ),
                                           ),
                                           Text(
-                                            _getPasswordStrength(_passwordController.text),
+                                            _getPasswordStrength(
+                                              _passwordController.text,
+                                            ),
                                             style: TextStyle(
-                                              color: _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text)),
+                                              color: _getPasswordStrengthColor(
+                                                _getPasswordStrength(
+                                                  _passwordController.text,
+                                                ),
+                                              ),
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -245,45 +264,116 @@ class _RegisterPageState extends State<RegisterPage> {
                                             child: Row(
                                               children: [
                                                 Expanded(
-                                                  flex: _passwordController.text.length >= 6 ? 1 : 0,
+                                                  flex:
+                                                      _passwordController
+                                                              .text
+                                                              .length >=
+                                                          6
+                                                      ? 1
+                                                      : 0,
                                                   child: Container(
                                                     height: 4,
                                                     decoration: BoxDecoration(
-                                                      color: _passwordController.text.length >= 6
-                                                          ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
-                                                          : AppTheme.borderColor,
-                                                      borderRadius: BorderRadius.circular(2),
+                                                      color:
+                                                          _passwordController
+                                                                  .text
+                                                                  .length >=
+                                                              6
+                                                          ? _getPasswordStrengthColor(
+                                                              _getPasswordStrength(
+                                                                _passwordController
+                                                                    .text,
+                                                              ),
+                                                            )
+                                                          : AppTheme
+                                                                .borderColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            2,
+                                                          ),
                                                     ),
                                                   ),
                                                 ),
                                                 const SizedBox(width: 2),
                                                 Expanded(
-                                                  flex: _passwordController.text.length >= 8 ? 1 : 0,
+                                                  flex:
+                                                      _passwordController
+                                                              .text
+                                                              .length >=
+                                                          8
+                                                      ? 1
+                                                      : 0,
                                                   child: Container(
                                                     height: 4,
                                                     decoration: BoxDecoration(
-                                                      color: _passwordController.text.length >= 8
-                                                          ? _getPasswordStrengthColor(_getPasswordStrength(_passwordController.text))
-                                                          : AppTheme.borderColor,
-                                                      borderRadius: BorderRadius.circular(2),
+                                                      color:
+                                                          _passwordController
+                                                                  .text
+                                                                  .length >=
+                                                              8
+                                                          ? _getPasswordStrengthColor(
+                                                              _getPasswordStrength(
+                                                                _passwordController
+                                                                    .text,
+                                                              ),
+                                                            )
+                                                          : AppTheme
+                                                                .borderColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            2,
+                                                          ),
                                                     ),
                                                   ),
                                                 ),
                                                 const SizedBox(width: 2),
                                                 Expanded(
-                                                  flex: (_passwordController.text.length >= 8 &&
-                                                      RegExp(r'[A-Z]').hasMatch(_passwordController.text) &&
-                                                      RegExp(r'[0-9]').hasMatch(_passwordController.text))
-                                                          ? 1 : 0,
+                                                  flex:
+                                                      (_passwordController
+                                                                  .text
+                                                                  .length >=
+                                                              8 &&
+                                                          RegExp(
+                                                            r'[A-Z]',
+                                                          ).hasMatch(
+                                                            _passwordController
+                                                                .text,
+                                                          ) &&
+                                                          RegExp(
+                                                            r'[0-9]',
+                                                          ).hasMatch(
+                                                            _passwordController
+                                                                .text,
+                                                          ))
+                                                      ? 1
+                                                      : 0,
                                                   child: Container(
                                                     height: 4,
                                                     decoration: BoxDecoration(
-                                                      color: (_passwordController.text.length >= 8 &&
-                                                          RegExp(r'[A-Z]').hasMatch(_passwordController.text) &&
-                                                          RegExp(r'[0-9]').hasMatch(_passwordController.text))
-                                                              ? AppTheme.pulseGreen
-                                                              : AppTheme.borderColor,
-                                                      borderRadius: BorderRadius.circular(2),
+                                                      color:
+                                                          (_passwordController
+                                                                      .text
+                                                                      .length >=
+                                                                  8 &&
+                                                              RegExp(
+                                                                r'[A-Z]',
+                                                              ).hasMatch(
+                                                                _passwordController
+                                                                    .text,
+                                                              ) &&
+                                                              RegExp(
+                                                                r'[0-9]',
+                                                              ).hasMatch(
+                                                                _passwordController
+                                                                    .text,
+                                                              ))
+                                                          ? AppTheme.pulseGreen
+                                                          : AppTheme
+                                                                .borderColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            2,
+                                                          ),
                                                     ),
                                                   ),
                                                 ),
@@ -301,7 +391,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                     prefixIcon: Icons.lock,
                                     obscureText: true,
                                     onChanged: (value) => _validatePasswords(),
-                                    errorText: _confirmPasswordError.isNotEmpty ? _confirmPasswordError : null,
+                                    errorText: _confirmPasswordError.isNotEmpty
+                                        ? _confirmPasswordError
+                                        : null,
                                   ),
                                 ],
                               ),
@@ -318,7 +410,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               children: [
                                 Text(
                                   '已有账户？',
-                                  style: TextStyle(color: AppTheme.textTertiary),
+                                  style: TextStyle(
+                                    color: AppTheme.textTertiary,
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: () {
@@ -337,7 +431,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             const SizedBox(height: 8),
                             Text(
                               '注册即表示您同意我们的服务条款和隐私政策',
-                              style: TextStyle(fontSize: 12, color: AppTheme.textTertiary),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppTheme.textTertiary,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ],

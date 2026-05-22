@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 
+        注意：此文件仅为示例文件！
+        真实使用时，请从华为 AppGallery Connect 网站下载 agconnect-services.json
+        并参考文档进行正确配置
+    -->
+    <string name="agcp_apm_apm_enable" tools:ignore="UnusedResources">true</string>
+    <string name="agcp_analytics_analytics_enable" tools:ignore="UnusedResources">true</string>
+    <string name="agcp_auth_client_id" tools:ignore="UnusedResources">YOUR_CLIENT_ID</string>
+    <string name="agcp_app_id" tools:ignore="UnusedResources">YOUR_APP_ID</string>
+    <string name="agcp_cp_id" tools:ignore="UnusedResources">YOUR_CP_ID</string>
+    <string name="agcp_api_key" tools:ignore="UnusedResources">YOUR_API_KEY</string>
+    <string name="agcp_route" tools:ignore="UnusedResources">YOUR_ROUTE</string>
+</resources>

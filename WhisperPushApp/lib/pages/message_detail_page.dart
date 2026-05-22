@@ -299,7 +299,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
   Widget _buildLevelBadge() {
     Color glowColor;
     String label;
-    IconData? icon;
+    IconData icon;
 
     switch (widget.message.level) {
       case 'critical':
@@ -340,8 +340,8 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) Icon(icon, size: 12, color: glowColor),
-          if (icon != null) const SizedBox(width: 4),
+          Icon(icon, size: 12, color: glowColor),
+          const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
@@ -410,10 +410,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
-        title: Text(
-          '消息详情',
-          style: TextStyle(color: AppTheme.textPrimary),
-        ),
+        title: Text('消息详情', style: TextStyle(color: AppTheme.textPrimary)),
         actions: [
           IconButton(
             icon: Icon(Icons.copy, color: AppTheme.textPrimary),
@@ -421,10 +418,7 @@ class _MessageDetailPageState extends State<MessageDetailPage> {
             tooltip: '复制内容',
           ),
           IconButton(
-            icon: Icon(
-              Icons.mark_email_unread,
-              color: AppTheme.textPrimary,
-            ),
+            icon: Icon(Icons.mark_email_unread, color: AppTheme.textPrimary),
             onPressed: _isMarkingUnread ? null : _markAsUnread,
             tooltip: '标记未读',
           ),

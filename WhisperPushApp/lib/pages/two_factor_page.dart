@@ -98,7 +98,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         token: authProvider.token,
       );
       await api.verifyTwoFactor(_codeController.text);
-      
+
       final codes = await api.getRecoveryCodes();
       setState(() {
         _recoveryCodes = codes;
@@ -114,7 +114,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
     } catch (e) {
       if (mounted) {
         final errorMessage = e.toString().replaceFirst('Exception: ', '');
-      ToastWidget.showError(context, '验证失败: $errorMessage');
+        ToastWidget.showError(context, '验证失败: $errorMessage');
       }
     } finally {
       setState(() => _isLoading = false);
@@ -157,7 +157,10 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.techPurple, width: 2),
+                    borderSide: BorderSide(
+                      color: AppTheme.techPurple,
+                      width: 2,
+                    ),
                   ),
                   filled: true,
                   fillColor: AppTheme.spaceBlue,
@@ -277,20 +280,20 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 child: CircularProgressIndicator(color: AppTheme.techPurple),
               )
             : !_apiAvailable
-                ? _buildApiUnavailableSection()
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      children: [
-                        if (_showRecoveryCodes)
-                          _buildRecoveryCodesSection()
-                        else if (_otpAuthUrl != null || _secret != null)
-                          _buildEnableVerificationSection()
-                        else
-                          _buildMainSection(),
-                      ],
-                    ),
-                  ),
+            ? _buildApiUnavailableSection()
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  children: [
+                    if (_showRecoveryCodes)
+                      _buildRecoveryCodesSection()
+                    else if (_otpAuthUrl != null || _secret != null)
+                      _buildEnableVerificationSection()
+                    else
+                      _buildMainSection(),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -337,10 +340,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            NeonButton(
-              text: '重试',
-              onPressed: _loadTwoFactorInfo,
-            ),
+            NeonButton(text: '重试', onPressed: _loadTwoFactorInfo),
           ],
         ),
       ),
@@ -507,7 +507,9 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
   }
 
   Widget _buildEnableVerificationSection() {
-    final qrData = _otpAuthUrl ?? (_secret != null ? 'otpauth://totp/WhisperPush?secret=$_secret' : '');
+    final qrData =
+        _otpAuthUrl ??
+        (_secret != null ? 'otpauth://totp/WhisperPush?secret=$_secret' : '');
 
     return Column(
       children: [
@@ -542,17 +544,19 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                       border: Border.all(color: AppTheme.borderColor),
                     ),
                     child: Icon(
-              Icons.qr_code,
-              size: 64,
-              color: AppTheme.textTertiary,
-            ),
+                      Icons.qr_code,
+                      size: 64,
+                      color: AppTheme.textTertiary,
+                    ),
                   ),
                 )
               : SizedBox(
                   width: 200,
                   height: 200,
                   child: Center(
-                    child: CircularProgressIndicator(color: AppTheme.techPurple),
+                    child: CircularProgressIndicator(
+                      color: AppTheme.techPurple,
+                    ),
                   ),
                 ),
         ),
@@ -571,7 +575,9 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
                 decoration: BoxDecoration(
                   color: AppTheme.spaceBlue,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color.fromARGB(77, 139, 92, 246)),
+                  border: Border.all(
+                    color: const Color.fromARGB(77, 139, 92, 246),
+                  ),
                 ),
                 child: SelectableText(
                   _secret ?? '',
@@ -604,16 +610,16 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
             style: TextStyle(color: AppTheme.textPrimary),
-          decoration: InputDecoration(
-            hintText: '6位验证码',
-            hintStyle: TextStyle(color: AppTheme.textTertiary),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
+            decoration: InputDecoration(
+              hintText: '6位验证码',
+              hintStyle: TextStyle(color: AppTheme.textTertiary),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+              counterText: '',
             ),
-            counterText: '',
-          ),
             textAlign: TextAlign.center,
           ),
         ),
@@ -638,10 +644,7 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-              vertical: 14,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
           ),
           child: const Text('取消'),
         ),
@@ -680,27 +683,29 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
             children: _recoveryCodes
                 .asMap()
                 .entries
-                .map((entry) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        children: [
-                          Text(
-                            '${entry.key + 1}.',
-                            style: TextStyle(color: AppTheme.textTertiary),
+                .map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${entry.key + 1}.',
+                          style: TextStyle(color: AppTheme.textTertiary),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          entry.value,
+                          style: TextStyle(
+                            fontFamily: 'Monospace',
+                            fontSize: 14,
+                            color: AppTheme.textPrimary,
+                            letterSpacing: 1,
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            entry.value,
-                            style: TextStyle(
-                              fontFamily: 'Monospace',
-                              fontSize: 14,
-                              color: AppTheme.textPrimary,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ))
+                        ),
+                      ],
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ),

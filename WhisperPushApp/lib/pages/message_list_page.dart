@@ -27,10 +27,10 @@ class _MessageListPageState extends State<MessageListPage> {
   bool _isLoading = true;
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   final _searchController = TextEditingController();
-  
+
   bool _isMultiSelectMode = false;
   List<int> _selectedMessageIds = [];
-  
+
   String? _filterStatus;
   String? _filterLevel;
   String? _filterGroup;
@@ -41,31 +41,31 @@ class _MessageListPageState extends State<MessageListPage> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      
+
       if (authProvider.serverUrl == null || authProvider.serverUrl!.isEmpty) {
         throw Exception('服务器地址未配置');
       }
-      
+
       if (kDebugMode) {
         print('=== 加载消息 ===');
         print('Server URL: ${authProvider.serverUrl}');
         print('Token: ${authProvider.token?.substring(0, 20) ?? 'null'}...');
       }
-      
+
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
 
       final messages = await api.getMessages();
-      
+
       if (kDebugMode) {
         print('消息数量: ${messages.length}');
         if (messages.isNotEmpty) {
           print('第一条消息: ${messages.first.title}');
         }
       }
-      
+
       setState(() {
         _messages = messages;
         _availableGroups = _extractGroups(messages);
@@ -77,9 +77,9 @@ class _MessageListPageState extends State<MessageListPage> {
         print('堆栈: $stackTrace');
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('加载失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('加载失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -101,7 +101,7 @@ class _MessageListPageState extends State<MessageListPage> {
       _filteredMessages = _messages.where((msg) {
         if (_searchController.text.isNotEmpty) {
           final query = _searchController.text.toLowerCase();
-          if (!msg.title.toLowerCase().contains(query) && 
+          if (!msg.title.toLowerCase().contains(query) &&
               !msg.body.toLowerCase().contains(query)) {
             return false;
           }
@@ -130,7 +130,7 @@ class _MessageListPageState extends State<MessageListPage> {
       _toggleSelect(message.id);
       return;
     }
-    
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -168,16 +168,16 @@ class _MessageListPageState extends State<MessageListPage> {
 
   Future<void> _markSelectedAsRead() async {
     if (_selectedMessageIds.isEmpty) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      
+
       for (var id in _selectedMessageIds) {
         await api.markMessageRead(id);
       }
@@ -190,9 +190,9 @@ class _MessageListPageState extends State<MessageListPage> {
       await _loadMessages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('操作失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('操作失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -201,28 +201,33 @@ class _MessageListPageState extends State<MessageListPage> {
 
   Future<void> _deleteSelected() async {
     if (_selectedMessageIds.isEmpty) return;
-    
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.spaceIndigo,
-        title: Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
-        content: Text(
-          '确定要删除选中的 ${_selectedMessageIds.length} 条消息吗？',
-          style: TextStyle(color: AppTheme.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('取消', style: TextStyle(color: AppTheme.textTertiary)),
+
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.spaceIndigo,
+            title: Text('确认删除', style: TextStyle(color: AppTheme.textPrimary)),
+            content: Text(
+              '确定要删除选中的 ${_selectedMessageIds.length} 条消息吗？',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(
+                  '取消',
+                  style: TextStyle(color: AppTheme.textTertiary),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('删除', style: TextStyle(color: AppTheme.dangerRed)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text('删除', style: TextStyle(color: AppTheme.dangerRed)),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
 
     if (!mounted) return;
     if (!confirmed) return;
@@ -248,9 +253,9 @@ class _MessageListPageState extends State<MessageListPage> {
       await _loadMessages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('删除失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -259,25 +264,25 @@ class _MessageListPageState extends State<MessageListPage> {
 
   Future<void> _markMessageAsUnread(Message message) async {
     setState(() => _isLoading = true);
-    
+
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final api = ApiService(
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      
+
       await api.markMessageUnread(message.id);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已标记为未读')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('已标记为未读')));
       await _loadMessages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('操作失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('操作失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -296,15 +301,15 @@ class _MessageListPageState extends State<MessageListPage> {
 
       await api.deleteMessage(messageId);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已删除消息')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('已删除消息')));
       await _loadMessages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('删除失败: ${e.toString()}')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -328,15 +333,22 @@ class _MessageListPageState extends State<MessageListPage> {
           children: [
             Text(
               '筛选消息',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary,
+              ),
             ),
             const SizedBox(height: 20),
-            
+
             GlassContainer(
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
                 initialValue: _filterStatus,
-                hint: Text('状态', style: TextStyle(color: AppTheme.textTertiary)),
+                hint: Text(
+                  '状态',
+                  style: TextStyle(color: AppTheme.textTertiary),
+                ),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: const [
                   DropdownMenuItem(value: 'all', child: Text('全部')),
@@ -349,18 +361,24 @@ class _MessageListPageState extends State<MessageListPage> {
                 },
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
                 style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             GlassContainer(
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
                 initialValue: _filterLevel,
-                hint: Text('级别', style: TextStyle(color: AppTheme.textTertiary)),
+                hint: Text(
+                  '级别',
+                  style: TextStyle(color: AppTheme.textTertiary),
+                ),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: const [
                   DropdownMenuItem(value: 'all', child: Text('全部')),
@@ -374,23 +392,30 @@ class _MessageListPageState extends State<MessageListPage> {
                 },
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
                 style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             GlassContainer(
               padding: const EdgeInsets.all(0),
               child: DropdownButtonFormField<String>(
                 initialValue: _filterGroup,
-                hint: Text('分组', style: TextStyle(color: AppTheme.textTertiary)),
+                hint: Text(
+                  '分组',
+                  style: TextStyle(color: AppTheme.textTertiary),
+                ),
                 dropdownColor: AppTheme.spaceIndigo,
                 items: [
                   const DropdownMenuItem(value: 'all', child: Text('全部')),
-                  ..._availableGroups.map((group) => 
-                    DropdownMenuItem(value: group, child: Text(group))
+                  ..._availableGroups.map(
+                    (group) =>
+                        DropdownMenuItem(value: group, child: Text(group)),
                   ),
                 ],
                 onChanged: (value) {
@@ -399,13 +424,16 @@ class _MessageListPageState extends State<MessageListPage> {
                 },
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
                 style: TextStyle(color: AppTheme.textPrimary),
               ),
             ),
             const SizedBox(height: 24),
-            
+
             Row(
               children: [
                 Expanded(
@@ -473,7 +501,10 @@ class _MessageListPageState extends State<MessageListPage> {
       appBar: AppBar(
         backgroundColor: AppTheme.spaceBlue,
         title: _isMultiSelectMode
-            ? Text('已选择 ${_selectedMessageIds.length} 条', style: TextStyle(color: AppTheme.textPrimary))
+            ? Text(
+                '已选择 ${_selectedMessageIds.length} 条',
+                style: TextStyle(color: AppTheme.textPrimary),
+              )
             : Text('消息', style: TextStyle(color: AppTheme.textPrimary)),
         leading: _isMultiSelectMode
             ? IconButton(
@@ -486,7 +517,10 @@ class _MessageListPageState extends State<MessageListPage> {
             Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.mark_email_read, color: AppTheme.textPrimary),
+                  icon: Icon(
+                    Icons.mark_email_read,
+                    color: AppTheme.textPrimary,
+                  ),
                   onPressed: _markSelectedAsRead,
                   tooltip: '标记为已读',
                 ),
@@ -510,7 +544,9 @@ class _MessageListPageState extends State<MessageListPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SettingsPage()),
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
                     );
                   },
                   tooltip: '设置',
@@ -541,10 +577,14 @@ class _MessageListPageState extends State<MessageListPage> {
                     Expanded(
                       child: _filteredMessages.isEmpty
                           ? EmptyState(
-                              icon: _searchController.text.isNotEmpty ? Icons.search_off : Icons.inbox,
-                              title: _searchController.text.isNotEmpty ? '暂无匹配结果' : '暂无消息',
-                              description: _searchController.text.isNotEmpty 
-                                  ? '尝试使用其他关键词搜索' 
+                              icon: _searchController.text.isNotEmpty
+                                  ? Icons.search_off
+                                  : Icons.inbox,
+                              title: _searchController.text.isNotEmpty
+                                  ? '暂无匹配结果'
+                                  : '暂无消息',
+                              description: _searchController.text.isNotEmpty
+                                  ? '尝试使用其他关键词搜索'
                                   : '消息会显示在这里',
                               actionText: '刷新',
                               onAction: _loadMessages,
@@ -555,15 +595,19 @@ class _MessageListPageState extends State<MessageListPage> {
                                 final message = _filteredMessages[index];
                                 return MessageCard(
                                   message: message,
-                                  isSelected: _selectedMessageIds.contains(message.id),
+                                  isSelected: _selectedMessageIds.contains(
+                                    message.id,
+                                  ),
                                   isMultiSelectMode: _isMultiSelectMode,
                                   onTap: () => _navigateToDetail(message),
-                                  onLongPress: () => _enterMultiSelectMode(message.id),
+                                  onLongPress: () =>
+                                      _enterMultiSelectMode(message.id),
                                   onSelectChanged: (selected) {
                                     _toggleSelect(message.id);
                                   },
                                   onDismissed: () => _deleteMessage(message.id),
-                                  onMarkToggle: () => _markMessageAsUnread(message),
+                                  onMarkToggle: () =>
+                                      _markMessageAsUnread(message),
                                 );
                               },
                             ),

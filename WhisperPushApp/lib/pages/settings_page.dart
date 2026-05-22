@@ -161,17 +161,24 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showSecretKeyDialog(String secretKey) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     final isDark = themeProvider.isDarkMode;
-    
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1A1A2E) : AppTheme.spaceIndigo,
+        backgroundColor: isDark
+            ? const Color(0xFF1A1A2E)
+            : AppTheme.spaceIndigo,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
             Icon(Icons.key, color: AppTheme.techPurple),
-            SizedBox(width: 8),
-            Text('秘钥已生成', style: TextStyle(color: isDark ? Colors.white : AppTheme.textPrimary)),
+            const SizedBox(width: 8),
+            Text(
+              '秘钥已生成',
+              style: TextStyle(
+                color: isDark ? Colors.white : AppTheme.textPrimary,
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -186,10 +193,14 @@ class _SettingsPageState extends State<SettingsPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.techPurple.withValues(alpha: isDark ? 0.1 : 0.08),
+                color: AppTheme.techPurple.withValues(
+                  alpha: isDark ? 0.1 : 0.08,
+                ),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.techPurple.withValues(alpha: isDark ? 0.3 : 0.2),
+                  color: AppTheme.techPurple.withValues(
+                    alpha: isDark ? 0.3 : 0.2,
+                  ),
                 ),
               ),
               child: SelectableText(
@@ -210,7 +221,9 @@ class _SettingsPageState extends State<SettingsPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.techPurple,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: secretKey));
@@ -244,11 +257,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: BoxShape.circle,
                   color: AppTheme.dangerRed.withValues(alpha: 0.15),
                 ),
-                child: Icon(
-                  Icons.delete,
-                  color: AppTheme.dangerRed,
-                  size: 28,
-                ),
+                child: Icon(Icons.delete, color: AppTheme.dangerRed, size: 28),
               ),
               const SizedBox(height: 20),
               Text(
@@ -366,11 +375,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: AppTheme.dangerRed.withValues(alpha: 0.3),
                   ),
                 ),
-                child: Icon(
-                  Icons.logout,
-                  color: AppTheme.dangerRed,
-                  size: 28,
-                ),
+                child: Icon(Icons.logout, color: AppTheme.dangerRed, size: 28),
               ),
               const SizedBox(height: 20),
               Text(
@@ -511,9 +516,12 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             height: 1,
             width: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [const Color.fromARGB(128, 139, 92, 246), Colors.transparent],
+                colors: [
+                  Color.fromARGB(128, 139, 92, 246),
+                  Colors.transparent,
+                ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -632,11 +640,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 borderRadius: BorderRadius.circular(12),
                 color: const Color.fromARGB(30, 6, 182, 212),
               ),
-              child: Icon(
-                Icons.cloud,
-                color: AppTheme.neonBlue,
-                size: 20,
-              ),
+              child: Icon(Icons.cloud, color: AppTheme.neonBlue, size: 20),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -653,10 +657,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 2),
                   Text(
                     _serverUrl ?? '未设置',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textPrimary,
-                    ),
+                    style: TextStyle(fontSize: 14, color: AppTheme.textPrimary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -669,7 +670,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   '切换',
                   style: TextStyle(fontSize: 13, color: AppTheme.techPurple),
                 ),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Icon(Icons.refresh, size: 16, color: AppTheme.techPurple),
               ],
             ),
@@ -715,10 +716,11 @@ class _SettingsPageState extends State<SettingsPage> {
                             horizontal: 16,
                             vertical: 20,
                           ),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: const Color.fromARGB(77, 75, 85, 99)),
+                                color: Color.fromARGB(77, 75, 85, 99),
+                              ),
                             ),
                           ),
                           child: Row(
@@ -736,9 +738,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
-                                  boxShadow: [
+                                  boxShadow: const [
                                     BoxShadow(
-                                      color: const Color.fromARGB(60, 139, 92, 246),
+                                      color: Color.fromARGB(
+                                        60,
+                                        139,
+                                        92,
+                                        246,
+                                      ),
                                       blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
@@ -847,10 +854,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 horizontal: 16,
                                 vertical: 14,
                               ),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: const Color.fromARGB(77, 75, 85, 99),
+                                    color: Color.fromARGB(77, 75, 85, 99),
                                   ),
                                 ),
                               ),
@@ -929,7 +936,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const DeviceManagementPage(),
+                                builder: (context) =>
+                                    const DeviceManagementPage(),
                               ),
                             );
                           },
@@ -939,10 +947,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             horizontal: 16,
                             vertical: 16,
                           ),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             border: Border(
                               top: BorderSide(
-                                color: const Color.fromARGB(77, 75, 85, 99),
+                                color: Color.fromARGB(77, 75, 85, 99),
                               ),
                             ),
                           ),
@@ -968,7 +976,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                   children: [
                                     Text(
                                       '推送通知',
-                                      style: TextStyle(color: AppTheme.textPrimary),
+                                      style: TextStyle(
+                                        color: AppTheme.textPrimary,
+                                      ),
                                     ),
                                     Text(
                                       '接收重要消息推送',
@@ -1075,9 +1085,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: '版本号',
                           trailing: Text(
                             _appVersion,
-                            style: TextStyle(
-                              color: AppTheme.textTertiary,
-                            ),
+                            style: TextStyle(color: AppTheme.textTertiary),
                           ),
                         ),
                         _buildSettingItem(
@@ -1132,4 +1140,3 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
-

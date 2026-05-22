@@ -198,7 +198,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -215,7 +215,9 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                             color: const Color.fromARGB(200, 30, 41, 59),
                             borderRadius: AppTheme.borderRadius,
                             border: Border.all(
-                              color: colorScheme.borderColor.withValues(alpha: 0.6),
+                              color: colorScheme.borderColor.withValues(
+                                alpha: 0.6,
+                              ),
                               width: 1.5,
                             ),
                           ),
@@ -229,7 +231,9 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                                   color: colorScheme.iconBg,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: colorScheme.iconColor.withValues(alpha: 0.3),
+                                      color: colorScheme.iconColor.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       blurRadius: 10,
                                     ),
                                   ],
@@ -261,7 +265,9 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                           color: Colors.white,
                           borderRadius: AppTheme.borderRadius,
                           border: Border.all(
-                            color: colorScheme.borderColor.withValues(alpha: isDark ? 0.6 : 0.4),
+                            color: colorScheme.borderColor.withValues(
+                              alpha: isDark ? 0.6 : 0.4,
+                            ),
                             width: 1.5,
                           ),
                         ),
