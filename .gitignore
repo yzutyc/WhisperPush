@@ -48,3 +48,10 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Android Signing (敏感信息，永远不要提交)
+**/*.jks
+**/*.keystore
+**/*keystore*.txt
+**/*keystore*.base64
+**/keystore-base64.txt
