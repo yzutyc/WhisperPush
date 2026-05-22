@@ -57,12 +57,10 @@ jobs:
         RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
         RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
       run: |
-        cat > WhisperPushApp/android/local.properties << EOF
-RELEASE_STORE_FILE=whisperpush-release-key.jks
-RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD
-RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS
-RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD
-EOF
+        echo "RELEASE_STORE_FILE=whisperpush-release-key.jks" > WhisperPushApp/android/local.properties
+        echo "RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD" >> WhisperPushApp/android/local.properties
+        echo "RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS" >> WhisperPushApp/android/local.properties
+        echo "RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD" >> WhisperPushApp/android/local.properties
 
     - name: Build APK
       working-directory: ./WhisperPushApp
