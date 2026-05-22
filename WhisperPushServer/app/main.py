@@ -4,7 +4,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.logging_middleware import RequestLoggingMiddleware
 from app.routers import auth, secrets, messages, devices, two_factor, user_settings
 
-app = FastAPI(title="WhisperPush API", version="0.1.9")
+app = FastAPI(title="WhisperPush API", version="0.1.10")
+
+_main_loop = None
+
+
+@app.on_event("startup")
+def _save_event_loop():
+    global _main_loop
+    import asyncio
+    _main_loop = asyncio.get_running_loop()
+
+
+def get_main_loop():
+    return _main_loop
 
 app.add_middleware(RequestLoggingMiddleware)
 
