@@ -46,7 +46,7 @@ jobs:
     - name: Decode Android Keystore
       if: startsWith(github.ref, 'refs/tags/')
       env:
-        ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_JKS }}
       run: |
         echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > WhisperPushApp/android/app/whisperpush-release-key.jks
 
@@ -58,11 +58,11 @@ jobs:
         RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
       run: |
         cat > WhisperPushApp/android/local.properties << EOF
-        RELEASE_STORE_FILE=whisperpush-release-key.jks
-        RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD
-        RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS
-        RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD
-        EOF
+RELEASE_STORE_FILE=whisperpush-release-key.jks
+RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD
+RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS
+RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD
+EOF
 
     - name: Build APK
       working-directory: ./WhisperPushApp
