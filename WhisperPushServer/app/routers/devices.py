@@ -73,7 +73,8 @@ def register_device(
         user_id=current_user.id,
         device_type=device.device_type,
         device_token=device.device_token,
-        device_name=device.device_name
+        device_name=device.device_name,
+        push_vendor=device.push_vendor
     )
     db.add(new_device)
     db.commit()

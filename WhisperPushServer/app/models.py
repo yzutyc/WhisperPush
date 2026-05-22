@@ -45,6 +45,7 @@ class Device(Base):
     device_type = Column(String(20))
     device_token = Column(String(255), nullable=True)
     device_name = Column(String(100), nullable=True)
+    push_vendor = Column(String(50), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     is_active = Column(Boolean, default=True)
 

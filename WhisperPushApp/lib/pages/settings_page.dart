@@ -16,6 +16,7 @@ import '../providers/theme_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/logger.dart';
 import 'change_password_page.dart';
+import 'device_management_page.dart';
 import 'login_page.dart';
 import 'privacy_policy_page.dart';
 import 'terms_of_service_page.dart';
@@ -918,54 +919,78 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     padding: const EdgeInsets.all(0),
                     enableHover: false,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: const Color.fromARGB(40, 51, 65, 85),
-                            ),
-                            child: Icon(
-                              Icons.notifications,
-                              color: AppTheme.textSecondary,
-                              size: 20,
+                    child: Column(
+                      children: [
+                        _buildSettingItem(
+                          icon: Icons.devices,
+                          title: '设备管理',
+                          subtitle: '管理您的注册设备',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DeviceManagementPage(),
+                              ),
+                            );
+                          },
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              top: BorderSide(
+                                color: const Color.fromARGB(77, 75, 85, 99),
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '推送通知',
-                                  style: TextStyle(color: AppTheme.textPrimary),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: const Color.fromARGB(40, 51, 65, 85),
                                 ),
-                                Text(
-                                  '接收重要消息推送',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppTheme.textTertiary,
-                                  ),
+                                child: Icon(
+                                  Icons.notifications,
+                                  color: AppTheme.textSecondary,
+                                  size: 20,
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '推送通知',
+                                      style: TextStyle(color: AppTheme.textPrimary),
+                                    ),
+                                    Text(
+                                      '接收重要消息推送',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppTheme.textTertiary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              NeonSwitch(
+                                value: _notificationsEnabled,
+                                onChanged: (value) {
+                                  setState(() => _notificationsEnabled = value);
+                                  _saveNotificationsSetting(value);
+                                },
+                              ),
+                            ],
                           ),
-                          NeonSwitch(
-                            value: _notificationsEnabled,
-                            onChanged: (value) {
-                              setState(() => _notificationsEnabled = value);
-                              _saveNotificationsSetting(value);
-                            },
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   _buildSectionHeader('外观设置', icon: Icons.palette),

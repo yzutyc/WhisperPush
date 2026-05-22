@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../models/message.dart';
 import '../models/secret.dart';
 import '../models/user.dart';
+import '../models/device.dart';
 
 class ApiService {
   final String baseUrl;
@@ -264,6 +265,43 @@ class ApiService {
       }),
     );
     return _handleResponse(response);
+  }
+
+  Future<Device> registerDevice({
+    required String deviceType,
+    required String? deviceToken,
+    required String? deviceName,
+    required String? pushVendor,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/devices'),
+      headers: headers,
+      body: jsonEncode({
+        'device_type': deviceType,
+        'device_token': deviceToken,
+        'device_name': deviceName,
+        'push_vendor': pushVendor,
+      }),
+    );
+    final data = _handleResponse(response);
+    return Device.fromJson(data);
+  }
+
+  Future<List<Device>> getDevices() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/v1/devices'),
+      headers: headers,
+    );
+    final data = _handleResponse(response) as List;
+    return data.map((item) => Device.fromJson(item)).toList();
+  }
+
+  Future<void> deleteDevice(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/v1/devices/$id'),
+      headers: headers,
+    );
+    _handleResponse(response);
   }
 
   dynamic _handleResponse(http.Response response) {
