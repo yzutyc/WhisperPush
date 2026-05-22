@@ -37,6 +37,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.41.9'
+        cache: true
 
     - name: Get dependencies
       working-directory: ./WhisperPushApp
@@ -90,6 +91,7 @@ jobs:
       with:
         flutter-version: '3.41.9'
         architecture: x64
+        cache: true
 
     - name: Get dependencies
       working-directory: ./WhisperPushApp
@@ -130,6 +132,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.41.9'
+        cache: true
 
     - name: Get dependencies
       working-directory: ./WhisperPushApp
@@ -175,6 +178,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.41.9'
+        cache: true
 
     - name: Get dependencies
       working-directory: ./WhisperPushApp
@@ -214,6 +218,7 @@ jobs:
       with:
         flutter-version: '3.41.9'
         architecture: x64
+        cache: true
 
     - name: Get dependencies
       working-directory: ./WhisperPushApp
@@ -252,6 +257,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.41.9'
+        cache: true
 
     - name: Get dependencies
       working-directory: ./WhisperPushApp
