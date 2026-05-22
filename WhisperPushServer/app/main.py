@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.logging_middleware import RequestLoggingMiddleware
 from app.routers import auth, secrets, messages, devices, two_factor, user_settings
 
-app = FastAPI(title="WhisperPush API", version="0.1.10")
+app = FastAPI(title="WhisperPush API", version="0.1.11")
 
 _main_loop = None
 
