@@ -71,7 +71,7 @@ class MessageResponse(BaseModel):
     user_id: int
     title: str
     body: str
-    content_type: str
+    content_type: Optional[str]
     group: Optional[str]
     level: str
     created_at: datetime
