@@ -46,7 +46,9 @@
 - PostgreSQL 15+（生产环境）
 - SQLite（开发/测试环境，自动配置）
 
-### 使用 Docker Compose（推荐）
+> 💡 更多部署方式（systemd 服务、Docker、手动启动）请参见下方 [部署指南](#部署指南) 章节。
+
+### 快速体验（Docker Compose）
 
 ```bash
 # 启动服务
@@ -56,7 +58,7 @@ docker-compose up -d
 docker-compose exec api alembic upgrade head
 ```
 
-### 手动启动
+### 快速体验（手动启动）
 
 ```bash
 # 安装依赖（使用 uv 或 pip）
@@ -123,6 +125,7 @@ pytest test/ -v --cov=app
 ├── .env.example            # 环境变量示例
 ├── docker-compose.yml      # Docker 配置
 ├── Dockerfile              # Docker 镜像
+├── setup_service.sh        # Linux systemd 服务安装脚本
 ├── pyproject.toml          # 项目配置与依赖
 └── README.md               # 项目说明
 ```
@@ -188,12 +191,16 @@ pytest test/ -v --cov=app
 
 ```env
 # 数据库配置
-DATABASE_URL=postgresql://user:password@host:5432/dbname
+DATABASE_URL=postgresql+asyncpg://user:password@host:5432/dbname
 
 # JWT 配置
 SECRET_KEY=your-secret-key-here-keep-it-safe
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=10080  # 7天
+
+# 服务配置（setup_service.sh 也可通过命令行参数指定）
+PORT=8000                          # 监听端口
+WORKERS=4                          # uvicorn worker 数量
 
 # FCM (Android) 配置（可选）
 FCM_SERVER_KEY=your-fcm-server-key
@@ -205,6 +212,18 @@ APNS_BUNDLE_ID=com.yourapp.bundleid
 APNS_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
 APNS_PRIVATE_KEY_PATH=/path/to/AuthKey_KEYID.p8
 APNS_USE_SANDBOX=true
+
+# 华为推送配置（可选）
+HUAWEI_APP_ID=
+HUAWEI_APP_SECRET=
+
+# SMTP 邮件配置（可选，用于密码重置等邮件通知）
+SMTP_HOST=localhost
+SMTP_PORT=587
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_FROM_ADDRESS=noreply@whisperpush.io
+SMTP_USE_TLS=true
 ```
 
 ## 推送通知说明
@@ -320,24 +339,194 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
-## 部署建议
+## 部署指南
 
-### 生产环境
-- 使用 PostgreSQL 数据库
-- 使用 Gunicorn 或 Uvicorn 作为 WSGI 服务器
-- 配置 HTTPS（使用 Nginx + Let's Encrypt）
-- 设置适当的日志级别和日志轮转
-- 配置防火墙规则
+### 方式一：systemd 服务安装（推荐，Linux 生产环境）
 
-### Docker 部署
+项目提供了 `setup_service.sh` 脚本，可一键将服务安装为 Linux systemd 服务，实现开机自启、自动重启和日志管理。
+
+#### 前置条件
+
+| 条件 | 说明 |
+|------|------|
+| 操作系统 | Linux（支持 systemd） |
+| 权限 | 需要 root 权限（使用 `sudo`） |
+| Python 包管理器 | [uv](https://docs.astral.sh/uv/) — 脚本会自动检测，或通过 `UV_PATH` 指定 |
+| 数据库 | PostgreSQL 15+（需提前安装并创建数据库） |
+
+#### 安装 uv（如尚未安装）
 
 ```bash
-# 构建镜像
-docker build -t whisperpush-server .
-
-# 运行容器
-docker run -d -p 8000:8000 --env-file .env whisperpush-server
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
+
+安装后，uv 通常位于 `~/.local/bin/uv` 或 `~/.cargo/bin/uv`。脚本会自动在这些路径下查找。
+
+#### 准备配置文件
+
+安装前，确保项目目录下有 `.env` 文件：
+
+```bash
+cp .env.example .env
+vim .env   # 编辑数据库连接、JWT 密钥等配置
+```
+
+> ⚠️ **重要**：`SECRET_KEY` 必须修改为随机字符串，`DATABASE_URL` 必须指向可用的 PostgreSQL 数据库。
+
+#### 执行安装
+
+```bash
+# 默认安装（监听 0.0.0.0:8000，4 worker）
+sudo bash setup_service.sh
+
+# 自定义端口安装
+sudo bash setup_service.sh -p 9000
+
+# 自定义端口和 worker 数量
+sudo bash setup_service.sh -p 9000 -w 2
+
+# 指定 uv 路径（当自动检测失败时）
+sudo bash setup_service.sh --uv-path /path/to/uv
+
+# 查看帮助
+bash setup_service.sh --help
+```
+
+#### 安装过程说明
+
+脚本执行时会依次完成以下步骤：
+
+| 步骤 | 说明 |
+|------|------|
+| 1. 权限检查 | 确认以 root 权限运行 |
+| 2. 检测 uv | 自动在系统路径和用户 HOME 目录查找 uv |
+| 3. 系统级 uv | 若 uv 位于用户 HOME，自动复制到 `/usr/local/bin/uv` 确保服务用户可访问 |
+| 4. 创建系统用户 | 创建 `whisperpush` 系统用户（无登录 shell） |
+| 5. 部署项目文件 | 将项目文件拷贝至 `/opt/whisperpush-server/`（排除 `.git`、`__pycache__` 等） |
+| 6. 安装依赖 | 执行 `uv sync --frozen` 安装 Python 依赖 |
+| 7. 数据库迁移 | 执行 `alembic upgrade head`（失败仅警告，不中断安装） |
+| 8. 创建启动前脚本 | 生成 `prestart.sh`，在服务启动前检查数据库连接并同步表结构 |
+| 9. 创建 systemd 服务 | 生成 `/etc/systemd/system/whisperpush-server.service` |
+| 10. 设置文件权限 | 项目文件归 `whisperpush` 用户所有，`.env` 限 owner 可读 |
+| 11. 启用并启动服务 | `systemctl enable` + `systemctl restart` |
+
+#### systemd 服务配置详情
+
+脚本生成的 systemd 服务包含以下关键配置：
+
+- **运行用户**：`whisperpush`（最小权限系统用户）
+- **多 Worker 模式**：uvicorn 多进程运行，默认 4 worker
+- **启动前检查**：`ExecStartPre` 执行数据库连接检查和表同步
+- **优雅关闭**：SIGTERM 信号 + 30 秒超时
+- **自动重启**：失败后 5 秒自动重启
+- **安全加固**：`NoNewPrivileges`、`PrivateTmp`、`ProtectSystem=strict`、`ProtectHome=yes`
+- **日志输出**：通过 journald 管理
+
+#### 服务管理
+
+```bash
+# 查看服务状态
+sudo systemctl status whisperpush-server
+
+# 重启服务
+sudo systemctl restart whisperpush-server
+
+# 停止服务
+sudo systemctl stop whisperpush-server
+
+# 启动服务
+sudo systemctl start whisperpush-server
+
+# 查看实时日志
+sudo journalctl -u whisperpush-server -f
+
+# 查看最近 100 行日志
+sudo journalctl -u whisperpush-server -n 100
+
+# 查看今天的日志
+sudo journalctl -u whisperpush-server --since today
+```
+
+#### 健康检查
+
+```bash
+curl http://localhost:8000/health
+```
+
+#### 更新部署
+
+当项目代码更新后，重新运行安装脚本即可：
+
+```bash
+cd /path/to/WhisperPushServer
+git pull
+sudo bash setup_service.sh
+```
+
+脚本会检测到安装目录已存在，提示是否覆盖。确认后将重新部署文件、安装依赖并重启服务。
+
+> 💡 已有的 `.env` 配置文件不会被覆盖，脚本会保留现有配置。
+
+#### 卸载服务
+
+```bash
+sudo bash setup_service.sh uninstall
+```
+
+卸载过程中，脚本会依次询问：
+1. 确认卸载（停止服务、禁用自启、删除 systemd 服务文件）
+2. 是否删除安装目录 `/opt/whisperpush-server/`
+3. 是否删除系统用户 `whisperpush`
+
+#### 故障排查
+
+| 问题 | 排查命令 | 常见原因 |
+|------|---------|---------|
+| 服务启动失败 | `sudo journalctl -u whisperpush-server -n 50` | 数据库连接配置错误 |
+| 数据库连接失败 | 检查 `.env` 中 `DATABASE_URL` | 数据库未启动或连接串错误 |
+| uv 找不到 | `sudo bash setup_service.sh --uv-path /path/to/uv` | uv 未安装或路径异常 |
+| 权限错误 | `ls -la /opt/whisperpush-server/` | 文件归属不正确 |
+| 端口被占用 | `ss -tlnp \| grep 8000` | 端口冲突，使用 `-p` 指定其他端口 |
+
+### 方式二：Docker Compose
+
+```bash
+# 启动服务
+docker-compose up -d
+
+# 执行数据库迁移
+docker-compose exec api alembic upgrade head
+```
+
+### 方式三：手动启动
+
+```bash
+# 安装依赖（使用 uv 或 pip）
+pip install .
+
+# 或者使用开发模式
+pip install -e .
+
+# 设置环境变量
+cp .env.example .env
+# 编辑 .env 文件配置数据库连接
+
+# 执行数据库迁移
+alembic upgrade head
+
+# 启动服务
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+> ⚠️ **注意**：手动启动模式仅适合开发/测试环境，生产环境请使用 systemd 服务或 Docker 部署。
+
+### 生产环境额外建议
+
+- 配置 HTTPS反向代理（Nginx + Let's Encrypt）
+- 设置适当的日志级别和日志轮转
+- 配置防火墙规则，仅开放必要端口
+- 定期备份数据库
+- 使用非默认端口（`-p` 参数）
 
 ## 许可证
 
