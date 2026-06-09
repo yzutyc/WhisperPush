@@ -14,6 +14,9 @@ HOST="0.0.0.0"
 PORT="${PORT:-8001}"
 WORKERS="${WORKERS:-4}"
 
+# PyPI 镜像源
+PYPI_INDEX_URL="${PYPI_INDEX_URL:-https://mirrors.cloud.tencent.com/pypi/simple/}"
+
 # ---- 颜色输出 ----
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -176,7 +179,8 @@ install_deps() {
     "${sys_python}" -m venv .venv
 
     log_info "安装 Python 依赖..."
-    "$UV_PATH" pip install -e . --python "${INSTALL_DIR}/.venv/bin/python"
+    log_info "使用 PyPI 镜像源: ${PYPI_INDEX_URL}"
+    "$UV_PATH" pip install -e . --index-url "$PYPI_INDEX_URL" --python "${INSTALL_DIR}/.venv/bin/python"
     log_info "依赖安装完成"
 
     log_info "执行数据库迁移..."
