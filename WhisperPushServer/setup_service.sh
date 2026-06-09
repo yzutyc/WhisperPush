@@ -261,25 +261,35 @@ SYSTEMD_EOF
 # 6. 设置文件权限
 #===============================================================================
 set_permissions() {
+
+    echo "设置文件权限..."
+
+    echo "chown -R "${SERVICE_USER}:${SERVICE_GROUP}" "${INSTALL_DIR}""
     chown -R "${SERVICE_USER}:${SERVICE_GROUP}" "$INSTALL_DIR"
     
     # 设置目录权限为 755
+    echo "chmod 755 "${INSTALL_DIR}"/* 2>/dev/null || true"
     find "$INSTALL_DIR" -type d -exec chmod 755 {} \;
     
     # 设置文件权限为 644
+    echo "chmod 644 "${INSTALL_DIR}"/* 2>/dev/null || true"
     find "$INSTALL_DIR" -type f -exec chmod 644 {} \;
     
     # 为 .venv/bin/ 下所有可执行文件添加执行权限
     if [[ -d "${INSTALL_DIR}/.venv/bin" ]]; then
+        echo "chmod 755 "${INSTALL_DIR}/.venv/bin"/* 2>/dev/null || true"
         chmod 755 "${INSTALL_DIR}/.venv/bin"/*
     fi
     
     # 确保 prestart.sh 和其他脚本可执行
+    echo "chmod 755 "${INSTALL_DIR}/prestart.sh" 2>/dev/null || true"
     chmod 755 "${INSTALL_DIR}/prestart.sh" 2>/dev/null || true
     
     # .env 包含敏感信息，限制为仅 owner 可读
+    echo "chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true"
     chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true
-    
+
+    ll "${INSTALL_DIR}"
     log_info "文件权限设置完成"
 }
 
