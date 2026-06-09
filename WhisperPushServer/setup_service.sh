@@ -289,7 +289,6 @@ set_permissions() {
     echo "chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true"
     chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true
 
-    ll "${INSTALL_DIR}"
     log_info "文件权限设置完成"
 }
 
