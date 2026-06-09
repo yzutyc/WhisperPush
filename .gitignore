@@ -56,3 +56,13 @@ docker-compose.override.yml
 **/*keystore*.base64
 **/keystore-base64.txt
 **/local.properties
+/WhisperPushApp/.idea/*
+/WhisperPushApp/assets/*
+/WhisperPushApp/linux/*
+/WhisperPushApp/.dart_tool/*
+/WhisperPushApp/ios/*
+/WhisperPushApp/android/*
+/WhisperPushApp/build/*
+/WhisperPushApp/macos/*
+/WhisperPushApp/web/*
+/WhisperPushApp/windows/*
