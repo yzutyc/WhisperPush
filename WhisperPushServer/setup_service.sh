@@ -289,7 +289,7 @@ set_permissions() {
     echo "chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true"
 
     echo "chmod +x "${INSTALL_DIR}/.venv/bin/python""
-    chmod +x "${INSTALL_DIR}/.venv/bin/python"
+    chmod +x "${INSTALL_DIR}/.venv/bin/python" >/dev/null || true
 
     log_info "文件权限设置完成"
 }
