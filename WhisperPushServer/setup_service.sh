@@ -11,7 +11,7 @@ SERVICE_GROUP="whisperpush"
 INSTALL_DIR="/opt/${SERVICE_NAME}"
 UV_PATH="${UV_PATH:-$(command -v uv 2>/dev/null || echo '')}"
 HOST="0.0.0.0"
-PORT="${PORT:-8000}"
+PORT="${PORT:-8001}"
 WORKERS="${WORKERS:-4}"
 
 # ---- 颜色输出 ----
@@ -35,11 +35,31 @@ require_root() {
 }
 
 #===============================================================================
-# 1. 检测 uv / Python 环境
+# 1. 安装系统依赖
+#===============================================================================
+install_system_deps() {
+    log_info "检查系统依赖..."
+    local pkgs=()
+    if ! command -v python3 &>/dev/null; then
+        pkgs+=(python3)
+    fi
+    if ! dpkg -s python3-venv &>/dev/null 2>&1; then
+        pkgs+=(python3-venv)
+    fi
+    if [[ ${#pkgs[@]} -gt 0 ]]; then
+        apt-get update -qq
+        apt-get install -y -qq "${pkgs[@]}"
+        log_info "系统依赖安装完成: ${pkgs[*]}"
+    else
+        log_info "系统依赖已满足"
+    fi
+}
+
+#===============================================================================
+# 2. 检测 uv
 #===============================================================================
 detect_uv() {
     if [[ -z "$UV_PATH" ]]; then
-        # sudo 环境下 SUDO_USER 是原始用户，从原用户 HOME 查找
         local search_paths=(
             "/usr/local/bin/uv"
             "/usr/bin/uv"
@@ -73,7 +93,7 @@ detect_uv() {
 }
 
 #===============================================================================
-# 2. 确保 uv 系统级可访问
+# 3. 确保 uv 系统级可访问
 #===============================================================================
 ensure_system_uv() {
     local system_uv="/usr/local/bin/uv"
@@ -95,7 +115,7 @@ ensure_system_uv() {
 }
 
 #===============================================================================
-# 3. 创建系统用户
+# 4. 创建系统用户
 #===============================================================================
 create_service_user() {
     if id "$SERVICE_USER" &>/dev/null; then
@@ -107,7 +127,7 @@ create_service_user() {
 }
 
 #===============================================================================
-# 4. 部署项目文件
+# 5. 部署项目文件
 #===============================================================================
 deploy_project() {
     local src_dir
@@ -130,12 +150,10 @@ deploy_project() {
 
     log_info "拷贝项目文件到 ${INSTALL_DIR} ..."
     mkdir -p "$INSTALL_DIR"
-    # 排除不需要的文件/目录
     rsync -a --exclude='.git' --exclude='__pycache__' --exclude='*.pyc' \
           --exclude='.venv' --exclude='venv' --exclude='.pytest_cache' \
           --exclude='*.egg-info' "$src_dir/" "$INSTALL_DIR/"
 
-    # .env 文件单独处理（如存在则拷贝，避免覆盖已有配置）
     if [[ -f "$INSTALL_DIR/.env" ]]; then
         log_info ".env 已存在，保留现有配置"
     elif [[ -f "$src_dir/.env" ]]; then
@@ -145,16 +163,24 @@ deploy_project() {
 }
 
 #===============================================================================
-# 5. 安装依赖 & 数据库迁移
+# 6. 安装依赖 & 数据库迁移
 #===============================================================================
 install_deps() {
     cd "$INSTALL_DIR"
+
+    # 使用系统 Python 创建 venv，避免 symlink 指向 /root/ 下不可访问的位置
+    local sys_python
+    sys_python=$(command -v python3)
+    log_info "使用系统 Python: ${sys_python}"
+    log_info "创建虚拟环境..."
+    "${sys_python}" -m venv .venv
+
     log_info "安装 Python 依赖..."
-    "$UV_PATH" sync --frozen
+    "$UV_PATH" pip install -e . --python "${INSTALL_DIR}/.venv/bin/python"
     log_info "依赖安装完成"
 
     log_info "执行数据库迁移..."
-    if "$UV_PATH" run alembic upgrade head; then
+    if "${INSTALL_DIR}/.venv/bin/python" -m alembic upgrade head; then
         log_info "数据库迁移完成"
     else
         log_warn "数据库迁移失败，请检查 .env 中的数据库连接配置"
@@ -163,7 +189,7 @@ install_deps() {
 }
 
 #===============================================================================
-# 5b. 创建服务启动前检查脚本
+# 6b. 创建服务启动前检查脚本
 #===============================================================================
 create_prestart_script() {
     local prestart="${INSTALL_DIR}/prestart.sh"
@@ -201,11 +227,13 @@ PRESTART_EOF
     chmod +x "$prestart"
     log_info "已创建启动前检查脚本: ${prestart}"
 }
+
+#===============================================================================
+# 7. 创建 systemd 服务文件
+#===============================================================================
 create_systemd_service() {
     local service_file="/etc/systemd/system/${SERVICE_NAME}.service"
 
-    # 使用 uvicorn 直接启动（生产模式，无 --reload）
-    # 数据库检查由 ExecStartPre 完成
     cat > "$service_file" << SYSTEMD_EOF
 [Unit]
 Description=WhisperPush Server - 消息推送系统后端服务
@@ -258,44 +286,33 @@ SYSTEMD_EOF
 }
 
 #===============================================================================
-# 6. 设置文件权限
+# 8. 设置文件权限
 #===============================================================================
 set_permissions() {
-
-    echo "设置文件权限..."
-
-    echo "chown -R "${SERVICE_USER}:${SERVICE_GROUP}" "${INSTALL_DIR}""
     chown -R "${SERVICE_USER}:${SERVICE_GROUP}" "$INSTALL_DIR"
-    
+
     # 设置目录权限为 755
-    echo "chmod 755 "${INSTALL_DIR}"/* 2>/dev/null || true"
     find "$INSTALL_DIR" -type d -exec chmod 755 {} \;
-    
+
     # 设置文件权限为 644
-    echo "chmod 644 "${INSTALL_DIR}"/* 2>/dev/null || true"
     find "$INSTALL_DIR" -type f -exec chmod 644 {} \;
-    
+
     # 为 .venv/bin/ 下所有可执行文件添加执行权限
     if [[ -d "${INSTALL_DIR}/.venv/bin" ]]; then
-        echo "chmod 755 "${INSTALL_DIR}/.venv/bin"/* 2>/dev/null || true"
         chmod 755 "${INSTALL_DIR}/.venv/bin"/*
     fi
-    
-    # 确保 prestart.sh 和其他脚本可执行
-    echo "chmod 755 "${INSTALL_DIR}/prestart.sh" 2>/dev/null || true"
-    chmod 755 "${INSTALL_DIR}/prestart.sh" 2>/dev/null || true
-    
-    # .env 包含敏感信息，限制为仅 owner 可读
-    echo "chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true"
 
-    echo "chmod +x "${INSTALL_DIR}/.venv/bin/python""
-    chmod +x "${INSTALL_DIR}/.venv/bin/python" >/dev/null || true
+    # 确保 prestart.sh 可执行
+    chmod 755 "${INSTALL_DIR}/prestart.sh" 2>/dev/null || true
+
+    # .env 包含敏感信息，限制为仅 owner 可读
+    chmod 600 "${INSTALL_DIR}/.env" 2>/dev/null || true
 
     log_info "文件权限设置完成"
 }
 
 #===============================================================================
-# 7. 启用并启动服务
+# 9. 启用并启动服务
 #===============================================================================
 enable_and_start() {
     systemctl daemon-reload
@@ -303,7 +320,6 @@ enable_and_start() {
     systemctl restart "$SERVICE_NAME"
     log_info "服务已启用并启动"
 
-    # 等待启动
     sleep 2
     if systemctl is-active --quiet "$SERVICE_NAME"; then
         log_info "服务运行中"
@@ -313,7 +329,7 @@ enable_and_start() {
 }
 
 #===============================================================================
-# 8. 打印状态信息
+# 10. 打印状态信息
 #===============================================================================
 show_status() {
     echo ""
@@ -396,6 +412,7 @@ main() {
     case "$ACTION" in
         install)
             require_root
+            install_system_deps
             detect_uv
             ensure_system_uv
             create_service_user
@@ -422,13 +439,13 @@ show_help() {
     echo "  uninstall   停止并移除 systemd 服务"
     echo ""
     echo "选项:"
-    echo "  -p, --port PORT       监听端口（默认 8000）"
+    echo "  -p, --port PORT       监听端口（默认 8001）"
     echo "  -w, --workers N       uvicorn worker 数量（默认 4）"
     echo "  --uv-path PATH        uv 可执行文件路径（默认自动检测）"
     echo "  -h, --help            显示此帮助信息"
     echo ""
     echo "示例:"
-    echo "  sudo $0                          # 默认端口 8000 安装"
+    echo "  sudo $0                          # 默认端口 8001 安装"
     echo "  sudo $0 -p 9000                  # 自定义端口 9000 安装"
     echo "  sudo $0 -p 9000 -w 2             # 端口 9000，2 worker"
     echo "  sudo $0 uninstall                # 卸载服务"
