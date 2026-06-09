@@ -1,4 +1,3 @@
-import asyncio
 import hashlib
 
 from fastapi import APIRouter, Depends, HTTPException, Header, Query
@@ -116,15 +115,10 @@ def push_message(
     # 尝试通过 WebSocket 推送
     try:
         from app.websocket import manager
-        from app.main import get_main_loop
-        loop = get_main_loop()
-        if loop and loop.is_running():
-            loop.call_soon_threadsafe(
-                lambda: asyncio.ensure_future(
-                    manager.send_new_message(user.id, message_dict), loop=loop
-                )
-            )
-    except Exception:
+        import asyncio
+        asyncio.create_task(manager.send_new_message(user.id, message_dict))
+    except Exception as e:
+        print(f"Error sending message via WebSocket: {e}")
         pass
 
     # 获取用户活跃设备列表

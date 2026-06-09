@@ -9,7 +9,6 @@ from app.config import settings
 from app.database import get_db
 from app.security import verify_password, get_password_hash, create_access_token, get_user_by_email, \
     get_user_by_username, create_password_reset_token, verify_reset_token, consume_reset_token
-from app.email_service import send_password_reset_email
 
 router = APIRouter()
 
@@ -126,25 +125,29 @@ def forgot_password(
     """
     忘记密码接口
 
-    验证用户邮箱，生成密码重置令牌并通过邮件发送。
-    为防止用户枚举攻击，无论邮箱是否存在都返回相同响应。
+    验证用户邮箱，生成密码重置令牌并返回。
+    生产环境中应通过邮件发送令牌，当前直接返回令牌供客户端使用。
 
     Args:
         request: 包含用户邮箱的请求
         db: 数据库会话
 
     Returns:
-        dict: 统一的状态响应（不泄露用户是否存在）
+        dict: 包含重置令牌和状态消息的响应
+
+    Raises:
+        HTTPException: 404 - 用户不存在
     """
     user = get_user_by_email(db, email=request.email)
-    if user:
-        reset_token = create_password_reset_token(db, user.id)
-        send_password_reset_email(to_address=user.email, reset_token=reset_token)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
 
-    # 统一返回相同消息，防止用户枚举
+    reset_token = create_password_reset_token(db, user.id)
+
     return {
         "status": "success",
-        "message": "If the email is registered, a password reset link has been sent.",
+        "message": "Password reset token generated",
+        "reset_token": reset_token,
     }
 
 

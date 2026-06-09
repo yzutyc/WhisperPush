@@ -84,7 +84,6 @@ class DeviceCreate(BaseModel):
     device_type: str
     device_token: Optional[str] = None
     device_name: Optional[str] = None
-    push_vendor: Optional[str] = None
 
 class DeviceResponse(BaseModel):
     id: int
@@ -92,7 +91,6 @@ class DeviceResponse(BaseModel):
     device_type: str
     device_token: Optional[str]
     device_name: Optional[str]
-    push_vendor: Optional[str]
     created_at: datetime
     is_active: bool
 
