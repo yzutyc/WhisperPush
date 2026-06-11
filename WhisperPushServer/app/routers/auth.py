@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+import hashlib
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -10,6 +12,7 @@ from app.database import get_db
 from app.security import verify_password, get_password_hash, create_access_token, get_user_by_email, \
     get_user_by_username, create_password_reset_token, verify_reset_token, consume_reset_token
 
+
 router = APIRouter()
 
 
@@ -17,27 +20,27 @@ router = APIRouter()
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """
     用户注册接口
-    
+
     创建新用户账户，验证邮箱和用户名唯一性，存储密码哈希值。
-    
+
     Args:
         user: 用户注册数据，包含 username、email、password
         db: 数据库会话
-    
+
     Returns:
         schemas.UserResponse: 注册成功的用户信息
-    
+
     Raises:
         HTTPException: 400 - 邮箱已注册或用户名已被占用
     """
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+
     db_user = get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already taken")
-    
+
     password_hash = get_password_hash(user.password)
     new_user = models.User(
         username=user.username,
@@ -54,47 +57,92 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def login(form_data: schemas.LoginRequest, db: Session = Depends(get_db)):
     """
     用户登录接口
-    
+
     通过邮箱或用户名验证用户身份，生成 JWT 访问令牌。
-    
+    如果用户启用了双因素认证，则需要提供 two_factor_code。
+
     Args:
         form_data: 登录请求数据，包含 username_or_email 和 password
         db: 数据库会话
-    
+
     Returns:
         schemas.Token: 包含 access_token 和 token_type 的令牌响应
-    
+
     Raises:
         HTTPException: 401 - 用户名/邮箱或密码不正确
+        HTTPException: 401 - 双因素认证失败或需要
     """
     user = get_user_by_email(db, email=form_data.username_or_email)
     if not user:
         user = get_user_by_username(db, username=form_data.username_or_email)
-    
+
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username/email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
+    # 检查是否启用双因素认证
+    from app.routers.two_factor import get_two_factor
+    two_factor = get_two_factor(db, user.id)
+
+    if two_factor and two_factor.enabled:
+        if not form_data.two_factor_code:
+            # 需要双因素认证
+            return {"requires_two_factor": True}
+
+        # 验证 2FA 码
+        import pyotp
+        from sqlalchemy import select
+        from app import models
+
+        # 先尝试验证 TOTP 码
+        totp = pyotp.TOTP(two_factor.secret)
+        if not totp.verify(form_data.two_factor_code):
+            # TOTP 验证失败，尝试恢复码
+            code_hash = hashlib.sha256(form_data.two_factor_code.encode()).hexdigest()
+            recovery_code = db.execute(
+                select(models.RecoveryCode).where(
+                    models.RecoveryCode.user_id == user.id,
+                    models.RecoveryCode.code_hash == code_hash,
+                    models.RecoveryCode.used == False
+                )
+            ).scalar_one_or_none()
+
+            if not recovery_code:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid two-factor code",
+                )
+
+            # 标记恢复码为已使用
+            recovery_code.used = True
+            db.commit()
+
+    # 生成访问令牌
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer", "username": user.username}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": user.username,
+        "requires_two_factor": False
+    }
 
 
 @router.get("/me", response_model=schemas.UserResponse)
 def read_users_me(current_user: models.User = Depends(dependencies.get_current_user)):
     """
     获取当前用户信息
-    
+
     返回当前已认证用户的详细信息。
-    
+
     Args:
         current_user: 当前已认证的用户对象（通过 JWT 令牌解析）
-    
+
     Returns:
         schemas.UserResponse: 当前用户信息
     """
@@ -105,12 +153,12 @@ def read_users_me(current_user: models.User = Depends(dependencies.get_current_u
 def logout(current_user: models.User = Depends(dependencies.get_current_user)):
     """
     用户登出接口
-    
+
     执行用户登出操作。当前实现为无状态登出，客户端应自行销毁令牌。
-    
+
     Args:
         current_user: 当前已认证的用户对象
-    
+
     Returns:
         dict: 包含状态和消息的响应
     """
@@ -191,25 +239,25 @@ def change_password(
 ):
     """
     修改密码接口
-    
+
     验证当前密码后更新用户密码。
-    
+
     Args:
         request: 修改密码请求，包含 current_password 和 new_password
         db: 数据库会话
         current_user: 当前已认证的用户对象
-    
+
     Returns:
         dict: 包含状态和消息的响应
-    
+
     Raises:
         HTTPException: 400 - 当前密码不正确
     """
     if not verify_password(request.current_password, current_user.password_hash):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
-    
+
     new_password_hash = get_password_hash(request.new_password)
     current_user.password_hash = new_password_hash
     db.commit()
-    
+
     return {"status": "success", "message": "Password changed successfully"}

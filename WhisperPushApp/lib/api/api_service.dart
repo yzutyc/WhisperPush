@@ -100,7 +100,7 @@ class ApiService {
       Uri.parse('$baseUrl/api/v1/secrets/$id'),
       headers: headers,
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<List<Message>> getMessages({int skip = 0, int limit = 100}) async {
@@ -144,7 +144,7 @@ class ApiService {
       Uri.parse('$baseUrl/api/v1/messages/$id'),
       headers: headers,
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<void> logout() async {
@@ -152,7 +152,7 @@ class ApiService {
       Uri.parse('$baseUrl/api/v1/auth/logout'),
       headers: headers,
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<Map<String, dynamic>> forgotPassword(String email) async {
@@ -170,7 +170,7 @@ class ApiService {
       headers: headers,
       body: jsonEncode({'token': token, 'new_password': newPassword}),
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<void> changePassword(
@@ -185,7 +185,7 @@ class ApiService {
         'new_password': newPassword,
       }),
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<Map<String, dynamic>> getTwoFactorInfo() async {
@@ -204,13 +204,13 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<void> verifyTwoFactor(String code) async {
+  Future<Map<String, dynamic>> verifyTwoFactor(String code) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/auth/two-factor/verify'),
       headers: headers,
       body: jsonEncode({'code': code}),
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<void> disableTwoFactor(String password) async {
@@ -219,7 +219,7 @@ class ApiService {
       headers: headers,
       body: jsonEncode({'password': password}),
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   Future<List<String>> getRecoveryCodes() async {
@@ -310,7 +310,7 @@ class ApiService {
       Uri.parse('$baseUrl/api/v1/devices/$id'),
       headers: headers,
     );
-    _handleResponse(response);
+    return _handleResponse(response);
   }
 
   dynamic _handleResponse(http.Response response) {

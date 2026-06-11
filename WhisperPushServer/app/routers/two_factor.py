@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import io
+import secrets
 
 import pyotp
 from fastapi import APIRouter, Depends, HTTPException
@@ -9,7 +10,6 @@ from qrcode import constants
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
-import secrets
 from app import models, schemas
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -137,7 +137,8 @@ def enable_two_factor(
     
     return {
         "secret": secret,
-        "qr_code_url": f"data:image/png;base64,{qr_code_base64}"
+        "qr_code_url": f"data:image/png;base64,{qr_code_base64}",
+        "otpauth_url": provisioning_uri
     }
 
 

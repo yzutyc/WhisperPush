@@ -36,9 +36,10 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 class Token(BaseModel):
-    access_token: str
-    token_type: str
-    username: str
+    access_token: Optional[str] = None
+    token_type: Optional[str] = None
+    username: Optional[str] = None
+    requires_two_factor: Optional[bool] = False
 
 class TokenData(BaseModel):
     user_id: Optional[int] = None

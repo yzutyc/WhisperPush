@@ -97,9 +97,9 @@ class _TwoFactorPageState extends State<TwoFactorPage> {
         baseUrl: authProvider.serverUrl!,
         token: authProvider.token,
       );
-      await api.verifyTwoFactor(_codeController.text);
+      final result = await api.verifyTwoFactor(_codeController.text);
 
-      final codes = await api.getRecoveryCodes();
+      final codes = List<String>.from(result['recovery_codes'] ?? []);
       setState(() {
         _recoveryCodes = codes;
         _showRecoveryCodes = true;

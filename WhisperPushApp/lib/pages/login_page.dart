@@ -29,7 +29,11 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _serverUrlController = TextEditingController();
+  final _twoFactorController = TextEditingController();
   bool _isLoading = false;
+  bool _requiresTwoFactor = false;
+  String? _tempUsername;
+  String? _tempPassword;
   List<String> _historyUrls = [];
 
   @override
@@ -56,6 +60,12 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    if (_requiresTwoFactor) {
+      // 验证 2FA
+      await _submitTwoFactor(url);
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -66,6 +76,16 @@ class _LoginPageState extends State<LoginPage> {
         _usernameController.text.trim(),
         _passwordController.text.trim(),
       );
+
+      if (result['requires_two_factor'] == true) {
+        // 需要 2FA 验证
+        setState(() {
+          _requiresTwoFactor = true;
+          _tempUsername = _usernameController.text.trim();
+          _tempPassword = _passwordController.text.trim();
+        });
+        return;
+      }
 
       await authProvider.login(
         token: result['access_token'],
@@ -91,6 +111,63 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _submitTwoFactor(String url) async {
+    if (_twoFactorController.text.isEmpty) {
+      ToastWidget.showWarning(context, '请输入6位验证码');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(baseUrl: url);
+
+      final result = await api.loginWithTwoFactor(
+        _tempUsername!,
+        _tempPassword!,
+        _twoFactorController.text.trim(),
+      );
+
+      await authProvider.login(
+        token: result['access_token'],
+        serverUrl: url,
+        username: result['username'],
+      );
+
+      await ServerCache.addUrl(url);
+
+      if (mounted) {
+        setState(() {
+          _requiresTwoFactor = false;
+          _tempUsername = null;
+          _tempPassword = null;
+          _twoFactorController.clear();
+        });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MessageListPage()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        ToastWidget.showError(context, '登录失败: $errorMessage');
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _cancelTwoFactor() {
+    setState(() {
+      _requiresTwoFactor = false;
+      _tempUsername = null;
+      _tempPassword = null;
+      _twoFactorController.clear();
+    });
+  }
+
   void _showServerSelector() {
     showModalBottomSheet(
       context: context,
@@ -113,6 +190,7 @@ class _LoginPageState extends State<LoginPage> {
     _usernameController.dispose();
     _passwordController.dispose();
     _serverUrlController.dispose();
+    _twoFactorController.dispose();
     super.dispose();
   }
 
@@ -151,21 +229,41 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           child: const LogoWidget(size: 80),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
+                        const SizedBox(height: 24),
+                        const Text(
                           'WhisperPush',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
+                        const Text(
                           'Secure Push Notifications',
                           style: TextStyle(
                             fontSize: 14,
                             color: AppTheme.textTertiary,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: AppTheme.borderRadiusSmall,
+                            color: const Color.fromARGB(51, 139, 92, 246),
+                            border: Border.all(
+                              color: AppTheme.techPurple.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: const Text(
+                            '端到端加密',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.techPurpleLight,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],
@@ -174,41 +272,151 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Expanded(
                   flex: 4,
-                  child: SingleChildScrollView(
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: AppTheme.spaceBlue,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
-                        ),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppTheme.spaceBlue,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(height: 16),
-                              Text(
-                                '欢迎回来',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.textPrimary,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.techPurple.withValues(alpha: 0.15),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 24),
+                            Text(
+                              _requiresTwoFactor ? '验证二步' : '欢迎回来',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _requiresTwoFactor
+                                  ? '请输入6位验证码'
+                                  : '请登录您的账户',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 32),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: InkWell(
+                                onTap: _showServerSelector,
+                                borderRadius: AppTheme.borderRadiusSmall,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: AppTheme.borderRadiusSmall,
+                                    color: const Color.fromARGB(64, 139, 92, 246),
+                                    border: Border.all(
+                                      color: AppTheme.techPurple.withValues(alpha: 0.25),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 24,
+                                        height: 24,
+                                        decoration: const BoxDecoration(
+                                          borderRadius: AppTheme.borderRadiusSmall,
+                                          color: Color.fromARGB(77, 6, 182, 212),
+                                        ),
+                                        child: const Icon(
+                                          Icons.cloud,
+                                          color: AppTheme.neonBlue,
+                                          size: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _serverUrlController.text.isNotEmpty
+                                            ? _serverUrlController.text.length > 20
+                                                ? '${_serverUrlController.text.substring(0, 20)}...'
+                                                : _serverUrlController.text
+                                            : '选择服务器',
+                                        style: const TextStyle(
+                                          color: AppTheme.neonBlueLight,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      const Icon(
+                                        Icons.arrow_drop_down,
+                                        color: AppTheme.neonBlueLight,
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '请登录您的账户',
-                                style: TextStyle(color: AppTheme.textTertiary),
+                            ),
+                            const SizedBox(height: 20),
+                            if (_requiresTwoFactor) ...[
+                              GlassContainer(
+                                padding: const EdgeInsets.all(0),
+                                child: FormInput(
+                                  controller: _twoFactorController,
+                                  labelText: '6位验证码',
+                                  prefixIcon: Icons.lock,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  validator: (value) {
+                                    if (value?.isEmpty ?? true) return '请输入验证码';
+                                    if (value?.length != 6) return '验证码应为6位';
+                                    return null;
+                                  },
+                                ),
                               ),
-                              const SizedBox(height: 32),
-                              Container(
-                                color: AppTheme.spaceBlue,
-                                padding: const EdgeInsets.all(10),
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: _isLoading ? null : _cancelTwoFactor,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.spaceIndigo,
+                                        foregroundColor: AppTheme.textTertiary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                      ),
+                                      child: const Text('返回'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: NeonButton(
+                                      text: '验证',
+                                      onPressed: _isLoading ? null : _submit,
+                                      isLoading: _isLoading,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ] else ...[
+                              GlassContainer(
+                                padding: const EdgeInsets.all(0),
                                 child: Column(
                                   children: [
                                     FormInput(
@@ -216,9 +424,7 @@ class _LoginPageState extends State<LoginPage> {
                                       labelText: '用户名或邮箱',
                                       prefixIcon: Icons.person,
                                       validator: (value) =>
-                                          value?.isEmpty ?? true
-                                          ? '请输入用户名或邮箱'
-                                          : null,
+                                          value?.isEmpty ?? true ? '请输入用户名' : null,
                                     ),
                                     const SizedBox(height: 16),
                                     FormInput(
@@ -227,63 +433,45 @@ class _LoginPageState extends State<LoginPage> {
                                       prefixIcon: Icons.lock,
                                       obscureText: true,
                                       validator: (value) =>
-                                          value?.isEmpty ?? true
-                                          ? '请输入密码'
-                                          : null,
+                                          value?.isEmpty ?? true ? '请输入密码' : null,
                                       onFieldSubmitted: (_) => _submit(),
                                     ),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                    onPressed: _showServerSelector,
-                                    child: Text(
-                                      '选择服务器',
-                                      style: TextStyle(
-                                        color: AppTheme.textTertiary,
-                                        fontSize: 13,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ForgotPasswordPage(),
                                       ),
-                                    ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    '忘记密码?',
+                                    style: TextStyle(color: AppTheme.textTertiary),
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ForgotPasswordPage(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      '忘记密码？',
-                                      style: TextStyle(
-                                        color: AppTheme.textTertiary,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                               const SizedBox(height: 24),
                               NeonButton(
                                 text: '登录',
-                                onPressed: _submit,
+                                onPressed: _isLoading ? null : _submit,
                                 isLoading: _isLoading,
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 24),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    '还没有账户？',
+                                  const Text(
+                                    '还没有账户? ',
                                     style: TextStyle(
                                       color: AppTheme.textTertiary,
+                                      fontSize: 14,
                                     ),
                                   ),
                                   TextButton(
@@ -291,23 +479,32 @@ class _LoginPageState extends State<LoginPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RegisterPage(),
+                                          builder: (context) => const RegisterPage(),
                                         ),
                                       );
                                     },
-                                    child: Text(
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                    ),
+                                    child: const Text(
                                       '立即注册',
                                       style: TextStyle(
-                                        color: AppTheme.techPurple,
-                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.techPurpleLight,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: AppTheme.techPurpleLight,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 32),
                             ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
@@ -363,7 +560,6 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
     try {
       final api = ApiService(baseUrl: url);
       final available = await api.checkServerStatus();
-
       if (!mounted) return;
 
       setState(() {
@@ -382,6 +578,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
         _isAvailable = false;
         _checkStatus = '✗ 连接失败';
       });
+      ToastWidget.showError(context, '连接失败: $e');
     } finally {
       setState(() => _isChecking = false);
     }
@@ -411,13 +608,20 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.65,
+      height: MediaQuery.of(context).size.height * 0.7,
       decoration: BoxDecoration(
         color: AppTheme.spaceBlue,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(32),
-          topRight: Radius.circular(32),
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 30,
+            spreadRadius: 10,
+          ),
+        ],
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -434,7 +638,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               '选择服务器',
               style: TextStyle(
                 fontSize: 20,
@@ -443,11 +647,13 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
               ),
             ),
             const SizedBox(height: 8),
-            Text('或输入新地址', style: TextStyle(color: AppTheme.textTertiary)),
-            const SizedBox(height: 32),
-            Container(
-              color: AppTheme.spaceBlue,
-              padding: const EdgeInsets.all(10),
+            const Text(
+              '选择历史地址或输入新地址',
+              style: TextStyle(color: AppTheme.textTertiary),
+            ),
+            const SizedBox(height: 24),
+            GlassContainer(
+              padding: const EdgeInsets.all(0),
               child: Column(
                 children: [
                   FormInput(
@@ -455,9 +661,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                     labelText: '服务器地址',
                     prefixIcon: Icons.cloud,
                     keyboardType: TextInputType.url,
-                    hintText: 'https://api.example.com',
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? '请输入服务器地址' : null,
+                    validator: (value) => value?.isEmpty ?? true ? '请输入服务器地址' : null,
                   ),
                   const SizedBox(height: 12),
                   Padding(
@@ -477,7 +681,7 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                           ),
                         const SizedBox(width: 8),
                         _isChecking
-                            ? SizedBox(
+                            ? const SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
@@ -492,6 +696,9 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                                     horizontal: 16,
                                     vertical: 8,
                                   ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   backgroundColor: AppTheme.techPurple,
                                 ),
                                 child: const Text(
@@ -505,89 +712,86 @@ class _ServerSelectorDialogState extends State<ServerSelectorDialog> {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
-            if (widget.historyUrls.isNotEmpty)
-              Column(
-                children: [
-                  Text(
-                    '历史地址',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textTertiary,
-                      letterSpacing: 1,
+            const SizedBox(height: 24),
+            if (widget.historyUrls.isNotEmpty) ...[
+              const Text(
+                '历史地址',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textTertiary,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...widget.historyUrls.map((url) {
+                return GlassContainer(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  padding: const EdgeInsets.all(0),
+                  onTap: () => _selectUrl(url),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color.fromARGB(77, 6, 182, 212),
+                          ),
+                          child: const Icon(
+                            Icons.cloud,
+                            color: AppTheme.neonBlue,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            url,
+                            style: const TextStyle(color: AppTheme.textPrimary),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (widget.currentUrl == url)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.techPurple.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              '当前',
+                              style: TextStyle(
+                                color: AppTheme.techPurple,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(width: 8),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ...widget.historyUrls.map((url) {
-                    return GlassContainer(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(0),
-                      onTap: () => _selectUrl(url),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: const Color.fromARGB(30, 6, 182, 212),
-                              ),
-                              child: Icon(
-                                Icons.cloud,
-                                color: AppTheme.neonBlue,
-                                size: 18,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                url,
-                                style: TextStyle(color: AppTheme.textPrimary),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (widget.currentUrl == url)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.techPurple.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  '当前',
-                                  style: TextStyle(
-                                    color: AppTheme.techPurple,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(width: 8),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ],
-              )
-            else
+                );
+              }),
+            ] else
               const EmptyState(
                 icon: Icons.history,
                 title: '暂无历史地址',
                 description: '输入新地址并验证后会自动保存',
               ),
-            const SizedBox(height: 32),
-            NeonButton(text: '确认', onPressed: _confirm),
+            const SizedBox(height: 24),
+            NeonButton(
+              text: '确认',
+              onPressed: _confirm,
+            ),
             const SizedBox(height: 32),
           ],
         ),
