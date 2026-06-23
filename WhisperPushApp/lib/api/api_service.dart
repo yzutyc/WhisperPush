@@ -124,14 +124,31 @@ class ApiService {
       Uri.parse('$baseUrl/api/v1/messages?skip=$skip&limit=$limit'),
       headers: headers,
     );
-    final data = _handleResponse(response) as Map<String, dynamic>;
-    final items = (data['items'] as List).map((item) => Message.fromJson(item)).toList();
-    return PaginatedResponse<Message>(
-      items: items,
-      total: data['total'] as int,
-      skip: data['skip'] as int,
-      limit: data['limit'] as int,
-    );
+    final data = _handleResponse(response);
+
+    // Handle both new format (with pagination) and old format (list)
+    if (data is List) {
+      // Old format: just a list of messages
+      final items = data.map((item) => Message.fromJson(item)).toList();
+      return PaginatedResponse<Message>(
+        items: items,
+        total: items.length,
+        skip: skip,
+        limit: limit,
+      );
+    } else if (data is Map<String, dynamic>) {
+      // New format: paginated response
+      final itemsData = data['items'] as List;
+      final items = itemsData.map((item) => Message.fromJson(item)).toList();
+      return PaginatedResponse<Message>(
+        items: items,
+        total: data['total'] as int? ?? items.length,
+        skip: data['skip'] as int? ?? skip,
+        limit: data['limit'] as int? ?? limit,
+      );
+    } else {
+      throw Exception('Unexpected response format');
+    }
   }
 
   Future<Message> getMessage(int id) async {
