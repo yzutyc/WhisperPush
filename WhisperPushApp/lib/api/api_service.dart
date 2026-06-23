@@ -7,6 +7,22 @@ import '../models/secret.dart';
 import '../models/user.dart';
 import '../models/device.dart';
 
+class PaginatedResponse<T> {
+  final List<T> items;
+  final int total;
+  final int skip;
+  final int limit;
+
+  PaginatedResponse({
+    required this.items,
+    required this.total,
+    required this.skip,
+    required this.limit,
+  });
+
+  bool get hasMore => skip + items.length < total;
+}
+
 class ApiService {
   final String baseUrl;
   final String? token;
@@ -103,13 +119,19 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<List<Message>> getMessages({int skip = 0, int limit = 100}) async {
+  Future<PaginatedResponse<Message>> getMessages({int skip = 0, int limit = 20}) async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/v1/messages?skip=$skip&limit=$limit'),
       headers: headers,
     );
-    final data = _handleResponse(response) as List;
-    return data.map((item) => Message.fromJson(item)).toList();
+    final data = _handleResponse(response) as Map<String, dynamic>;
+    final items = (data['items'] as List).map((item) => Message.fromJson(item)).toList();
+    return PaginatedResponse<Message>(
+      items: items,
+      total: data['total'] as int,
+      skip: data['skip'] as int,
+      limit: data['limit'] as int,
+    );
   }
 
   Future<Message> getMessage(int id) async {

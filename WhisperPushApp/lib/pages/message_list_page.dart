@@ -28,6 +28,12 @@ class _MessageListPageState extends State<MessageListPage> {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   final _searchController = TextEditingController();
 
+  int _currentSkip = 0;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+  final _scrollController = ScrollController();
+  static const int _pageSize = 20;
+
   bool _isMultiSelectMode = false;
   List<int> _selectedMessageIds = [];
 
@@ -37,7 +43,10 @@ class _MessageListPageState extends State<MessageListPage> {
   List<String> _availableGroups = [];
 
   Future<void> _loadMessages() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _currentSkip = 0;
+    });
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -57,18 +66,20 @@ class _MessageListPageState extends State<MessageListPage> {
         token: authProvider.token,
       );
 
-      final messages = await api.getMessages();
+      final response = await api.getMessages(skip: 0, limit: _pageSize);
 
       if (kDebugMode) {
-        print('消息数量: ${messages.length}');
-        if (messages.isNotEmpty) {
-          print('第一条消息: ${messages.first.title}');
+        print('消息数量: ${response.items.length} / ${response.total}');
+        if (response.items.isNotEmpty) {
+          print('第一条消息: ${response.items.first.title}');
         }
       }
 
       setState(() {
-        _messages = messages;
-        _availableGroups = _extractGroups(messages);
+        _messages = response.items;
+        _currentSkip = response.items.length;
+        _hasMore = response.hasMore;
+        _availableGroups = _extractGroups(_messages);
         _applyFilters();
       });
     } catch (e, stackTrace) {
@@ -83,6 +94,38 @@ class _MessageListPageState extends State<MessageListPage> {
       }
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadMoreMessages() async {
+    if (_isLoadingMore || !_hasMore) return;
+
+    setState(() => _isLoadingMore = true);
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final api = ApiService(
+        baseUrl: authProvider.serverUrl!,
+        token: authProvider.token,
+      );
+
+      final response = await api.getMessages(skip: _currentSkip, limit: _pageSize);
+
+      setState(() {
+        _messages.addAll(response.items);
+        _currentSkip += response.items.length;
+        _hasMore = response.hasMore;
+        _availableGroups = _extractGroups(_messages);
+        _applyFilters();
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('加载更多失败: ${e.toString()}')));
+      }
+    } finally {
+      setState(() => _isLoadingMore = false);
     }
   }
 
@@ -484,14 +527,22 @@ class _MessageListPageState extends State<MessageListPage> {
   void initState() {
     super.initState();
     _searchController.addListener(_applyFilters);
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadMessages();
     });
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      _loadMoreMessages();
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -590,8 +641,17 @@ class _MessageListPageState extends State<MessageListPage> {
                               onAction: _loadMessages,
                             )
                           : ListView.builder(
-                              itemCount: _filteredMessages.length,
+                              controller: _scrollController,
+                              itemCount: _filteredMessages.length + (_isLoadingMore ? 1 : 0),
                               itemBuilder: (context, index) {
+                                if (index == _filteredMessages.length) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
                                 final message = _filteredMessages[index];
                                 return MessageCard(
                                   message: message,
