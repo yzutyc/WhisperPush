@@ -122,3 +122,13 @@ class TwoFactorDisableRequest(BaseModel):
 
 class RecoveryCodesResponse(BaseModel):
     recovery_codes: list[str]
+
+
+class MessageListResponse(BaseModel):
+    items: list[MessageResponse]
+    total: int
+    skip: int
+    limit: int
+
+    class Config:
+        from_attributes = True

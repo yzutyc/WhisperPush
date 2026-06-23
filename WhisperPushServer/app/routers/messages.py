@@ -2,6 +2,8 @@ import hashlib
 
 from fastapi import APIRouter, Depends, HTTPException, Header, Query
 from sqlalchemy import desc, select, func
+
+from app import schemas
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -154,7 +156,7 @@ def push_message(
     return {"status": "success", "message_id": new_message.id}
 
 
-@router.get("/messages")
+@router.get("/messages", response_model=schemas.MessageListResponse)
 def get_messages(
     skip: int = Query(0),
     limit: int = Query(100),
@@ -173,14 +175,14 @@ def get_messages(
         current_user: 当前已认证的用户对象
 
     Returns:
-        dict: 包含消息列表和总数的响应
+        MessageListResponse: 包含消息列表和总数的响应
     """
     # Get total count
     count_result = db.execute(
         select(func.count(models.Message.id))
         .where(models.Message.user_id == current_user.id)
     )
-    total = count_result.scalar()
+    total = count_result.scalar() or 0
 
     # Get paginated messages
     result = db.execute(
@@ -192,12 +194,12 @@ def get_messages(
     )
     messages = result.scalars().all()
 
-    return {
-        "items": [message_to_dict(msg) for msg in messages],
-        "total": total,
-        "skip": skip,
-        "limit": limit
-    }
+    return schemas.MessageListResponse(
+        items=messages,
+        total=total,
+        skip=skip,
+        limit=limit
+    )
 
 
 @router.get("/messages/{msg_id}", response_model=schemas.MessageResponse)
