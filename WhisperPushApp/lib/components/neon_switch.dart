@@ -53,6 +53,7 @@ class _NeonSwitchState extends State<NeonSwitch>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDarkMode;
     final activeColor = widget.activeColor ?? AppTheme.techPurple;
     final inactiveColor = widget.inactiveColor ?? AppTheme.spaceLight;
 
@@ -74,42 +75,62 @@ class _NeonSwitchState extends State<NeonSwitch>
                     end: Alignment.centerRight,
                   )
                 : LinearGradient(
-                    colors: [
-                      inactiveColor.withValues(alpha: 0.4),
-                      inactiveColor.withValues(alpha: 0.2),
-                    ],
+                    colors: isDark
+                        ? [
+                            inactiveColor.withValues(alpha: 0.4),
+                            inactiveColor.withValues(alpha: 0.2),
+                          ]
+                        : [
+                            const Color(0xFFE2E8F0),
+                            const Color(0xFFCBD5E1),
+                          ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
             boxShadow: widget.value
                 ? [
-                    BoxShadow(
-                      color: AppTheme.techPurple.withValues(
-                        alpha: _isHovered ? 0.6 : _glowAnimation.value * 0.5,
+                    if (isDark)
+                      BoxShadow(
+                        color: AppTheme.techPurple.withValues(
+                          alpha: _isHovered ? 0.6 : _glowAnimation.value * 0.5,
+                        ),
+                        blurRadius: _isHovered ? 20 : 15,
+                        spreadRadius: _isHovered ? 8 : 5,
                       ),
-                      blurRadius: _isHovered ? 20 : 15,
-                      spreadRadius: _isHovered ? 8 : 5,
-                    ),
-                    BoxShadow(
-                      color: AppTheme.neonBlue.withValues(
-                        alpha: _isHovered ? 0.4 : _glowAnimation.value * 0.3,
+                    if (isDark)
+                      BoxShadow(
+                        color: AppTheme.neonBlue.withValues(
+                          alpha: _isHovered ? 0.4 : _glowAnimation.value * 0.3,
+                        ),
+                        blurRadius: _isHovered ? 15 : 10,
+                        spreadRadius: _isHovered ? 5 : 3,
                       ),
-                      blurRadius: _isHovered ? 15 : 10,
-                      spreadRadius: _isHovered ? 5 : 3,
-                    ),
+                    if (!isDark)
+                      BoxShadow(
+                        color: AppTheme.techPurple.withValues(
+                          alpha: _isHovered ? 0.4 : _glowAnimation.value * 0.25,
+                        ),
+                        blurRadius: _isHovered ? 16 : 12,
+                        spreadRadius: _isHovered ? 4 : 2,
+                        offset: const Offset(0, 2),
+                      ),
                   ]
                 : [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 2),
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.2)
+                          : Colors.black.withValues(alpha: 0.08),
+                      blurRadius: isDark ? 8 : 4,
+                      spreadRadius: isDark ? 2 : 0,
+                      offset: isDark ? const Offset(0, 2) : const Offset(0, 1),
                     ),
                   ],
             border: Border.all(
               color: widget.value
-                  ? AppTheme.techPurple.withValues(alpha: 0.8)
-                  : inactiveColor.withValues(alpha: 0.3),
+                  ? AppTheme.techPurple.withValues(alpha: isDark ? 0.8 : 0.6)
+                  : isDark
+                      ? inactiveColor.withValues(alpha: 0.3)
+                      : const Color(0xFFCBD5E1),
               width: widget.value ? 1.5 : 1,
             ),
           ),
@@ -135,36 +156,67 @@ class _NeonSwitchState extends State<NeonSwitch>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: widget.value
-                          ? const LinearGradient(
-                              colors: [Colors.white, Color(0xFFE2E8F0)],
+                          ? LinearGradient(
+                              colors: isDark
+                                  ? const [Colors.white, Color(0xFFE2E8F0)]
+                                  : const [Colors.white, Color(0xFFF1F5F9)],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             )
-                          : const LinearGradient(
-                              colors: [Color(0xFF64748B), Color(0xFF475569)],
+                          : LinearGradient(
+                              colors: isDark
+                                  ? const [
+                                      Color(0xFF64748B),
+                                      Color(0xFF475569)
+                                    ]
+                                  : const [
+                                      Color(0xFF94A3B8),
+                                      Color(0xFF64748B)
+                                    ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                       boxShadow: widget.value
                           ? [
-                              BoxShadow(
-                                color: AppTheme.techPurple.withValues(
-                                  alpha: 0.6,
+                              if (isDark)
+                                BoxShadow(
+                                  color: AppTheme.techPurple.withValues(
+                                    alpha: 0.6,
+                                  ),
+                                  blurRadius: 10,
+                                  spreadRadius: 3,
                                 ),
-                                blurRadius: 10,
-                                spreadRadius: 3,
-                              ),
-                              BoxShadow(
-                                color: Colors.white.withValues(alpha: 0.5),
-                                blurRadius: 8,
-                                spreadRadius: 2,
-                              ),
+                              if (isDark)
+                                BoxShadow(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              if (!isDark)
+                                BoxShadow(
+                                  color: AppTheme.techPurple.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                  offset: const Offset(0, 2),
+                                ),
+                              if (!isDark)
+                                BoxShadow(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  blurRadius: 4,
+                                  spreadRadius: 1,
+                                  offset: const Offset(0, -1),
+                                ),
                             ]
                           : [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 5,
-                                spreadRadius: 1,
+                                color: isDark
+                                    ? Colors.black.withValues(alpha: 0.3)
+                                    : Colors.black.withValues(alpha: 0.1),
+                                blurRadius: isDark ? 5 : 3,
+                                spreadRadius: isDark ? 1 : 0,
+                                offset: const Offset(0, 1),
                               ),
                             ],
                     ),

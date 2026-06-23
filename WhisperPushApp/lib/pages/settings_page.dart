@@ -485,6 +485,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSectionHeader(String title, {IconData? icon}) {
+    final isDark = AppTheme.isDarkMode;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
@@ -495,9 +496,13 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 32,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: const Color.fromARGB(20, 139, 92, 246),
+                color: isDark
+                    ? const Color.fromARGB(20, 139, 92, 246)
+                    : AppTheme.techPurple.withValues(alpha: 0.08),
                 border: Border.all(
-                  color: const Color.fromARGB(77, 139, 92, 246),
+                  color: isDark
+                      ? const Color.fromARGB(77, 139, 92, 246)
+                      : AppTheme.techPurple.withValues(alpha: 0.15),
                 ),
               ),
               child: Icon(icon, color: AppTheme.techPurple, size: 18),
@@ -516,10 +521,10 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             height: 1,
             width: 40,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromARGB(128, 139, 92, 246),
+                  AppTheme.techPurple.withValues(alpha: isDark ? 0.5 : 0.3),
                   Colors.transparent,
                 ],
                 begin: Alignment.centerLeft,
@@ -540,6 +545,7 @@ class _SettingsPageState extends State<SettingsPage> {
     VoidCallback? onTap,
     bool isHighlighted = false,
   }) {
+    final isDark = AppTheme.isDarkMode;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -554,15 +560,27 @@ class _SettingsPageState extends State<SettingsPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 color: isHighlighted
-                    ? const Color.fromARGB(35, 139, 92, 246)
-                    : const Color.fromARGB(45, 51, 65, 85),
+                    ? (isDark
+                        ? const Color.fromARGB(35, 139, 92, 246)
+                        : AppTheme.techPurple.withValues(alpha: 0.12))
+                    : (isDark
+                        ? const Color.fromARGB(45, 51, 65, 85)
+                        : const Color(0xFFF1F5F9)),
                 boxShadow: isHighlighted
                     ? [
-                        const BoxShadow(
-                          color: Color.fromARGB(30, 139, 92, 246),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
+                        if (isDark)
+                          const BoxShadow(
+                            color: Color.fromARGB(30, 139, 92, 246),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
+                        if (!isDark)
+                          BoxShadow(
+                            color: AppTheme.techPurple.withValues(alpha: 0.15),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 2),
+                          ),
                       ]
                     : null,
               ),
@@ -619,6 +637,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildServerInfoCard() {
+    final isDark = AppTheme.isDarkMode;
     return GlassCard(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(0),
@@ -638,7 +657,14 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 44,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: const Color.fromARGB(30, 6, 182, 212),
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.neonBlue.withValues(alpha: isDark ? 0.2 : 0.12),
+                    AppTheme.techPurple.withValues(alpha: isDark ? 0.15 : 0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
               child: Icon(Icons.cloud, color: AppTheme.neonBlue, size: 20),
             ),
@@ -664,15 +690,33 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            Row(
-              children: [
-                Text(
-                  '切换',
-                  style: TextStyle(fontSize: 13, color: AppTheme.techPurple),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppTheme.techPurple.withValues(alpha: 0.15)
+                    : AppTheme.techPurple.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isDark
+                      ? AppTheme.techPurple.withValues(alpha: 0.3)
+                      : AppTheme.techPurple.withValues(alpha: 0.15),
                 ),
-                const SizedBox(width: 4),
-                Icon(Icons.refresh, size: 16, color: AppTheme.techPurple),
-              ],
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    '切换',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.techPurple,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.refresh, size: 15, color: AppTheme.techPurple),
+                ],
+              ),
             ),
           ],
         ),
@@ -716,10 +760,12 @@ class _SettingsPageState extends State<SettingsPage> {
                             horizontal: 16,
                             vertical: 20,
                           ),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: Color.fromARGB(77, 75, 85, 99),
+                                color: AppTheme.isDarkMode
+                                    ? const Color.fromARGB(77, 75, 85, 99)
+                                    : const Color(0xFFE2E8F0),
                               ),
                             ),
                           ),
@@ -738,17 +784,27 @@ class _SettingsPageState extends State<SettingsPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color.fromARGB(
-                                        60,
-                                        139,
-                                        92,
-                                        246,
+                                  boxShadow: [
+                                    if (AppTheme.isDarkMode)
+                                      const BoxShadow(
+                                        color: Color.fromARGB(
+                                          60,
+                                          139,
+                                          92,
+                                          246,
+                                        ),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
                                       ),
-                                      blurRadius: 20,
-                                      spreadRadius: 5,
-                                    ),
+                                    if (!AppTheme.isDarkMode)
+                                      BoxShadow(
+                                        color: AppTheme.techPurple.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        blurRadius: 15,
+                                        spreadRadius: 2,
+                                        offset: const Offset(0, 4),
+                                      ),
                                   ],
                                 ),
                                 child: Center(
@@ -854,10 +910,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                 horizontal: 16,
                                 vertical: 14,
                               ),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: Color.fromARGB(77, 75, 85, 99),
+                                    color: AppTheme.isDarkMode
+                                        ? const Color.fromARGB(77, 75, 85, 99)
+                                        : const Color(0xFFE2E8F0),
                                   ),
                                 ),
                               ),
@@ -868,12 +926,16 @@ class _SettingsPageState extends State<SettingsPage> {
                                     height: 44,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
-                                      color: const Color.fromARGB(
-                                        30,
-                                        139,
-                                        92,
-                                        246,
-                                      ),
+                                      color: AppTheme.isDarkMode
+                                          ? const Color.fromARGB(
+                                              30,
+                                              139,
+                                              92,
+                                              246,
+                                            )
+                                          : AppTheme.techPurple.withValues(
+                                              alpha: 0.1,
+                                            ),
                                     ),
                                     child: Icon(
                                       Icons.key,
@@ -947,10 +1009,12 @@ class _SettingsPageState extends State<SettingsPage> {
                             horizontal: 16,
                             vertical: 16,
                           ),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(
                               top: BorderSide(
-                                color: Color.fromARGB(77, 75, 85, 99),
+                                color: AppTheme.isDarkMode
+                                    ? const Color.fromARGB(77, 75, 85, 99)
+                                    : const Color(0xFFE2E8F0),
                               ),
                             ),
                           ),
@@ -961,7 +1025,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                 height: 44,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  color: const Color.fromARGB(40, 51, 65, 85),
+                                  color: AppTheme.isDarkMode
+                                      ? const Color.fromARGB(40, 51, 65, 85)
+                                      : const Color(0xFFF1F5F9),
                                 ),
                                 child: Icon(
                                   Icons.notifications,
@@ -978,6 +1044,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       '推送通知',
                                       style: TextStyle(
                                         color: AppTheme.textPrimary,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     Text(
@@ -1025,7 +1092,19 @@ class _SettingsPageState extends State<SettingsPage> {
                                 height: 44,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  color: const Color.fromARGB(40, 51, 65, 85),
+                                  color: AppTheme.isDarkMode
+                                      ? const Color.fromARGB(40, 51, 65, 85)
+                                      : const Color(0xFFF1F5F9),
+                                  gradient: themeProvider.isDarkMode
+                                      ? null
+                                      : LinearGradient(
+                                          colors: [
+                                            const Color(0xFFF8FAFC),
+                                            const Color(0xFFF1F5F9),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
                                 ),
                                 child: Icon(
                                   themeProvider.isDarkMode
@@ -1044,6 +1123,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       '深色模式',
                                       style: TextStyle(
                                         color: AppTheme.textPrimary,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     Text(

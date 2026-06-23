@@ -324,10 +324,21 @@ class MessageCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  _buildGroupTag(),
-                  if (message.group != null) const SizedBox(width: 8),
-                  _buildLevelBadge(),
-                  const Spacer(),
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: _buildGroupTag(),
+                        ),
+                        if (message.group != null) const SizedBox(width: 8),
+                        Flexible(
+                          child: _buildLevelBadge(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Text(
                     message.formattedTime,
                     style: TextStyle(

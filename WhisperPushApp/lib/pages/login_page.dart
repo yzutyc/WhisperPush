@@ -367,23 +367,20 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(height: 20),
                             if (_requiresTwoFactor) ...[
-                              GlassContainer(
-                                padding: const EdgeInsets.all(0),
-                                child: FormInput(
-                                  controller: _twoFactorController,
-                                  labelText: '6位验证码',
-                                  prefixIcon: Icons.lock,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(6),
-                                  ],
-                                  validator: (value) {
-                                    if (value?.isEmpty ?? true) return '请输入验证码';
-                                    if (value?.length != 6) return '验证码应为6位';
-                                    return null;
-                                  },
-                                ),
+                              FormInput(
+                                controller: _twoFactorController,
+                                labelText: '6位验证码',
+                                prefixIcon: Icons.lock,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(6),
+                                ],
+                                validator: (value) {
+                                  if (value?.isEmpty ?? true) return '请输入验证码';
+                                  if (value?.length != 6) return '验证码应为6位';
+                                  return null;
+                                },
                               ),
                               const SizedBox(height: 24),
                               Row(
