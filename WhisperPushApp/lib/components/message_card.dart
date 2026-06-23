@@ -55,9 +55,9 @@ class MessageCard extends StatelessWidget {
         break;
       default:
         glowColor = AppTheme.textTertiary;
-        borderColor = const Color.fromARGB(80, 209, 213, 219);
-        label = '未知';
-        icon = null;
+        borderColor = const Color.fromARGB(120, 16, 185, 129);
+        label = '普通';
+        icon = Icons.check_circle;
     }
 
     return Container(

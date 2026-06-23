@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_theme.dart';
 
@@ -14,6 +15,7 @@ class FormInput extends StatelessWidget {
   final ValueChanged<String>? onFieldSubmitted;
   final String? errorText;
   final bool enabled;
+  final List<TextInputFormatter>? inputFormatters;
 
   const FormInput({
     super.key,
@@ -28,6 +30,7 @@ class FormInput extends StatelessWidget {
     this.onFieldSubmitted,
     this.errorText,
     this.enabled = true,
+    this.inputFormatters,
   });
 
   @override
@@ -40,6 +43,7 @@ class FormInput extends StatelessWidget {
       onChanged: onChanged,
       onFieldSubmitted: onFieldSubmitted,
       enabled: enabled,
+      inputFormatters: inputFormatters,
       style: TextStyle(fontSize: 16, color: AppTheme.textPrimary),
       decoration: InputDecoration(
         labelText: labelText,
